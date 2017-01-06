@@ -1,0 +1,39 @@
+{% set data = load_setup_py_data() %}
+
+package:
+  name: thermostate
+  version: {{ data['version'] }}
+
+source:
+  path: ..
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+
+requirements:
+  build:
+    - python >=3.4,{{PY_VER}}*
+    - setuptools
+
+  run:
+    - python {{PY_VER}}*
+    - coolprop
+    - pint
+
+test:
+  imports:
+    - thermostate
+
+  requires:
+    - pytest
+    - pytest-cov
+
+  commands:
+    - pytest -vv --cov=./
+
+about:
+  home: https://github.com/bryanwweber/UConnRCMPy
+  license: MIT
+  license_file: LICENSE.md
