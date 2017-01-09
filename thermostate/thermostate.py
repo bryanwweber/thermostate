@@ -311,3 +311,31 @@ class State(object):
     @xT.setter
     def xT(self, value):
         self.Tx = value[1], value[0]
+
+    @property
+    def pu(self):
+        return self._p, self._u
+
+    @pu.setter
+    def pu(self, value):
+        self._check_dimensions(['p', 'u'], value)
+        PropsSI_p = self.to_PropsSI('p', value[0])
+        PropsSI_u = self.to_PropsSI('u', value[1])
+
+        self._p = self.to_SI('p', value[0])
+        self._u = self.to_SI('u', value[1])
+        self._T = Q_(PropsSI('T', 'P', PropsSI_p, 'U', PropsSI_u, self.sub), self.SI_units['T'])
+        self._h = Q_(PropsSI('H', 'P', PropsSI_p, 'U', PropsSI_u, self.sub), self.SI_units['h'])
+        self._s = Q_(PropsSI('S', 'P', PropsSI_p, 'U', PropsSI_u, self.sub), self.SI_units['s'])
+        self._v = Q_(1.0/PropsSI('D', 'P', PropsSI_p, 'U', PropsSI_u, self.sub), self.SI_units['v'])
+        self._x = Q_(PropsSI('Q', 'P', PropsSI_p, 'U', PropsSI_u, self.sub), self.SI_units['x'])
+        if self._x == -1.0:
+            self._x = None
+
+    @property
+    def up(self):
+        return self._u, self._p
+
+    @up.setter
+    def up(self, value):
+        self.pu = value[1], value[0]
