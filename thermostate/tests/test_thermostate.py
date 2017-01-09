@@ -14,18 +14,6 @@ def isclose_quant(a, b, *args, **kwargs):
 class TestState(object):
     """
     """
-    def test_set_Tp(self):
-        s = State(substance='water', T=Q_(400., 'K'), p=Q_(101325., 'Pa'))
-        assert isclose_quant(s.T, Q_(400., 'K'))
-        assert isclose_quant(s.p, Q_(101325., 'Pa'))
-        assert isclose_quant(s.Tp[0], Q_(400., 'K'))
-        assert isclose_quant(s.Tp[1], Q_(101325., 'Pa'))
-        assert isclose_quant(s.u, Q_(2547715.3635084038, 'J/kg'))
-        assert isclose_quant(s.s, Q_(7496.2021523754065, 'J/(kg*K)'))
-        assert isclose_quant(s.v, Q_(1.801983936953226, 'm**3/kg'))
-        assert isclose_quant(s.h, Q_(2730301.3859201893, 'J/kg'))
-        assert s.x is None
-
     def test_lowercase_input(self):
         State(substance='water')
         State(substance='r22')
@@ -67,6 +55,18 @@ class TestState(object):
     def test_bad_TP_values(self):
         with pytest.raises(ValueError):
             State(substance='water', T=Q_(10000., 'K'), p=Q_(101325., 'Pa'))
+
+    def test_set_Tp(self):
+        s = State(substance='water', T=Q_(400., 'K'), p=Q_(101325., 'Pa'))
+        assert isclose_quant(s.T, Q_(400., 'K'))
+        assert isclose_quant(s.p, Q_(101325., 'Pa'))
+        assert isclose_quant(s.Tp[0], Q_(400., 'K'))
+        assert isclose_quant(s.Tp[1], Q_(101325., 'Pa'))
+        assert isclose_quant(s.u, Q_(2547715.3635084038, 'J/kg'))
+        assert isclose_quant(s.s, Q_(7496.2021523754065, 'J/(kg*K)'))
+        assert isclose_quant(s.v, Q_(1.801983936953226, 'm**3/kg'))
+        assert isclose_quant(s.h, Q_(2730301.3859201893, 'J/kg'))
+        assert s.x is None
 
     def test_set_pT(self):
         s = State(substance='water')
