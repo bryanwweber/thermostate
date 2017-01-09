@@ -92,7 +92,7 @@ class State(object):
         if len(input_props) > 0:
             setattr(self, input_props, (kwargs[input_props[0]], kwargs[input_props[1]]))
         else:
-            setattr(self, 'TP', (Q_(300., 'K'), Q_(101325., 'Pa')))
+            setattr(self, 'Tp', (Q_(300., 'K'), Q_(101325., 'Pa')))
 
     def to_SI(self, prop, value):
         return value.to(self.SI_units[prop])
