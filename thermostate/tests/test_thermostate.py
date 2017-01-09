@@ -448,3 +448,33 @@ class TestState(object):
         assert isclose_quant(s.v, Q_(0.4772010021515822, 'm**3/kg'))
         assert isclose_quant(s.h, Q_(1061602.391543017, 'J/kg'))
         assert isclose_quant(s.x, Q_(0.28475636946248034, 'dimensionless'))
+
+    # This set of tests fails because s and u are not valid inputs for PhaseSI
+    # in CoolProp 6.1.0
+    @pytest.mark.xfail(strict=True)
+    def test_set_us(self):
+        s = State(substance='water')
+        s.us = Q_(1013250., 'J/kg'), Q_(3028.9867985920914, 'J/(kg*K)')
+        assert isclose_quant(s.T, Q_(373.1242958476843, 'K'))
+        assert isclose_quant(s.p, Q_(101325., 'Pa'))
+        assert isclose_quant(s.us[0], Q_(1013250., 'J/kg'))
+        assert isclose_quant(s.us[1], Q_(3028.9867985920914, 'J/(kg*K)'))
+        assert isclose_quant(s.u, Q_(1013250., 'J/kg'))
+        assert isclose_quant(s.s, Q_(3028.9867985920914, 'J/(kg*K)'))
+        assert isclose_quant(s.v, Q_(0.4772010021515822, 'm**3/kg'))
+        assert isclose_quant(s.h, Q_(1061602.391543017, 'J/kg'))
+        assert isclose_quant(s.x, Q_(0.28475636946248034, 'dimensionless'))
+
+    @pytest.mark.xfail(strict=True)
+    def test_set_su(self):
+        s = State(substance='water')
+        s.su = Q_(3028.9867985920914, 'J/(kg*K)'), Q_(1013250., 'J/kg')
+        assert isclose_quant(s.T, Q_(373.1242958476843, 'K'))
+        assert isclose_quant(s.p, Q_(101325., 'Pa'))
+        assert isclose_quant(s.su[0], Q_(3028.9867985920914, 'J/(kg*K)'))
+        assert isclose_quant(s.su[1], Q_(1013250., 'J/kg'))
+        assert isclose_quant(s.u, Q_(1013250, 'J/kg'))
+        assert isclose_quant(s.s, Q_(3028.9867985920914, 'J/(kg*K)'))
+        assert isclose_quant(s.v, Q_(0.4772010021515822, 'm**3/kg'))
+        assert isclose_quant(s.h, Q_(1061602.391543017, 'J/kg'))
+        assert isclose_quant(s.x, Q_(0.28475636946248034, 'dimensionless'))

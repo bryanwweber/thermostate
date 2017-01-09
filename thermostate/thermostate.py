@@ -377,3 +377,21 @@ class State(object):
     @xp.setter
     def xp(self, value):
         self.px = value[1], value[0]
+
+    @property
+    def us(self):
+        return self._u, self._s
+
+    @us.setter
+    def us(self, value):
+        raise StateError('Setting s and u simultaneously is not allowed.')
+        self._check_dimensions(['u', 's'], value)
+        self._set_properties(['u', 's'], value)
+
+    @property
+    def su(self):
+        return self._s, self._u
+
+    @su.setter
+    def su(self, value):
+        self.us = value[1], value[0]
