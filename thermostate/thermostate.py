@@ -189,7 +189,7 @@ class State(object):
 
     @property
     def uT(self):
-        return self._T, self._u
+        return self._u, self._T
 
     @uT.setter
     def uT(self, value):
