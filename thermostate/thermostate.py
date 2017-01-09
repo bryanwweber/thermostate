@@ -367,3 +367,32 @@ class State(object):
     @sp.setter
     def sp(self, value):
         self.ps = value[1], value[0]
+
+    @property
+    def pv(self):
+        return self._p, self._v
+
+    @pv.setter
+    def pv(self, value):
+        self._check_dimensions(['p', 'v'], value)
+        PropsSI_p = self.to_PropsSI('p', value[0])
+        PropsSI_v = self.to_PropsSI('v', value[1])
+        PropsSI_d = 1.0/PropsSI_v
+
+        self._p = self.to_SI('p', value[0])
+        self._v = self.to_SI('v', value[1])
+        self._T = Q_(PropsSI('T', 'P', PropsSI_p, 'D', PropsSI_d, self.sub), self.SI_units['T'])
+        self._h = Q_(PropsSI('H', 'P', PropsSI_p, 'D', PropsSI_d, self.sub), self.SI_units['h'])
+        self._u = Q_(PropsSI('U', 'P', PropsSI_p, 'D', PropsSI_d, self.sub), self.SI_units['u'])
+        self._s = Q_(PropsSI('S', 'P', PropsSI_p, 'D', PropsSI_d, self.sub), self.SI_units['s'])
+        self._x = Q_(PropsSI('Q', 'P', PropsSI_p, 'D', PropsSI_d, self.sub), self.SI_units['x'])
+        if self._x == -1.0:
+            self._x = None
+
+    @property
+    def vp(self):
+        return self._v, self._p
+
+    @vp.setter
+    def vp(self, value):
+        self.pv = value[1], value[0]
