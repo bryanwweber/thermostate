@@ -214,7 +214,7 @@ class State(object):
         self._p = Q_(PropsSI('P', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['p'])
         self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['s'])
         self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['v'])
-        self._u = Q_(PropsSI('H', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['h'])
+        self._u = Q_(PropsSI('U', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['u'])
         self._x = Q_(PropsSI('Q', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['x'])
         if self._x == -1.0:
             self._x = None
