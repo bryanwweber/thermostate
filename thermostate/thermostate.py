@@ -197,3 +197,32 @@ class State(object):
     @uT.setter
     def uT(self, value):
         self.Tu = value[1], value[0]
+
+    @property
+    def Th(self):
+        return self._T, self._h
+
+    @Th.setter
+    def Th(self, value):
+        raise StateError('Setting T and h simultaneously is not allowed.')
+        self._check_dimensions(['T', 'h'], value)
+        PropsSI_T = self.to_PropsSI('T', value[0])
+        PropsSI_h = self.to_PropsSI('h', value[1])
+
+        self._T = self.to_SI('T', value[0])
+        self._h = self.to_SI('h', value[1])
+        self._p = Q_(PropsSI('P', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['p'])
+        self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['s'])
+        self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['v'])
+        self._u = Q_(PropsSI('H', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['h'])
+        self._x = Q_(PropsSI('Q', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['x'])
+        if self._x == -1.0:
+            self._x = None
+
+    @property
+    def hT(self):
+        return self._h, self._T
+
+    @hT.setter
+    def hT(self, value):
+        self.Th = value[1], value[0]
