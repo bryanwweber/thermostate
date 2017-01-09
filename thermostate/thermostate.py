@@ -38,12 +38,12 @@ class State(object):
     allowed_subs = ['AIR', 'AMMONIA', 'WATER', 'PROPANE', 'R134A', 'R22']
 
     allowed_pairs = [
-        'Tp', 'Ts', 'Tv', 'Th', 'Tx',
+        'Tp', 'Ts', 'Tv', 'Tx',
         'pT', 'pu', 'ps', 'pv', 'ph', 'px',
         'up', 'us', 'uv',
         'sT', 'sp', 'su', 'sv', 'sh',
         'vT', 'vp', 'vu', 'vs', 'vh',
-        'hT', 'hp', 'hs', 'hv',
+        'hp', 'hs', 'hv',
     ]
 
     dimensions = {
