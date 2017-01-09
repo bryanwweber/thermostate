@@ -56,6 +56,15 @@ class State(object):
         'x': UnitsContainer({}),
     }
 
+    SI_units = {
+        'T': 'kelvin',
+        'p': 'pascal',
+        'u': 'joules/kilogram',
+        's': 'joules/(kilogram*kelvin)',
+        'v': 'meter**3/kilogram',
+        'h': 'joules/kilogram',
+    }
+
     def __init__(self, substance, **kwargs):  # T=None, p=None, u=None, s=None, v=None, h=None, x=None):  # noqa
         if substance.upper() in self.allowed_subs:
             self.sub = substance.upper()
@@ -82,11 +91,11 @@ class State(object):
         else:
             setattr(self, 'TP', (Q_(300., 'K'), Q_(101325., 'Pa')))
 
-    def to_SI(self, value):
-        return value.to_base_units()
+    def to_SI(self, prop, value):
+        return value.to(self.SI_units[prop])
 
-    def to_PropsSI(self, value):
-        return self.to_SI(value).magnitude
+    def to_PropsSI(self, prop, value):
+        return self.to_SI(prop, value).magnitude
 
     def _check_dimensions(self, properties, value):
         if value[0].dimensionality != self.dimensions[properties[0]]:
@@ -133,8 +142,8 @@ class State(object):
     @Tp.setter
     def Tp(self, value):
         self._check_dimensions(['T', 'p'], value)
-        PropsSI_T = self.to_PropsSI(value[0])
-        PropsSI_p = self.to_PropsSI(value[1])
+        PropsSI_T = self.to_PropsSI('T', value[0])
+        PropsSI_p = self.to_PropsSI('p', value[1])
         try:
             PropsSI('Phase', 'T', PropsSI_T, 'P', PropsSI_p, self.sub)
         except ValueError as e:
@@ -143,12 +152,12 @@ class State(object):
             else:
                 raise
 
-        self._T = self.to_SI(value[0])
-        self._p = self.to_SI(value[1])
-        self._u = Q_(PropsSI('U', 'T', PropsSI_T, 'P', PropsSI_p, self.sub), 'J/kg')
-        self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'P', PropsSI_p, self.sub), 'J/(kg*K)')
-        self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'P', PropsSI_p, self.sub), 'm**3/kg')
-        self._h = Q_(PropsSI('H', 'T', PropsSI_T, 'P', PropsSI_p, self.sub), 'J/kg')
+        self._T = self.to_SI('T', value[0])
+        self._p = self.to_SI('p', value[1])
+        self._u = Q_(PropsSI('U', 'T', PropsSI_T, 'P', PropsSI_p, self.sub), self.SI_units['u'])
+        self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'P', PropsSI_p, self.sub), self.SI_units['s'])
+        self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'P', PropsSI_p, self.sub), self.SI_units['v'])
+        self._h = Q_(PropsSI('H', 'T', PropsSI_T, 'P', PropsSI_p, self.sub), self.SI_units['h'])
         self._x = None
 
     @property
