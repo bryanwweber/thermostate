@@ -167,3 +167,29 @@ class State(object):
     @pT.setter
     def pT(self, value):
         self.Tp = value[1], value[0]
+
+    @property
+    def Tu(self):
+        return self._T, self._u
+
+    @Tu.setter
+    def Tu(self, value):
+        self._check_dimensions(['T', 'u'], value)
+        PropsSI_T = self.to_PropsSI('T', value[0])
+        PropsSI_u = self.to_PropsSI('u', value[1])
+
+        self._T = self.to_SI('T', value[0])
+        self._u = self.to_SI('u', value[1])
+        self._p = Q_(PropsSI('P', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['p'])
+        self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['s'])
+        self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['v'])
+        self._h = Q_(PropsSI('H', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['h'])
+        self._x = None
+
+    @property
+    def uT(self):
+        return self._T, self._u
+
+    @uT.setter
+    def uT(self, value):
+        self.Tu = value[1], value[0]
