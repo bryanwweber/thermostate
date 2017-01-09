@@ -422,3 +422,29 @@ class TestState(object):
         assert isclose_quant(s.v, Q_(3.189303132125469, 'm**3/kg'))
         assert isclose_quant(s.h, Q_(3336406.139862406, 'J/kg'))
         assert s.x is None
+
+    def test_set_px(self):
+        s = State(substance='water')
+        s.px = Q_(101325., 'Pa'), Q_(0.28475636946248034, 'dimensionless')
+        assert isclose_quant(s.T, Q_(373.1242958476843, 'K'))
+        assert isclose_quant(s.p, Q_(101325., 'Pa'))
+        assert isclose_quant(s.px[0], Q_(101325., 'Pa'))
+        assert isclose_quant(s.px[1], Q_(0.28475636946248034, 'dimensionless'))
+        assert isclose_quant(s.u, Q_(1013250., 'J/kg'))
+        assert isclose_quant(s.s, Q_(3028.9867985920914, 'J/(kg*K)'))
+        assert isclose_quant(s.v, Q_(0.4772010021515822, 'm**3/kg'))
+        assert isclose_quant(s.h, Q_(1061602.391543017, 'J/kg'))
+        assert isclose_quant(s.x, Q_(0.28475636946248034, 'dimensionless'))
+
+    def test_set_xp(self):
+        s = State(substance='water')
+        s.xp = Q_(0.28475636946248034, 'dimensionless'), Q_(101325., 'Pa')
+        assert isclose_quant(s.T, Q_(373.1242958476843, 'K'))
+        assert isclose_quant(s.p, Q_(101325., 'Pa'))
+        assert isclose_quant(s.xp[0], Q_(0.28475636946248034, 'dimensionless'))
+        assert isclose_quant(s.xp[1], Q_(101325., 'Pa'))
+        assert isclose_quant(s.u, Q_(1013250, 'J/kg'))
+        assert isclose_quant(s.s, Q_(3028.9867985920914, 'J/(kg*K)'))
+        assert isclose_quant(s.v, Q_(0.4772010021515822, 'm**3/kg'))
+        assert isclose_quant(s.h, Q_(1061602.391543017, 'J/kg'))
+        assert isclose_quant(s.x, Q_(0.28475636946248034, 'dimensionless'))
