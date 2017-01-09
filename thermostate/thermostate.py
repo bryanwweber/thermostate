@@ -360,3 +360,20 @@ class State(object):
     @hp.setter
     def hp(self, value):
         self.ph = value[1], value[0]
+
+    @property
+    def px(self):
+        return self._p, self._x
+
+    @px.setter
+    def px(self, value):
+        self._check_dimensions(['p', 'x'], value)
+        self._set_properties(['p', 'x'], value)
+
+    @property
+    def xp(self):
+        return self._x, self._p
+
+    @xp.setter
+    def xp(self, value):
+        self.px = value[1], value[0]
