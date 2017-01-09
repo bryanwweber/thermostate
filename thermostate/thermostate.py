@@ -110,6 +110,45 @@ class State(object):
                 props=properties,
                 dim=self.dimensions[properties[1]]))
 
+    def _set_properties(self, known_props, known_values):
+        if len(known_props) != 2 or len(known_values) != 2 or len(known_props) != len(known_values):
+            raise StateError('Only specify two properties to _set_properties')
+
+        all_props = 'Tpuvhsx'
+
+        props = []
+        vals = []
+
+        for prop, val in zip(known_props, known_values):
+            if prop == 'x':
+                props.append('Q')
+                vals.append(self.to_PropsSI('x', val))
+            elif prop == 'v':
+                props.append('D')
+                vals.append(1.0/self.to_PropsSI('v', val))
+            else:
+                props.append(prop.upper())
+                vals.append(self.to_PropsSI(prop, val))
+
+            setattr(self, '_' + prop, self.to_SI(prop, val))
+
+        unknown_props = all_props.replace(known_props[0], '').replace(known_props[1], '')
+
+        for prop in unknown_props:
+            if prop == 'v':
+                value = Q_(1.0/PropsSI('D', props[0], vals[0], props[1], vals[1], self.sub),
+                           self.SI_units[prop])
+            elif prop == 'x':
+                value = Q_(PropsSI('Q', props[0], vals[0], props[1], vals[1], self.sub),
+                           self.SI_units[prop])
+                if value == -1.0:
+                    value = None
+            else:
+                value = Q_(PropsSI(prop.upper(), props[0], vals[0], props[1], vals[1], self.sub),
+                           self.SI_units[prop])
+
+            setattr(self, '_' + prop, value)
+
     @property
     def T(self):
         return self._T
@@ -145,23 +184,18 @@ class State(object):
     @Tp.setter
     def Tp(self, value):
         self._check_dimensions(['T', 'p'], value)
-        PropsSI_T = self.to_PropsSI('T', value[0])
-        PropsSI_p = self.to_PropsSI('p', value[1])
         try:
-            PropsSI('Phase', 'T', PropsSI_T, 'P', PropsSI_p, self.sub)
+            PropsSI('Phase',
+                    'T', self.to_PropsSI('T', value[0]),
+                    'P', self.to_PropsSI('p', value[1]),
+                    self.sub)
         except ValueError as e:
             if 'Saturation pressure' in str(e):
                 raise StateError('The given values for T and P are not independent.')
             else:
                 raise
 
-        self._T = self.to_SI('T', value[0])
-        self._p = self.to_SI('p', value[1])
-        self._u = Q_(PropsSI('U', 'T', PropsSI_T, 'P', PropsSI_p, self.sub), self.SI_units['u'])
-        self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'P', PropsSI_p, self.sub), self.SI_units['s'])
-        self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'P', PropsSI_p, self.sub), self.SI_units['v'])
-        self._h = Q_(PropsSI('H', 'T', PropsSI_T, 'P', PropsSI_p, self.sub), self.SI_units['h'])
-        self._x = None
+        self._set_properties(['T', 'p'], value)
 
     @property
     def pT(self):
@@ -179,18 +213,7 @@ class State(object):
     def Tu(self, value):
         raise StateError('Setting T and u simultaneously is not allowed.')
         self._check_dimensions(['T', 'u'], value)
-        PropsSI_T = self.to_PropsSI('T', value[0])
-        PropsSI_u = self.to_PropsSI('u', value[1])
-
-        self._T = self.to_SI('T', value[0])
-        self._u = self.to_SI('u', value[1])
-        self._p = Q_(PropsSI('P', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['p'])
-        self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['s'])
-        self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['v'])
-        self._h = Q_(PropsSI('H', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['h'])
-        self._x = Q_(PropsSI('Q', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['x'])
-        if self._x == -1.0:
-            self._x = None
+        self._set_properties(['T', 'u'], value)
 
     @property
     def uT(self):
@@ -208,18 +231,7 @@ class State(object):
     def Th(self, value):
         raise StateError('Setting T and h simultaneously is not allowed.')
         self._check_dimensions(['T', 'h'], value)
-        PropsSI_T = self.to_PropsSI('T', value[0])
-        PropsSI_h = self.to_PropsSI('h', value[1])
-
-        self._T = self.to_SI('T', value[0])
-        self._h = self.to_SI('h', value[1])
-        self._p = Q_(PropsSI('P', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['p'])
-        self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['s'])
-        self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['v'])
-        self._u = Q_(PropsSI('U', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['u'])
-        self._x = Q_(PropsSI('Q', 'T', PropsSI_T, 'H', PropsSI_h, self.sub), self.SI_units['x'])
-        if self._x == -1.0:
-            self._x = None
+        self._set_properties(['T', 'h'], value)
 
     @property
     def hT(self):
@@ -236,18 +248,8 @@ class State(object):
     @Ts.setter
     def Ts(self, value):
         self._check_dimensions(['T', 's'], value)
-        PropsSI_T = self.to_PropsSI('T', value[0])
-        PropsSI_s = self.to_PropsSI('s', value[1])
 
-        self._T = self.to_SI('T', value[0])
-        self._s = self.to_SI('s', value[1])
-        self._p = Q_(PropsSI('P', 'T', PropsSI_T, 'S', PropsSI_s, self.sub), self.SI_units['p'])
-        self._h = Q_(PropsSI('H', 'T', PropsSI_T, 'S', PropsSI_s, self.sub), self.SI_units['h'])
-        self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'S', PropsSI_s, self.sub), self.SI_units['v'])
-        self._u = Q_(PropsSI('U', 'T', PropsSI_T, 'S', PropsSI_s, self.sub), self.SI_units['u'])
-        self._x = Q_(PropsSI('Q', 'T', PropsSI_T, 'S', PropsSI_s, self.sub), self.SI_units['x'])
-        if self._x == -1.0:
-            self._x = None
+        self._set_properties(['T', 's'], value)
 
     @property
     def sT(self):
@@ -264,19 +266,7 @@ class State(object):
     @Tv.setter
     def Tv(self, value):
         self._check_dimensions(['T', 'v'], value)
-        PropsSI_T = self.to_PropsSI('T', value[0])
-        PropsSI_v = self.to_PropsSI('v', value[1])
-        PropsSI_d = 1.0/PropsSI_v
-
-        self._T = self.to_SI('T', value[0])
-        self._v = self.to_SI('v', value[1])
-        self._p = Q_(PropsSI('P', 'T', PropsSI_T, 'D', PropsSI_d, self.sub), self.SI_units['p'])
-        self._h = Q_(PropsSI('H', 'T', PropsSI_T, 'D', PropsSI_d, self.sub), self.SI_units['h'])
-        self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'D', PropsSI_d, self.sub), self.SI_units['s'])
-        self._u = Q_(PropsSI('U', 'T', PropsSI_T, 'D', PropsSI_d, self.sub), self.SI_units['u'])
-        self._x = Q_(PropsSI('Q', 'T', PropsSI_T, 'D', PropsSI_d, self.sub), self.SI_units['x'])
-        if self._x == -1.0:
-            self._x = None
+        self._set_properties(['T', 'v'], value)
 
     @property
     def vT(self):
@@ -293,16 +283,7 @@ class State(object):
     @Tx.setter
     def Tx(self, value):
         self._check_dimensions(['T', 'x'], value)
-        PropsSI_T = self.to_PropsSI('T', value[0])
-        PropsSI_x = self.to_PropsSI('x', value[1])
-
-        self._T = self.to_SI('T', value[0])
-        self._x = self.to_SI('x', value[1])
-        self._p = Q_(PropsSI('P', 'T', PropsSI_T, 'Q', PropsSI_x, self.sub), self.SI_units['p'])
-        self._h = Q_(PropsSI('H', 'T', PropsSI_T, 'Q', PropsSI_x, self.sub), self.SI_units['h'])
-        self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'Q', PropsSI_x, self.sub), self.SI_units['s'])
-        self._u = Q_(PropsSI('U', 'T', PropsSI_T, 'Q', PropsSI_x, self.sub), self.SI_units['u'])
-        self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'Q', PropsSI_x, self.sub), self.SI_units['v'])
+        self._set_properties(['T', 'x'], value)
 
     @property
     def xT(self):
@@ -319,18 +300,7 @@ class State(object):
     @pu.setter
     def pu(self, value):
         self._check_dimensions(['p', 'u'], value)
-        PropsSI_p = self.to_PropsSI('p', value[0])
-        PropsSI_u = self.to_PropsSI('u', value[1])
-
-        self._p = self.to_SI('p', value[0])
-        self._u = self.to_SI('u', value[1])
-        self._T = Q_(PropsSI('T', 'P', PropsSI_p, 'U', PropsSI_u, self.sub), self.SI_units['T'])
-        self._h = Q_(PropsSI('H', 'P', PropsSI_p, 'U', PropsSI_u, self.sub), self.SI_units['h'])
-        self._s = Q_(PropsSI('S', 'P', PropsSI_p, 'U', PropsSI_u, self.sub), self.SI_units['s'])
-        self._v = Q_(1.0/PropsSI('D', 'P', PropsSI_p, 'U', PropsSI_u, self.sub), self.SI_units['v'])
-        self._x = Q_(PropsSI('Q', 'P', PropsSI_p, 'U', PropsSI_u, self.sub), self.SI_units['x'])
-        if self._x == -1.0:
-            self._x = None
+        self._set_properties(['p', 'u'], value)
 
     @property
     def up(self):
@@ -347,18 +317,7 @@ class State(object):
     @ps.setter
     def ps(self, value):
         self._check_dimensions(['p', 's'], value)
-        PropsSI_p = self.to_PropsSI('p', value[0])
-        PropsSI_s = self.to_PropsSI('s', value[1])
-
-        self._p = self.to_SI('p', value[0])
-        self._s = self.to_SI('s', value[1])
-        self._T = Q_(PropsSI('T', 'P', PropsSI_p, 'S', PropsSI_s, self.sub), self.SI_units['T'])
-        self._h = Q_(PropsSI('H', 'P', PropsSI_p, 'S', PropsSI_s, self.sub), self.SI_units['h'])
-        self._u = Q_(PropsSI('U', 'P', PropsSI_p, 'S', PropsSI_s, self.sub), self.SI_units['u'])
-        self._v = Q_(1.0/PropsSI('D', 'P', PropsSI_p, 'S', PropsSI_s, self.sub), self.SI_units['v'])
-        self._x = Q_(PropsSI('Q', 'P', PropsSI_p, 'S', PropsSI_s, self.sub), self.SI_units['x'])
-        if self._x == -1.0:
-            self._x = None
+        self._set_properties(['p', 's'], value)
 
     @property
     def sp(self):
@@ -375,19 +334,7 @@ class State(object):
     @pv.setter
     def pv(self, value):
         self._check_dimensions(['p', 'v'], value)
-        PropsSI_p = self.to_PropsSI('p', value[0])
-        PropsSI_v = self.to_PropsSI('v', value[1])
-        PropsSI_d = 1.0/PropsSI_v
-
-        self._p = self.to_SI('p', value[0])
-        self._v = self.to_SI('v', value[1])
-        self._T = Q_(PropsSI('T', 'P', PropsSI_p, 'D', PropsSI_d, self.sub), self.SI_units['T'])
-        self._h = Q_(PropsSI('H', 'P', PropsSI_p, 'D', PropsSI_d, self.sub), self.SI_units['h'])
-        self._u = Q_(PropsSI('U', 'P', PropsSI_p, 'D', PropsSI_d, self.sub), self.SI_units['u'])
-        self._s = Q_(PropsSI('S', 'P', PropsSI_p, 'D', PropsSI_d, self.sub), self.SI_units['s'])
-        self._x = Q_(PropsSI('Q', 'P', PropsSI_p, 'D', PropsSI_d, self.sub), self.SI_units['x'])
-        if self._x == -1.0:
-            self._x = None
+        self._set_properties(['p', 'v'], value)
 
     @property
     def vp(self):
