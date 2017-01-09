@@ -10,6 +10,11 @@ with open(op.join(op.dirname(op.realpath(__file__)), 'README.md')) as readme_fil
 with open(op.join(op.dirname(op.realpath(__file__)), 'CHANGELOG.md')) as changelog_file:
     changelog = changelog_file.read()
 
+install_requires = [
+    'coolprop',
+    'pint',
+]
+
 setup(
     name='thermostate',
     version=__version__,
