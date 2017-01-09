@@ -144,3 +144,29 @@ class TestState(object):
         assert isclose_quant(s.v, Q_(1.801983936953226, 'm**3/kg'))
         assert isclose_quant(s.h, Q_(2730301.3859201893, 'J/kg'))
         assert s.x is None
+
+    def test_set_sT(self):
+        s = State(substance='water')
+        s.sT = Q_(7496.2021523754065, 'J/(kg*K)'), Q_(400., 'K')
+        assert isclose_quant(s.T, Q_(400., 'K'))
+        assert isclose_quant(s.p, Q_(101325., 'Pa'))
+        assert isclose_quant(s.sT[1], Q_(400., 'K'))
+        assert isclose_quant(s.sT[0], Q_(7496.2021523754065, 'J/(kg*K)'))
+        assert isclose_quant(s.u, Q_(2547715.3635084038, 'J/kg'))
+        assert isclose_quant(s.s, Q_(7496.2021523754065, 'J/(kg*K)'))
+        assert isclose_quant(s.v, Q_(1.801983936953226, 'm**3/kg'))
+        assert isclose_quant(s.h, Q_(2730301.3859201893, 'J/kg'))
+        assert s.x is None
+
+    def test_set_Ts(self):
+        s = State(substance='water')
+        s.Ts = Q_(400., 'K'), Q_(7496.2021523754065, 'J/(kg*K)')
+        assert isclose_quant(s.T, Q_(400., 'K'))
+        assert isclose_quant(s.p, Q_(101325., 'Pa'))
+        assert isclose_quant(s.Tu[0], Q_(400., 'K'))
+        assert isclose_quant(s.Ts[1], Q_(7496.2021523754065, 'J/(kg*K)'))
+        assert isclose_quant(s.u, Q_(2547715.3635084038, 'J/kg'))
+        assert isclose_quant(s.s, Q_(7496.2021523754065, 'J/(kg*K)'))
+        assert isclose_quant(s.v, Q_(1.801983936953226, 'm**3/kg'))
+        assert isclose_quant(s.h, Q_(2730301.3859201893, 'J/kg'))
+        assert s.x is None
