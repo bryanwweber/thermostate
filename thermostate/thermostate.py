@@ -38,9 +38,9 @@ class State(object):
     allowed_subs = ['AIR', 'AMMONIA', 'WATER', 'PROPANE', 'R134A', 'R22']
 
     allowed_pairs = [
-        'Tp', 'Tu', 'Ts', 'Tv', 'Th', 'Tx',
+        'Tp', 'Ts', 'Tv', 'Th', 'Tx',
         'pT', 'pu', 'ps', 'pv', 'ph', 'px',
-        'uT', 'up', 'us', 'uv',
+        'up', 'us', 'uv',
         'sT', 'sp', 'su', 'sv', 'sh',
         'vT', 'vp', 'vu', 'vs', 'vh',
         'hT', 'hp', 'hs', 'hv',
@@ -174,6 +174,7 @@ class State(object):
 
     @Tu.setter
     def Tu(self, value):
+        raise StateError('Setting T and u simultaneously is not allowed.')
         self._check_dimensions(['T', 'u'], value)
         PropsSI_T = self.to_PropsSI('T', value[0])
         PropsSI_u = self.to_PropsSI('u', value[1])
