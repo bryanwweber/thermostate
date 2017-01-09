@@ -3,10 +3,12 @@ Base ThermoState module
 """
 from CoolProp.CoolProp import PropsSI
 from pint import UnitRegistry
-from pint.unit import UnitsContainer
+from pint.unit import UnitsContainer, UnitDefinition
+from pint.converters import ScaleConverter
 
 units = UnitRegistry()
 Q_ = units.Quantity
+units.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1.0/100.0)))
 
 
 class StateError(Exception):
@@ -283,3 +285,29 @@ class State(object):
     @vT.setter
     def vT(self, value):
         self.Tv = value[1], value[0]
+
+    @property
+    def Tx(self):
+        return self._T, self._x
+
+    @Tx.setter
+    def Tx(self, value):
+        self._check_dimensions(['T', 'x'], value)
+        PropsSI_T = self.to_PropsSI('T', value[0])
+        PropsSI_x = self.to_PropsSI('x', value[1])
+
+        self._T = self.to_SI('T', value[0])
+        self._x = self.to_SI('x', value[1])
+        self._p = Q_(PropsSI('P', 'T', PropsSI_T, 'Q', PropsSI_x, self.sub), self.SI_units['p'])
+        self._h = Q_(PropsSI('H', 'T', PropsSI_T, 'Q', PropsSI_x, self.sub), self.SI_units['h'])
+        self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'Q', PropsSI_x, self.sub), self.SI_units['s'])
+        self._u = Q_(PropsSI('U', 'T', PropsSI_T, 'Q', PropsSI_x, self.sub), self.SI_units['u'])
+        self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'Q', PropsSI_x, self.sub), self.SI_units['v'])
+
+    @property
+    def xT(self):
+        return self._x, self._T
+
+    @xT.setter
+    def xT(self, value):
+        self.Tx = value[1], value[0]
