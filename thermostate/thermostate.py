@@ -211,9 +211,14 @@ class State(object):
 
     @Tu.setter
     def Tu(self, value):
-        raise StateError('Setting T and u simultaneously is not allowed.')
         self._check_dimensions(['T', 'u'], value)
-        self._set_properties(['T', 'u'], value)
+        try:
+            self._set_properties(['T', 'u'], value)
+        except ValueError as e:
+            if str(e).startswith('This pair of inputs'):
+                raise StateError('Setting T and u simultaneously is not allowed.')
+            else:
+                raise
 
     @property
     def uT(self):
@@ -229,9 +234,14 @@ class State(object):
 
     @Th.setter
     def Th(self, value):
-        raise StateError('Setting T and h simultaneously is not allowed.')
         self._check_dimensions(['T', 'h'], value)
-        self._set_properties(['T', 'h'], value)
+        try:
+            self._set_properties(['T', 'h'], value)
+        except ValueError as e:
+            if str(e).startswith('This pair of inputs'):
+                raise StateError('Setting T and h simultaneously is not allowed.')
+            else:
+                raise
 
     @property
     def hT(self):
@@ -384,9 +394,14 @@ class State(object):
 
     @us.setter
     def us(self, value):
-        raise StateError('Setting s and u simultaneously is not allowed.')
         self._check_dimensions(['u', 's'], value)
-        self._set_properties(['u', 's'], value)
+        try:
+            self._set_properties(['u', 's'], value)
+        except ValueError as e:
+            if str(e).startswith('This pair of inputs'):
+                raise StateError('Setting s and u simultaneously is not allowed.')
+            else:
+                raise
 
     @property
     def su(self):

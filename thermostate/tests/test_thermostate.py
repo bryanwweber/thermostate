@@ -83,7 +83,7 @@ class TestState(object):
 
     # This set of tests fails because T and u are not valid inputs for PhaseSI
     # in CoolProp 6.1.0
-    @pytest.mark.xfail(strict=True)
+    @pytest.mark.xfail(strict=True, raises=StateError)
     def test_set_uT(self):
         s = State(substance='water')
         s.uT = Q_(2547715.3635084038, 'J/kg'), Q_(400., 'K')
@@ -97,7 +97,7 @@ class TestState(object):
         assert isclose_quant(s.h, Q_(2730301.3859201893, 'J/kg'))
         assert s.x is None
 
-    @pytest.mark.xfail(strict=True)
+    @pytest.mark.xfail(strict=True, raises=StateError)
     def test_set_Tu(self):
         s = State(substance='water')
         s.Tu = Q_(400., 'K'), Q_(2547715.3635084038, 'J/kg')
@@ -113,7 +113,7 @@ class TestState(object):
 
     # This set of tests fails because T and h are not valid inputs for PhaseSI
     # in CoolProp 6.1.0
-    @pytest.mark.xfail(strict=True)
+    @pytest.mark.xfail(strict=True, raises=StateError)
     def test_set_hT(self):
         s = State(substance='water')
         s.hT = Q_(2730301.3859201893, 'J/kg'), Q_(400., 'K')
@@ -127,7 +127,7 @@ class TestState(object):
         assert isclose_quant(s.h, Q_(2730301.3859201893, 'J/kg'))
         assert s.x is None
 
-    @pytest.mark.xfail(strict=True)
+    @pytest.mark.xfail(strict=True, raises=StateError)
     def test_set_Th(self):
         s = State(substance='water')
         s.Th = Q_(400., 'K'), Q_(2730301.3859201893, 'J/kg')
@@ -451,7 +451,7 @@ class TestState(object):
 
     # This set of tests fails because s and u are not valid inputs for PhaseSI
     # in CoolProp 6.1.0
-    @pytest.mark.xfail(strict=True)
+    @pytest.mark.xfail(strict=True, raises=StateError)
     def test_set_us(self):
         s = State(substance='water')
         s.us = Q_(1013250., 'J/kg'), Q_(3028.9867985920914, 'J/(kg*K)')
@@ -465,7 +465,7 @@ class TestState(object):
         assert isclose_quant(s.h, Q_(1061602.391543017, 'J/kg'))
         assert isclose_quant(s.x, Q_(0.28475636946248034, 'dimensionless'))
 
-    @pytest.mark.xfail(strict=True)
+    @pytest.mark.xfail(strict=True, raises=StateError)
     def test_set_su(self):
         s = State(substance='water')
         s.su = Q_(3028.9867985920914, 'J/(kg*K)'), Q_(1013250., 'J/kg')
