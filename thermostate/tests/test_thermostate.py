@@ -1,18 +1,14 @@
 """
 Test module for the main ThermoState code
 """
-from pint import UnitRegistry
 import pytest
 from math import isclose
 
-from ..thermostate import State, StateError
+from ..thermostate import State, StateError, Q_
 
 
 def isclose_quant(a, b, *args, **kwargs):
     return isclose(a.magnitude, b.magnitude, *args, **kwargs)
-
-ureg = UnitRegistry()
-Q_ = ureg.Quantity
 
 
 class TestState(object):
@@ -196,3 +192,49 @@ class TestState(object):
         assert isclose_quant(s.v, Q_(1.801983936953226, 'm**3/kg'))
         assert isclose_quant(s.h, Q_(2730301.3859201893, 'J/kg'))
         assert s.x is None
+
+    def test_set_xT(self):
+        s = State(substance='water')
+        s.xT = Q_(0.5, 'dimensionless'), Q_(400., 'K')
+        assert isclose_quant(s.T, Q_(400., 'K'))
+        assert isclose_quant(s.p, Q_(245769.34557103913, 'Pa'))
+        assert isclose_quant(s.xT[1], Q_(400., 'K'))
+        assert isclose_quant(s.xT[0], Q_(0.5, 'dimensionless'))
+        assert isclose_quant(s.u, Q_(1534461.5163075812, 'J/kg'))
+        assert isclose_quant(s.s, Q_(4329.703956664546, 'J/(kg*K)'))
+        assert isclose_quant(s.v, Q_(0.3656547423394701, 'm**3/kg'))
+        assert isclose_quant(s.h, Q_(1624328.2430353598, 'J/kg'))
+        assert isclose_quant(s.x, Q_(0.5, 'dimensionless'))
+        s.xT = Q_(50, 'percent'), Q_(400., 'K')
+        assert isclose_quant(s.T, Q_(400., 'K'))
+        assert isclose_quant(s.p, Q_(245769.34557103913, 'Pa'))
+        assert isclose_quant(s.xT[1], Q_(400., 'K'))
+        assert isclose_quant(s.xT[0], Q_(0.5, 'dimensionless'))
+        assert isclose_quant(s.u, Q_(1534461.5163075812, 'J/kg'))
+        assert isclose_quant(s.s, Q_(4329.703956664546, 'J/(kg*K)'))
+        assert isclose_quant(s.v, Q_(0.3656547423394701, 'm**3/kg'))
+        assert isclose_quant(s.h, Q_(1624328.2430353598, 'J/kg'))
+        assert isclose_quant(s.x, Q_(0.5, 'dimensionless'))
+
+    def test_set_Tx(self):
+        s = State(substance='water')
+        s.Tx = Q_(400., 'K'), Q_(0.5, 'dimensionless')
+        assert isclose_quant(s.T, Q_(400., 'K'))
+        assert isclose_quant(s.p, Q_(245769.34557103913, 'Pa'))
+        assert isclose_quant(s.Tx[0], Q_(400., 'K'))
+        assert isclose_quant(s.Tx[1], Q_(0.5, 'dimensionless'))
+        assert isclose_quant(s.u, Q_(1534461.5163075812, 'J/kg'))
+        assert isclose_quant(s.s, Q_(4329.703956664546, 'J/(kg*K)'))
+        assert isclose_quant(s.v, Q_(0.3656547423394701, 'm**3/kg'))
+        assert isclose_quant(s.h, Q_(1624328.2430353598, 'J/kg'))
+        assert isclose_quant(s.x, Q_(0.5, 'dimensionless'))
+        s.Tx = Q_(400., 'K'), Q_(50, 'percent')
+        assert isclose_quant(s.T, Q_(400., 'K'))
+        assert isclose_quant(s.p, Q_(245769.34557103913, 'Pa'))
+        assert isclose_quant(s.Tx[0], Q_(400., 'K'))
+        assert isclose_quant(s.Tx[1], Q_(0.5, 'dimensionless'))
+        assert isclose_quant(s.u, Q_(1534461.5163075812, 'J/kg'))
+        assert isclose_quant(s.s, Q_(4329.703956664546, 'J/(kg*K)'))
+        assert isclose_quant(s.v, Q_(0.3656547423394701, 'm**3/kg'))
+        assert isclose_quant(s.h, Q_(1624328.2430353598, 'J/kg'))
+        assert isclose_quant(s.x, Q_(0.5, 'dimensionless'))
