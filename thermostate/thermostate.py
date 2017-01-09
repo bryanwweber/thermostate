@@ -88,6 +88,16 @@ class State(object):
     def to_PropsSI(self, value):
         return self.to_SI(value).magnitude
 
+    def _check_dimensions(self, properties, value):
+        if value[0].dimensionality != self.dimensions[properties[0]]:
+            raise StateError('The dimensions for {props[0]} must be {dim}'.format(
+                props=properties,
+                dim=self.dimensions[properties[0]]))
+        elif value[1].dimensionality != self.dimensions[properties[1]]:
+            raise StateError('The dimensions for {props[1]} must be {dim}'.format(
+                props=properties,
+                dim=self.dimensions[properties[1]]))
+
     @property
     def T(self):
         return self._T
@@ -122,13 +132,7 @@ class State(object):
 
     @Tp.setter
     def Tp(self, value):
-        if value[0].dimensionality != self.dimensions['T']:
-            raise StateError('The dimensions for temperature must be {}'.format(
-                self.dimensions['T']))
-        elif value[1].dimensionality != self.dimensions['p']:
-            raise StateError('The dimensions for pressure must be {}'.format(
-                self.dimensions['p']))
-
+        self._check_dimensions(['T', 'p'], value)
         PropsSI_T = self.to_PropsSI(value[0])
         PropsSI_p = self.to_PropsSI(value[1])
         try:
