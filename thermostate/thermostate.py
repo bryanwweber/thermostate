@@ -63,6 +63,7 @@ class State(object):
         's': 'joules/(kilogram*kelvin)',
         'v': 'meter**3/kilogram',
         'h': 'joules/kilogram',
+        'x': 'dimensionless',
     }
 
     def __init__(self, substance, **kwargs):  # T=None, p=None, u=None, s=None, v=None, h=None, x=None):  # noqa
@@ -185,7 +186,9 @@ class State(object):
         self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['s'])
         self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['v'])
         self._h = Q_(PropsSI('H', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['h'])
-        self._x = None
+        self._x = Q_(PropsSI('Q', 'T', PropsSI_T, 'U', PropsSI_u, self.sub), self.SI_units['x'])
+        if self._x == -1.0:
+            self._x = None
 
     @property
     def uT(self):
