@@ -254,3 +254,32 @@ class State(object):
     @sT.setter
     def sT(self, value):
         self.Ts = value[1], value[0]
+
+    @property
+    def Tv(self):
+        return self._T, self._v
+
+    @Tv.setter
+    def Tv(self, value):
+        self._check_dimensions(['T', 'v'], value)
+        PropsSI_T = self.to_PropsSI('T', value[0])
+        PropsSI_v = self.to_PropsSI('v', value[1])
+        PropsSI_d = 1.0/PropsSI_v
+
+        self._T = self.to_SI('T', value[0])
+        self._v = self.to_SI('v', value[1])
+        self._p = Q_(PropsSI('P', 'T', PropsSI_T, 'D', PropsSI_d, self.sub), self.SI_units['p'])
+        self._h = Q_(PropsSI('H', 'T', PropsSI_T, 'D', PropsSI_d, self.sub), self.SI_units['h'])
+        self._s = Q_(PropsSI('S', 'T', PropsSI_T, 'D', PropsSI_d, self.sub), self.SI_units['s'])
+        self._u = Q_(PropsSI('U', 'T', PropsSI_T, 'D', PropsSI_d, self.sub), self.SI_units['u'])
+        self._x = Q_(PropsSI('Q', 'T', PropsSI_T, 'D', PropsSI_d, self.sub), self.SI_units['x'])
+        if self._x == -1.0:
+            self._x = None
+
+    @property
+    def vT(self):
+        return self._v, self._T
+
+    @vT.setter
+    def vT(self, value):
+        self.Tv = value[1], value[0]
