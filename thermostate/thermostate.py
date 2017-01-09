@@ -343,3 +343,20 @@ class State(object):
     @vp.setter
     def vp(self, value):
         self.pv = value[1], value[0]
+
+    @property
+    def ph(self):
+        return self._p, self._h
+
+    @ph.setter
+    def ph(self, value):
+        self._check_dimensions(['p', 'h'], value)
+        self._set_properties(['p', 'h'], value)
+
+    @property
+    def hp(self):
+        return self._h, self._p
+
+    @hp.setter
+    def hp(self, value):
+        self.ph = value[1], value[0]
