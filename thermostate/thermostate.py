@@ -226,3 +226,31 @@ class State(object):
     @hT.setter
     def hT(self, value):
         self.Th = value[1], value[0]
+
+    @property
+    def Ts(self):
+        return self._T, self._s
+
+    @Ts.setter
+    def Ts(self, value):
+        self._check_dimensions(['T', 's'], value)
+        PropsSI_T = self.to_PropsSI('T', value[0])
+        PropsSI_s = self.to_PropsSI('s', value[1])
+
+        self._T = self.to_SI('T', value[0])
+        self._s = self.to_SI('s', value[1])
+        self._p = Q_(PropsSI('P', 'T', PropsSI_T, 'S', PropsSI_s, self.sub), self.SI_units['p'])
+        self._h = Q_(PropsSI('H', 'T', PropsSI_T, 'S', PropsSI_s, self.sub), self.SI_units['h'])
+        self._v = Q_(1.0/PropsSI('D', 'T', PropsSI_T, 'S', PropsSI_s, self.sub), self.SI_units['v'])
+        self._u = Q_(PropsSI('U', 'T', PropsSI_T, 'S', PropsSI_s, self.sub), self.SI_units['u'])
+        self._x = Q_(PropsSI('Q', 'T', PropsSI_T, 'S', PropsSI_s, self.sub), self.SI_units['x'])
+        if self._x == -1.0:
+            self._x = None
+
+    @property
+    def sT(self):
+        return self._s, self._T
+
+    @sT.setter
+    def sT(self, value):
+        self.Ts = value[1], value[0]
