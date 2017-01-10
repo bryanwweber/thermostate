@@ -31,19 +31,15 @@ install:
   - conda config --append channels bryanwweber
   - conda config --append channels conda-forge
   - conda update -q --all
-  - >
-    conda create -q -n test-environment python=$PYTHON anaconda-client conda-build pytest
-    pytest-cov coolprop pint sphinx doctr
+  - conda create -q -n test-environment python=$PYTHON pytest pytest-cov coolprop pint
   - source activate test-environment
   - conda info -a
   - conda list
 
 script:
   - python setup.py test
-  - if [ -z "$TRAVIS_TAG" ]; then
-      conda build conda.recipe --python=${PYTHON};
-    fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" && "$PYTHON" == "3.5" ]]; then
+      conda install -q sphinx doctr;
       python setup.py install;
       set -e;
       cd docs;
@@ -52,6 +48,10 @@ script:
       doctr deploy --gh-pages-docs .;
       set +e;
     fi
-
+  - if [ -z "$TRAVIS_TAG" ]; then
+      source deactivate;
+      conda install -q conda-build anaconda-client;
+      conda build conda.recipe --python=${PYTHON};
+    fi
 after_success:
   - bash <(curl -s https://codecov.io/bash)
