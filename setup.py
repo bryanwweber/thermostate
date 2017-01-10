@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 import os.path as op
+import sys
 
 with open(op.join(op.dirname(op.realpath(__file__)), 'thermostate', '_version.py')) as version_file:
     exec(version_file.read())
@@ -19,6 +20,9 @@ tests_require = [
     'pytest>=3.0.0',
     'pytest-cov>=2.3.1',
 ]
+
+needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
+setup_requires = ['pytest-runner'] if needs_pytest else []
 
 setup(
     name='thermostate',
@@ -40,5 +44,5 @@ setup(
     packages=find_packages(),
     install_requires=install_requires,
     tests_require=tests_require,
-    setup_requires=['pytest-runner']
+    setup_requires=setup_requires,
 )

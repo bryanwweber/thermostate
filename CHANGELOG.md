@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 ### Changed
+- Only load pytest-runner if tests are being run
 
 ### Fixed
 
