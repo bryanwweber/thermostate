@@ -42,8 +42,8 @@ class State(object):
     allowed_pairs = [
         'Tp', 'Ts', 'Tv', 'Tx',
         'pT', 'pu', 'ps', 'pv', 'ph', 'px',
-        'up', 'us', 'uv',
-        'sT', 'sp', 'su', 'sv', 'sh',
+        'up', 'uv',
+        'sT', 'sp', 'sv', 'sh',
         'vT', 'vp', 'vu', 'vs', 'vh',
         'hp', 'hs', 'hv',
     ]
