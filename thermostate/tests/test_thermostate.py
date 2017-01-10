@@ -49,6 +49,11 @@ class TestState(object):
         with pytest.raises(StateError):
             State(substance='water', T=Q_(373.1242958476844, 'K'), p=Q_(101325., 'Pa'))
 
+    def test_bad_set_properties(self):
+        s = State(substance='water')
+        with pytest.raises(StateError):
+            s._set_properties(['T', 'v', 'h'], [])
+
     # Need to find a pathologically bad set of inputs here to raise a ValueError from
     # CoolProp that isn't related to being too close to the saturation point
     @pytest.mark.xfail
