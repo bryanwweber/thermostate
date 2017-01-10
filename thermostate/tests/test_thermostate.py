@@ -42,12 +42,33 @@ class TestState(object):
         with pytest.raises(ValueError):
             State(substance='water', x=Q_(0.5, 'dimensionless'), P=Q_(101325, 'Pa'))
 
-    def test_bad_TP_dimensions(self):
+    def test_bad_T_dimensions(self):
         with pytest.raises(StateError):
             State(substance='water', T=Q_(300., 'Pa'), p=Q_(101325., 'Pa'))
 
+    def test_bad_p_dimensions(self):
         with pytest.raises(StateError):
             State(substance='water', T=Q_(300., 'K'), p=Q_(101325., 'K'))
+
+    def test_bad_u_dimensions(self):
+        with pytest.raises(StateError):
+            State(substance='water', v=Q_(3., 'm**3/kg'), u=Q_(101325., 'K'))
+
+    def test_bad_s_dimensions(self):
+        with pytest.raises(StateError):
+            State(substance='water', T=Q_(300., 'K'), s=Q_(10.1325, 'K'))
+
+    def test_bad_v_dimensions(self):
+        with pytest.raises(StateError):
+            State(substance='water', T=Q_(300., 'K'), v=Q_(1.01325, 'K'))
+
+    def test_bad_h_dimensions(self):
+        with pytest.raises(StateError):
+            State(substance='water', h=Q_(300., 'K'), v=Q_(1.01325, 'K'))
+
+    def test_bad_x_dimensions(self):
+        with pytest.raises(StateError):
+            State(substance='water', T=Q_(300., 'K'), x=Q_(1.01325, 'K'))
 
     def test_TP_twophase(self):
         with pytest.raises(StateError):
