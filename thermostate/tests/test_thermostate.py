@@ -62,7 +62,8 @@ class TestState(object):
             State(substance='water', T=Q_(10000., 'K'), p=Q_(101325., 'Pa'))
 
     def test_set_Tp(self):
-        s = State(substance='water', T=Q_(400., 'K'), p=Q_(101325., 'Pa'))
+        s = State(substance='water')
+        s.Tp = Q_(400., 'K'), Q_(101325., 'Pa')
         assert isclose_quant(s.T, Q_(400., 'K'))
         assert isclose_quant(s.p, Q_(101325., 'Pa'))
         assert isclose_quant(s.Tp[0], Q_(400., 'K'))
