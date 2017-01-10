@@ -13,3 +13,4 @@ omit =
     thermostate/tests/*
     setup.py
     thermostate/_version.py
+    .eggs/*
