@@ -17,12 +17,13 @@ install:
   - cmd: conda config --append channels conda-forge
   - cmd: conda update --all -q
   - cmd: IF "%APPVEYOR_REPO_TAG%"=="false" conda create -q -n test-environment python=%PYTHON_VERSION% pytest pytest-cov coolprop pint
+  - cmd: IF "%APPVEYOR_REPO_TAG%"=="false" call %PYTHON_LOC%\Scripts\activate.bat test-environment
   - cmd: IF "%APPVEYOR_REPO_TAG%"=="true" conda install -yq anaconda-client conda-build
   - cmd: conda info -a
   - cmd: conda list
 
 build_script:
-  - cmd: IF "%APPVEYOR_REPO_TAG"=="false" "%PYTHON_LOC%\envs\test-environment\python" setup.py test
+  - cmd: IF "%APPVEYOR_REPO_TAG"=="false" python setup.py test
   - cmd: IF "%APPVEYOR_REPO_TAG%"=="true" conda build conda.recipe --python=%PYTHON_VERSION%
 
 deploy_script:
