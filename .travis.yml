@@ -56,7 +56,7 @@ script:
       fi
     else
       conda build conda.recipe --python=${PYTHON};
-      anaconda -t $ANACONDA_TOKEN upload $HOME/miniconda/conda-bld/*/thermostate*.tar.bz2
+      anaconda -t $ANACONDA_TOKEN upload $HOME/miniconda/conda-bld/*/thermostate*.tar.bz2;
     fi
 
 after_success:
