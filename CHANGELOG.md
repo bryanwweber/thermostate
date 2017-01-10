@@ -17,4 +17,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[0.1.0]: https://github.com/bryanwweber/UConnRCMPy/compare/491975d84317abdaf289c01be02567ab33bbc390...v0.1.0
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.1.0...master
+[0.1.0]: https://github.com/bryanwweber/thermostate/compare/491975d84317abdaf289c01be02567ab33bbc390...v0.1.0
