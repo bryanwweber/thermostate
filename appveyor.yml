@@ -16,26 +16,15 @@ install:
   - cmd: conda config --append channels bryanwweber
   - cmd: conda config --append channels conda-forge
   - cmd: conda update --all -q
-  - ps: Write-Host $env:APPVEYOR_REPO_TAG
-  - ps: >-
-      if(!$env:APPVEYOR_REPO_TAG)
-      {
-        $env:tag_build = 'false'
-      }
-      else
-      {
-        $env:tag_build = 'true'
-      }
-  - cmd: ECHO %tag_build%
-  - cmd: IF "%tag_build%"=="false" conda create -q -n test-environment python=%PYTHON_VERSION% pytest pytest-cov coolprop pint
-  - cmd: IF "%tag_build%"=="false" activate test-environment
-  - cmd: IF "%tag_build%"=="true" conda install -yq anaconda-client conda-build
+  - cmd: IF "%APPVEYOR_REPO_TAG%"=="false" conda create -q -n test-environment python=%PYTHON_VERSION% pytest pytest-cov coolprop pint
+  - cmd: IF "%APPVEYOR_REPO_TAG%"=="false" activate test-environment
+  - cmd: IF "%APPVEYOR_REPO_TAG%"=="true" conda install -yq anaconda-client conda-build
   - cmd: conda info -a
   - cmd: conda list
 
 build_script:
-  - cmd: IF "%tag_build"=="false" python setup.py test
-  - cmd: IF "%tag_build%"=="true" conda build conda.recipe --python=%PYTHON_VERSION%
+  - cmd: IF "%APPVEYOR_REPO_TAG"=="false" python setup.py test
+  - cmd: IF "%APPVEYOR_REPO_TAG%"=="true" conda build conda.recipe --python=%PYTHON_VERSION%
 
 deploy_script:
-  - cmd: IF "%tag_build%"=="true" anaconda -t %ANACONDA_KEY% upload "%PYTHON_LOC%\conda-bld\win-64\thermostate*.tar.bz2"
+  - cmd: IF "%APPVEYOR_REPO_TAG%"=="true" anaconda -t %ANACONDA_KEY% upload "%PYTHON_LOC%\conda-bld\win-64\thermostate*.tar.bz2"
