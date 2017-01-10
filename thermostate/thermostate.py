@@ -77,10 +77,12 @@ class State(object):
             ))
 
         input_props = ''
-        if len(kwargs) != 0:
-            for prop in 'Tpusvhx':
-                if kwargs.get(prop, None) is not None:
-                    input_props += prop
+        all_props = 'Tpusvhx'
+        for arg in kwargs:
+            if arg not in all_props:
+                raise ValueError('The argument {} is not allowed.'.format(arg))
+            else:
+                input_props += arg
 
         if len(input_props) > 2 or len(input_props) == 1:
             raise ValueError('Incorrect number of properties specified. Must be 2 or 0.')

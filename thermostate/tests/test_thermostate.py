@@ -38,6 +38,10 @@ class TestState(object):
         with pytest.raises(ValueError):
             State(substance='water', x=Q_(0.5, 'dimensionless'), h=Q_(300, 'kJ/kg'))
 
+    def test_invalid_input_prop(self):
+        with pytest.raises(ValueError):
+            State(substance='water', x=Q_(0.5, 'dimensionless'), P=Q_(101325, 'Pa'))
+
     def test_bad_TP_dimensions(self):
         with pytest.raises(StateError):
             State(substance='water', T=Q_(300., 'Pa'), p=Q_(101325., 'Pa'))
