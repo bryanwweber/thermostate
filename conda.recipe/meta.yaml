@@ -19,19 +19,19 @@ requirements:
 
   run:
     - python {{PY_VER}}*
-    - coolprop
-    - pint
+    - coolprop >=6.1.0
+    - pint >=0.7.2
 
 test:
   imports:
     - thermostate
 
   requires:
-    - pytest
-    - pytest-cov
+    - pytest >=3.0.0
+    - pytest-cov >=2.3.1
 
   commands:
-    - pytest -vv --cov=./
+    - pytest -vv --pyargs thermostate
 
 about:
   home: https://github.com/bryanwweber/UConnRCMPy

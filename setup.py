@@ -11,8 +11,13 @@ with open(op.join(op.dirname(op.realpath(__file__)), 'CHANGELOG.md')) as changel
     changelog = changelog_file.read()
 
 install_requires = [
-    'coolprop',
-    'pint',
+    'coolprop>=6.1.0',
+    'pint>=0.7.2',
+]
+
+tests_require = [
+    'pytest>=3.0.0',
+    'pytest-cov>=2.3.1'
 ]
 
 setup(
@@ -33,4 +38,7 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     packages=find_packages(),
+    install_requires=install_requires,
+    tests_require=tests_require,
+    setup_requires=['pytest-runner']
 )
