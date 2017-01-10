@@ -13,4 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
-[0.0.1]: https://github.com/bryanwweber/UConnRCMPy/compare/491975d84317abdaf289c01be02567ab33bbc390...v0.0.1
+## [0.1.0]
+### Added
+- First Release
+
+[0.1.0]: https://github.com/bryanwweber/UConnRCMPy/compare/491975d84317abdaf289c01be02567ab33bbc390...v0.1.0
