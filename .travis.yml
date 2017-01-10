@@ -39,7 +39,9 @@ install:
   - conda list
 
 script:
-  - conda build conda.recipe --python=${BUILD_PYTHON}
+  - if [ -z "$TRAVIS_TAG" ]; then
+      conda build conda.recipe --python=${BUILD_PYTHON};
+    fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" && "$BUILD_PYTHON" == "3.5" ]]; then
       conda install --use-local thermostate;
       set -e;
