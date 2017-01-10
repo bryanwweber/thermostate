@@ -4,10 +4,10 @@ environment:
     secure: zrgNGO01FGp/rpGRlqYt+p8X77yCvLon49YdeyHAPhcHvu0iYon94UM7V5n6W/xT
 
   matrix:
-    - PYTHON_LOC: "C:\\Miniconda-x64"
+    - PYTHON_LOC: "C:\\Miniconda35-x64"
       PYTHON_VERSION: "3.5"
 
-    - PYTHON_LOC: "C:\\Miniconda-x64"
+    - PYTHON_LOC: "C:\\Miniconda35-x64"
       PYTHON_VERSION: "3.6"
 
 install:
@@ -17,13 +17,12 @@ install:
   - cmd: conda config --append channels conda-forge
   - cmd: conda update --all -q
   - cmd: IF "%APPVEYOR_REPO_TAG%"=="false" conda create -q -n test-environment python=%PYTHON_VERSION% pytest pytest-cov coolprop pint
-  - cmd: IF "%APPVEYOR_REPO_TAG%"=="false" activate test-environment
   - cmd: IF "%APPVEYOR_REPO_TAG%"=="true" conda install -yq anaconda-client conda-build
   - cmd: conda info -a
   - cmd: conda list
 
 build_script:
-  - cmd: IF "%APPVEYOR_REPO_TAG"=="false" python setup.py test
+  - cmd: IF "%APPVEYOR_REPO_TAG"=="false" "%PYTHON_LOC%\envs\test-environment\python" setup.py test
   - cmd: IF "%APPVEYOR_REPO_TAG%"=="true" conda build conda.recipe --python=%PYTHON_VERSION%
 
 deploy_script:
