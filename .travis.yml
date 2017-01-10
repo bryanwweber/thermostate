@@ -31,20 +31,20 @@ install:
   - conda config --append channels bryanwweber
   - conda config --append channels conda-forge
   - conda update -q --all
-  - conda install -q anaconda-client conda-build pytest pytest-cov
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$PYTHON" == "3.5" ]]; then
-      conda install -q sphinx doctr;
-    fi
+  - >
+    conda create -q -n test-environment python=$PYTHON anaconda-client conda-build pytest
+    pytest-cov coolprop pint sphinx doctr
+  - source activate test-environment
   - conda info -a
   - conda list
 
 script:
   - python setup.py test
   - if [ -z "$TRAVIS_TAG" ]; then
-      conda build conda.recipe --python=${BUILD_PYTHON};
+      conda build conda.recipe --python=${PYTHON};
     fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$BUILD_PYTHON" == "3.5" ]]; then
-      conda install --use-local thermostate;
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$PYTHON" == "3.5" ]]; then
+      python setup.py install;
       set -e;
       cd docs;
       make html SPHINXOPTS="-W";
