@@ -16,6 +16,7 @@ install:
   - cmd: conda config --append channels bryanwweber
   - cmd: conda config --append channels conda-forge
   - cmd: conda update --all -q
+  - ps: Write-Host $env:APPVEYOR_REPO_TAG
   - ps: >-
       if(!$env:APPVEYOR_REPO_TAG)
       {
@@ -25,6 +26,7 @@ install:
       {
         $env:tag_build = 'true'
       }
+  - cmd: ECHO %tag_build%
   - cmd: IF "%tag_build%"=="false" conda create -q -n test-environment python=%PYTHON_VERSION% pytest pytest-cov coolprop pint
   - cmd: IF "%tag_build%"=="false" activate test-environment
   - cmd: IF "%tag_build%"=="true" conda install -yq anaconda-client conda-build
