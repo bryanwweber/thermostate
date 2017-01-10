@@ -46,6 +46,7 @@ class State(object):
         'sT', 'sp', 'sv', 'sh',
         'vT', 'vp', 'vu', 'vs', 'vh',
         'hp', 'hs', 'hv',
+        'xT', 'xp'
     ]
 
     dimensions = {
@@ -88,7 +89,7 @@ class State(object):
             raise ValueError('Incorrect number of properties specified. Must be 2 or 0.')
 
         if len(input_props) > 0 and input_props not in self.allowed_pairs:
-            raise ValueError('The supplied pair of properties, {props[0]} and {props[1]} is not a'
+            raise ValueError('The supplied pair of properties, {props[0]} and {props[1]} is not a '
                              'valid set of independent properties.'.format(props=input_props))
 
         if len(input_props) > 0:
