@@ -461,3 +461,20 @@ class State(object):
     @sh.setter
     def sh(self, value):
         self.hs = value[1], value[0]
+
+    @property
+    def hv(self):
+        return self._h, self._v
+
+    @hv.setter
+    def hv(self, value):
+        self._check_dimensions(['h', 'v'], value)
+        self._set_properties(['h', 'v'], value)
+
+    @property
+    def vh(self):
+        return self._v, self._h
+
+    @vh.setter
+    def vh(self, value):
+        self.hv = value[1], value[0]
