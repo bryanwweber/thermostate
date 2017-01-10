@@ -34,6 +34,6 @@ test:
     - pytest -vv --pyargs thermostate
 
 about:
-  home: https://github.com/bryanwweber/UConnRCMPy
-  license: MIT
+  home: https://github.com/bryanwweber/thermostate
+  license: BSD
   license_file: LICENSE.md
