@@ -427,3 +427,20 @@ class State(object):
     @vu.setter
     def vu(self, value):
         self.uv = value[1], value[0]
+
+    @property
+    def vs(self):
+        return self._v, self._s
+
+    @vs.setter
+    def vs(self, value):
+        self._check_dimensions(['v', 's'], value)
+        self._set_properties(['v', 's'], value)
+
+    @property
+    def sv(self):
+        return self._s, self._v
+
+    @sv.setter
+    def sv(self, value):
+        self.vs = value[1], value[0]
