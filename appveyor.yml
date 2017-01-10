@@ -1,7 +1,7 @@
 version: 1.0.{build}
 environment:
   ANACONDA_KEY:
-    secure: zrgNGO01FGp/rpGRlqYt+p8X77yCvLon49YdeyHAPhcHvu0iYon94UM7V5n6W/xT
+    secure: j+gQbqTaDRlQ1+n6jfVoWVCtfqxM8lVM5Ri62cGXc1Vs5Q8IWH7UtZH2SBsabIyf
 
   matrix:
     - PYTHON_LOC: "C:\\Miniconda35-x64"
