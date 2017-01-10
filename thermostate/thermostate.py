@@ -68,7 +68,7 @@ class State(object):
         'x': 'dimensionless',
     }
 
-    def __init__(self, substance, **kwargs):  # T=None, p=None, u=None, s=None, v=None, h=None, x=None):  # noqa
+    def __init__(self, substance, **kwargs):
         if substance.upper() in self.allowed_subs:
             self.sub = substance.upper()
         else:
@@ -91,8 +91,6 @@ class State(object):
 
         if len(input_props) > 0:
             setattr(self, input_props, (kwargs[input_props[0]], kwargs[input_props[1]]))
-        else:
-            setattr(self, 'Tp', (Q_(300., 'K'), Q_(101325., 'Pa')))
 
     def to_SI(self, prop, value):
         return value.to(self.SI_units[prop])
