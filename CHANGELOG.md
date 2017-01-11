@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 ### Fixed
+- Typo in CHANGELOG.md
 
 ### Removed
 
@@ -27,6 +28,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - First Release
 
 [Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.1.2...master
-[0.1.2]: https://github.com/bryanwweber/thermostate/compare/v0.1.0...v0.1.2
+[0.1.2]: https://github.com/bryanwweber/thermostate/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/bryanwweber/thermostate/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/bryanwweber/thermostate/compare/491975d84317abdaf289c01be02567ab33bbc390...v0.1.0
