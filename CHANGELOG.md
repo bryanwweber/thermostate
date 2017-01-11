@@ -6,14 +6,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-- Common unit abbreviations in thermostate.EnglishEngineering and thermostate.SystemInternational
 
 ### Changed
 
 ### Fixed
-- Typo in CHANGELOG.md
 
 ### Removed
+
+## [0.1.3]
+### Added
+- Common unit abbreviations in thermostate.EnglishEngineering and thermostate.SystemInternational
+
+### Fixed
+- Typo in CHANGELOG.md
 
 ## [0.1.2]
 ### Fixed
@@ -27,7 +32,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.1.2...master
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.1.3...master
+[0.1.3]: https://github.com/bryanwweber/thermostate/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/bryanwweber/thermostate/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/bryanwweber/thermostate/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/bryanwweber/thermostate/compare/491975d84317abdaf289c01be02567ab33bbc390...v0.1.0
