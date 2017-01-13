@@ -1,6 +1,8 @@
 """
 Base ThermoState module
 """
+from itertools import permutations
+
 from CoolProp.CoolProp import PropsSI
 from pint import UnitRegistry
 from pint.unit import UnitsContainer, UnitDefinition
@@ -49,25 +51,38 @@ class State(object):
         'xT', 'xp'
     ]
 
+    all_props = 'Tpvuhsx'
+
+    all_pairs = [''.join(a) for a in permutations(all_props, 2)]
+
+    single_props = ['_' + p for p in all_props]
+
     dimensions = {
         'T': UnitsContainer({'[temperature]': 1.0}),
         'p': UnitsContainer({'[mass]': 1.0, '[length]': -1.0, '[time]': -2.0}),
-        'u': UnitsContainer({'[length]': 2.0, '[time]': -2.0}),
-        's': UnitsContainer({'[length]': 2.0, '[time]': -2.0, '[temperature]': -1.0}),
         'v': UnitsContainer({'[length]': 3.0, '[mass]': -1.0}),
+        'u': UnitsContainer({'[length]': 2.0, '[time]': -2.0}),
         'h': UnitsContainer({'[length]': 2.0, '[time]': -2.0}),
+        's': UnitsContainer({'[length]': 2.0, '[time]': -2.0, '[temperature]': -1.0}),
         'x': UnitsContainer({}),
     }
 
     SI_units = {
         'T': 'kelvin',
         'p': 'pascal',
-        'u': 'joules/kilogram',
-        's': 'joules/(kilogram*kelvin)',
         'v': 'meter**3/kilogram',
+        'u': 'joules/kilogram',
         'h': 'joules/kilogram',
+        's': 'joules/(kilogram*kelvin)',
         'x': 'dimensionless',
     }
+
+    def __setattr__(self, key, value):
+        if key not in self.all_pairs and key != 'sub' and key not in self.single_props:
+            raise AttributeError('The key entered is not one of the allowed pairs of properties. '
+                                 'Perhaps one of the letters was capitalized improperly?\n'
+                                 'key={}'.format(key))
+        object.__setattr__(self, key, value)
 
     def __init__(self, substance, **kwargs):
         if substance.upper() in self.allowed_subs:
@@ -78,9 +93,8 @@ class State(object):
             ))
 
         input_props = ''
-        all_props = 'Tpusvhx'
         for arg in kwargs:
-            if arg not in all_props:
+            if arg not in self.all_props:
                 raise ValueError('The argument {} is not allowed.'.format(arg))
             else:
                 input_props += arg
@@ -115,8 +129,6 @@ class State(object):
         if len(known_props) != 2 or len(known_values) != 2 or len(known_props) != len(known_values):
             raise StateError('Only specify two properties to _set_properties')
 
-        all_props = 'Tpuvhsx'
-
         props = []
         vals = []
 
@@ -133,7 +145,7 @@ class State(object):
 
             setattr(self, '_' + prop, self.to_SI(prop, val))
 
-        unknown_props = all_props.replace(known_props[0], '').replace(known_props[1], '')
+        unknown_props = self.all_props.replace(known_props[0], '').replace(known_props[1], '')
 
         for prop in unknown_props:
             if prop == 'v':
