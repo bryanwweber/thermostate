@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 ### Fixed
+- Rename units module to abbreviations so it no longer shadows units registry in thermostate
 
 ### Removed
 

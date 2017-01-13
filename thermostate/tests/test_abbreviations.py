@@ -1,7 +1,7 @@
 """
 Test module for the units abbreviations code
 """
-from ..units import EnglishEngineering as EE, SystemInternational as SI
+from ..abbreviations import EnglishEngineering as EE, SystemInternational as SI
 
 
 def test_EE():
