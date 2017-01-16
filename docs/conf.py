@@ -40,6 +40,9 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
+    'nbsphinx',
+    # This line is a workaround for https://github.com/spatialaudio/nbsphinx/issues/24
+    'IPython.sphinxext.ipython_console_highlighting',
 ]
 
 # add_function_parentheses = False
@@ -48,6 +51,7 @@ autodoc_default_flags = ['members']
 autoclass_content = 'class'
 napoleon_numpy_docstring = True
 napoleon_google_docstring = False
+npsphinx_allow_errors = True
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.6', None),
     'pint': ('https://pint.readthedocs.io/en/latest/', None),
@@ -93,7 +97,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '.ipynb_checkpoints']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'

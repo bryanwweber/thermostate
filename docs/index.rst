@@ -10,6 +10,7 @@ Welcome to thermostate's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   Tutorial
    thermostate
 
 Indices and tables

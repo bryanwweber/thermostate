@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- Tutorial in the docs using `nbsphinx` for formatting
 
 ### Changed
 - Offset units are automatically converted to base units in Pint
