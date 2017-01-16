@@ -8,7 +8,7 @@ from pint import UnitRegistry
 from pint.unit import UnitsContainer, UnitDefinition
 from pint.converters import ScaleConverter
 
-units = UnitRegistry()
+units = UnitRegistry(autoconvert_offset_to_baseunit=True)
 Q_ = units.Quantity
 units.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1.0/100.0)))
 
