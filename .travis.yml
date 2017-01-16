@@ -45,7 +45,7 @@ script:
   - if [[ -z "$TRAVIS_TAG" ]]; then
       python setup.py test;
       if [[ "$TRAVIS_OS_NAME" == "linux" && "$PYTHON" == "3.5" ]]; then
-        conda install -q sphinx doctr coolprop pint nbsphinx ipython ipykernel;
+        conda install -q sphinx doctr nbsphinx ipython ipykernel pandoc;
         python setup.py install;
         set -e;
         cd docs;
