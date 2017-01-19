@@ -6,15 +6,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.1.6]
+### Added
 - Tutorial in the docs using `nbsphinx` for formatting
 - Specific heat capacities at constant pressure and volume are now accesible via cp and cv attributes
 
 ### Changed
 - Offset units are automatically converted to base units in Pint
-
-### Fixed
-
-### Removed
 
 ## [0.1.5]
 ### Changed
@@ -43,7 +48,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.1.5...master
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.1.6...master
+[0.1.6]: https://github.com/bryanwweber/thermostate/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/bryanwweber/thermostate/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/bryanwweber/thermostate/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/bryanwweber/thermostate/compare/v0.1.2...v0.1.3
