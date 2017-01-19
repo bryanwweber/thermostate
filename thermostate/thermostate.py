@@ -55,7 +55,7 @@ class State(object):
 
     all_pairs = [''.join(a) for a in permutations(all_props, 2)]
 
-    single_props = ['_' + p for p in all_props]
+    other_props = ['cp', 'cv']
 
     dimensions = {
         'T': UnitsContainer({'[temperature]': 1.0}),
@@ -75,10 +75,12 @@ class State(object):
         'h': 'joules/kilogram',
         's': 'joules/(kilogram*kelvin)',
         'x': 'dimensionless',
+        'cp': 'joules/(kilogram*kelvin)',
+        'cv': 'joules/(kilogram*kelvin)',
     }
 
     def __setattr__(self, key, value):
-        if key not in self.all_pairs and key != 'sub' and key not in self.single_props:
+        if key not in self.all_pairs and key != 'sub' and not key.startswith('_'):
             raise AttributeError('The key entered is not one of the allowed pairs of properties. '
                                  'Perhaps one of the letters was capitalized improperly?\n'
                                  'key={}'.format(key))
@@ -137,19 +139,21 @@ class State(object):
                 props.append('Q')
                 vals.append(self.to_PropsSI('x', val))
             elif prop == 'v':
-                props.append('D')
+                props.append('DMASS')
                 vals.append(1.0/self.to_PropsSI('v', val))
             else:
-                props.append(prop.upper())
+                postfix = '' if prop in 'Tp' else 'MASS'
+                props.append(prop.upper() + postfix)
                 vals.append(self.to_PropsSI(prop, val))
 
             setattr(self, '_' + prop, self.to_SI(prop, val))
 
-        unknown_props = self.all_props.replace(known_props[0], '').replace(known_props[1], '')
+        unknown_props = list(self.all_props.replace(known_props[0], '').replace(known_props[1], ''))
+        unknown_props += self.other_props
 
         for prop in unknown_props:
             if prop == 'v':
-                value = Q_(1.0/PropsSI('D', props[0], vals[0], props[1], vals[1], self.sub),
+                value = Q_(1.0/PropsSI('DMASS', props[0], vals[0], props[1], vals[1], self.sub),
                            self.SI_units[prop])
             elif prop == 'x':
                 value = Q_(PropsSI('Q', props[0], vals[0], props[1], vals[1], self.sub),
@@ -157,7 +161,9 @@ class State(object):
                 if value == -1.0:
                     value = None
             else:
-                value = Q_(PropsSI(prop.upper(), props[0], vals[0], props[1], vals[1], self.sub),
+                postfix = '' if prop in 'Tp' else 'MASS'
+                p = prop.upper() + postfix
+                value = Q_(PropsSI(p, props[0], vals[0], props[1], vals[1], self.sub),
                            self.SI_units[prop])
 
             setattr(self, '_' + prop, value)
@@ -193,6 +199,14 @@ class State(object):
     @property
     def Tp(self):
         return self._T, self._p
+
+    @property
+    def cp(self):
+        return self._cp
+
+    @property
+    def cv(self):
+        return self._cv
 
     @Tp.setter
     def Tp(self, value):

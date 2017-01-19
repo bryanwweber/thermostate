@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - Tutorial in the docs using `nbsphinx` for formatting
+- Specific heat capacities at constant pressure and volume are now accesible via cp and cv attributes
 
 ### Changed
 - Offset units are automatically converted to base units in Pint
