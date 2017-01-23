@@ -51,7 +51,8 @@ autodoc_default_flags = ['members']
 autoclass_content = 'class'
 napoleon_numpy_docstring = True
 napoleon_google_docstring = False
-npsphinx_allow_errors = True
+nbsphinx_allow_errors = True
+nbsphinx_execute = 'always'
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.6', None),
     'pint': ('https://pint.readthedocs.io/en/latest/', None),
