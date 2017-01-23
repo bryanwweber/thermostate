@@ -57,6 +57,7 @@ script:
       conda build conda.recipe --python=${PYTHON};
       anaconda -t $ANACONDA_TOKEN upload $HOME/miniconda/conda-bld/*/thermostate*.tar.bz2;
     fi
+  - set +e
 
 after_success:
   - if [[ -z "$TRAVIS_TAG" ]]; then
