@@ -42,17 +42,16 @@ install:
   - conda list
 
 script:
+  - set -e
   - if [[ -z "$TRAVIS_TAG" ]]; then
       python setup.py test;
       if [[ "$TRAVIS_OS_NAME" == "linux" && "$PYTHON" == "3.5" ]]; then
         conda install -q sphinx doctr nbsphinx ipython ipykernel pandoc;
         python setup.py install;
-        set -e;
         cd docs;
         make html SPHINXOPTS="-W";
         cd ..;
         doctr deploy --gh-pages-docs .;
-        set +e;
       fi
     else
       conda build conda.recipe --python=${PYTHON};
