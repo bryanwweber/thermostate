@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
+## [0.1.7]
+### Added
+- Phase as a gettable attribute of the State
+- Isobutane is an available substance
+- Add cp and cv to Tutorial
+
+### Changed
+- Updated Tutorial with more detail of setting properties
+- Fail Travis when a single command fails
+
 ## [0.1.6]
 ### Added
 - Tutorial in the docs using `nbsphinx` for formatting
@@ -48,7 +58,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.1.6...master
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.1.7...master
+[0.1.7]: https://github.com/bryanwweber/thermostate/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/bryanwweber/thermostate/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/bryanwweber/thermostate/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/bryanwweber/thermostate/compare/v0.1.3...v0.1.4
