@@ -106,6 +106,7 @@ class TestState(object):
         assert isclose_quant(s.v, Q_(1.801983936953226, 'm**3/kg'))
         assert isclose_quant(s.h, Q_(2730301.3859201893, 'J/kg'))
         assert s.x is None
+        assert s.phase == 'gas'
 
     def test_set_pT(self):
         s = State(substance='water')
@@ -121,6 +122,7 @@ class TestState(object):
         assert isclose_quant(s.v, Q_(1.801983936953226, 'm**3/kg'))
         assert isclose_quant(s.h, Q_(2730301.3859201893, 'J/kg'))
         assert s.x is None
+        assert s.phase == 'gas'
 
     # This set of tests fails because T and u are not valid inputs for PhaseSI
     # in CoolProp 6.1.0

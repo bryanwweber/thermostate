@@ -3,7 +3,7 @@ Base ThermoState module
 """
 from itertools import permutations
 
-from CoolProp.CoolProp import PropsSI
+from CoolProp.CoolProp import PropsSI, PhaseSI
 from pint import UnitRegistry
 from pint.unit import UnitsContainer, UnitDefinition
 from pint.converters import ScaleConverter
@@ -168,6 +168,8 @@ class State(object):
 
             setattr(self, '_' + prop, value)
 
+        self._phase = PhaseSI(props[0], vals[0], props[1], vals[1], self.sub)
+
     @property
     def T(self):
         return self._T
@@ -207,6 +209,10 @@ class State(object):
     @property
     def cv(self):
         return self._cv
+
+    @property
+    def phase(self):
+        return self._phase
 
     @Tp.setter
     def Tp(self, value):
