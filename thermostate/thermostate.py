@@ -39,7 +39,7 @@ class State(object):
     x : `pint.UnitRegistry.Quantity`
         Quality
     """
-    allowed_subs = ['AIR', 'AMMONIA', 'WATER', 'PROPANE', 'R134A', 'R22']
+    allowed_subs = ['AIR', 'AMMONIA', 'WATER', 'PROPANE', 'R134A', 'R22', 'ISOBUTANE']
 
     allowed_pairs = [
         'Tp', 'Ts', 'Tv', 'Tx',
