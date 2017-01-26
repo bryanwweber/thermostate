@@ -105,18 +105,15 @@ class TestState(object):
         with pytest.raises(AttributeError):
             s.bad_get
 
-    # Need to find a pathologically bad set of inputs here to raise a ValueError from
-    # CoolProp that isn't related to being too close to the saturation point
-    @pytest.mark.xfail
-    def test_bad_Tp_values(self):
-        with pytest.raises(ValueError):
-            State(substance='water', T=Q_(10000., 'K'), p=Q_(101325., 'Pa'))
-
     def test_bad_property_setting(self):
         s = State(substance='water')
         with pytest.raises(AttributeError):
             # Should be lowercase p
             s.TP = Q_(400., 'K'), Q_(101325., 'Pa')
+
+    def test_unallowed_pair(self):
+        with pytest.raises(StateError):
+            State(substance='water', T=Q_(400., 'K'), u=Q_(2547715.3635084038, 'J/kg'))
 
     def test_set_Tp(self):
         s = State(substance='water')
@@ -149,10 +146,6 @@ class TestState(object):
         assert isclose_quant(s.h, Q_(2730301.3859201893, 'J/kg'))
         assert s.x is None
         assert s.phase == 'gas'
-
-    def test_unallowed_pair(self):
-        with pytest.raises(StateError):
-            State(substance='water', T=Q_(400., 'K'), u=Q_(2547715.3635084038, 'J/kg'))
 
     # This set of tests fails because T and u are not valid inputs for PhaseSI
     # in CoolProp 6.1.0
