@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Improve several error messages
 - Refactor property getting/setting to use less boilerplate code
 - Preface all class attributes with `_`
+- Refactor `_set_properties` to use CoolProp low-level API
 
 ### Fixed
 
