@@ -49,7 +49,7 @@ class State(object):
     x : `pint.UnitRegistry.Quantity`
         Quality
     """
-    allowed_subs = ['AIR', 'AMMONIA', 'WATER', 'PROPANE', 'R134A', 'R22', 'ISOBUTANE']
+    _allowed_subs = ['AIR', 'AMMONIA', 'WATER', 'PROPANE', 'R134A', 'R22', 'ISOBUTANE']
 
     _all_pairs = [munge_coolprop_input_prop(k) for k in dir(CoolProp.constants)
                   if 'INPUTS' in k and 'molar' not in k]
@@ -64,10 +64,11 @@ class State(object):
     # how we're messing with __setattr__.
     _allowed_pairs = (lambda x=_unsupported_pairs, y=_all_pairs: [p for p in y if p not in x])()
 
+    _all_props = list('Tpvuhsx')
 
-    other_props = ['cp', 'cv']
+    _read_only_props = ['cp', 'cv']
 
-    dimensions = {
+    _dimensions = {
         'T': UnitsContainer({'[temperature]': 1.0}),
         'p': UnitsContainer({'[mass]': 1.0, '[length]': -1.0, '[time]': -2.0}),
         'v': UnitsContainer({'[length]': 3.0, '[mass]': -1.0}),
@@ -77,7 +78,7 @@ class State(object):
         'x': UnitsContainer({}),
     }
 
-    SI_units = {
+    _SI_units = {
         'T': 'kelvin',
         'p': 'pascal',
         'v': 'meter**3/kilogram',
@@ -104,7 +105,7 @@ class State(object):
                                  'improperly?\nThe pair of properties was "{}".'.format(key))
 
     def __getattr__(self, key):
-        if key in self.all_props:
+        if key in self._all_props:
             return object.__getattribute__(self, '_' + key)
         elif key in self._allowed_pairs:
             val_0 = object.__getattribute__(self, '_' + key[0])
@@ -112,7 +113,7 @@ class State(object):
             return val_0, val_1
         elif key == 'phase':
             return object.__getattribute__(self, '_' + key)
-        elif key in self.other_props:
+        elif key in self._read_only_props:
             return object.__getattribute__(self, '_' + key)
         else:
             raise AttributeError("Property unknown")
@@ -147,7 +148,7 @@ class State(object):
 
         input_props = ''
         for arg in kwargs:
-            if arg not in self.all_props:
+            if arg not in self._all_props:
                 raise ValueError('The argument {} is not allowed.'.format(arg))
             else:
                 input_props += arg
@@ -155,28 +156,28 @@ class State(object):
         if len(input_props) > 2 or len(input_props) == 1:
             raise ValueError('Incorrect number of properties specified. Must be 2 or 0.')
 
-        if len(input_props) > 0 and input_props not in self.allowed_pairs:
-            raise ValueError('The supplied pair of properties, {props[0]} and {props[1]} is not an '
-                             'implemented set of independent properties.'.format(props=input_props))
+        if len(input_props) > 0 and input_props not in self._allowed_pairs:
+            raise StateError("The pair of input properties entered ({}) isn't supported yet. "
+                             "Sorry!".format(input_props))
 
         if len(input_props) > 0:
             setattr(self, input_props, (kwargs[input_props[0]], kwargs[input_props[1]]))
 
     def to_SI(self, prop, value):
-        return value.to(self.SI_units[prop])
+        return value.to(self._SI_units[prop])
 
     def to_PropsSI(self, prop, value):
         return self.to_SI(prop, value).magnitude
 
     def _check_dimensions(self, properties, value):
-        if value[0].dimensionality != self.dimensions[properties[0]]:
+        if value[0].dimensionality != self._dimensions[properties[0]]:
             raise StateError('The dimensions for {props[0]} must be {dim}'.format(
                 props=properties,
-                dim=self.dimensions[properties[0]]))
-        elif value[1].dimensionality != self.dimensions[properties[1]]:
+                dim=self._dimensions[properties[0]]))
+        elif value[1].dimensionality != self._dimensions[properties[1]]:
             raise StateError('The dimensions for {props[1]} must be {dim}'.format(
                 props=properties,
-                dim=self.dimensions[properties[1]]))
+                dim=self._dimensions[properties[1]]))
 
     def _set_properties(self, known_props, known_values):
         if len(known_props) != 2 or len(known_values) != 2 or len(known_props) != len(known_values):
@@ -211,27 +212,27 @@ class State(object):
 
             setattr(self, '_' + prop, self.to_SI(prop, val))
 
-        # unknown_props has to be a copy of the all_props list here,
+        # unknown_props has to be a copy of the _all_props list here,
         # otherwise, properties get permanently removed
-        unknown_props = self.all_props[:]
+        unknown_props = self._all_props[:]
         unknown_props.remove(known_props[0])
         unknown_props.remove(known_props[1])
-        unknown_props += self.other_props
+        unknown_props += self._read_only_props
 
         for prop in unknown_props:
             if prop == 'v':
                 value = Q_(1.0/PropsSI('DMASS', props[0], vals[0], props[1], vals[1], self.sub),
-                           self.SI_units[prop])
+                           self._SI_units[prop])
             elif prop == 'x':
                 value = Q_(PropsSI('Q', props[0], vals[0], props[1], vals[1], self.sub),
-                           self.SI_units[prop])
+                           self._SI_units[prop])
                 if value == -1.0:
                     value = None
             else:
                 postfix = '' if prop in 'Tp' else 'MASS'
                 p = prop.upper() + postfix
                 value = Q_(PropsSI(p, props[0], vals[0], props[1], vals[1], self.sub),
-                           self.SI_units[prop])
+                           self._SI_units[prop])
 
             setattr(self, '_' + prop, value)
 
