@@ -1,7 +1,6 @@
 """
 Base ThermoState module
 """
-from itertools import permutations
 from math import isclose
 
 from CoolProp.CoolProp import PropsSI, PhaseSI
@@ -61,7 +60,6 @@ class State(object):
 
     all_props = list('Tpvuhsx')
 
-    all_pairs = [''.join(a) for a in permutations(all_props, 2)]
 
     other_props = ['cp', 'cv']
 
