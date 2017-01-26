@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Improve several error messages
+- Refactor property getting/setting to use less boilerplate code
+- Preface all class attributes with `_`
 
 ### Fixed
 
