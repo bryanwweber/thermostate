@@ -2,18 +2,32 @@
 Test module for the main ThermoState code
 """
 import pytest
-from math import isclose
 
-from ..thermostate import State, StateError, Q_
-
-
-def isclose_quant(a, b, *args, **kwargs):
-    return isclose(a.magnitude, b.magnitude, *args, **kwargs)
+from ..thermostate import State, StateError, Q_, isclose_quant
 
 
 class TestState(object):
     """
     """
+    def test_eq(self):
+        st_1 = State(substance='water', T=Q_(400.0, 'K'), p=Q_(101325.0, 'Pa'))
+        st_2 = State(substance='water', T=Q_(400.0, 'K'), p=Q_(101325.0, 'Pa'))
+        assert st_1 == st_2
+        st_2.Tp = Q_(300.0, 'K'), Q_(101325.0, 'Pa')
+        assert not st_1 == st_2
+
+    def test_comparison(self):
+        st_1 = State(substance='water', T=Q_(400.0, 'K'), p=Q_(101325.0, 'Pa'))
+        st_2 = State(substance='water', T=Q_(400.0, 'K'), p=Q_(101325.0, 'Pa'))
+        with pytest.raises(TypeError):
+            st_1 < st_2
+        with pytest.raises(TypeError):
+            st_1 <= st_2
+        with pytest.raises(TypeError):
+            st_1 > st_2
+        with pytest.raises(TypeError):
+            st_1 >= st_2
+
     def test_lowercase_input(self):
         State(substance='water')
         State(substance='r22')

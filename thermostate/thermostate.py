@@ -2,6 +2,7 @@
 Base ThermoState module
 """
 from itertools import permutations
+from math import isclose
 
 from CoolProp.CoolProp import PropsSI, PhaseSI
 from pint import UnitRegistry
@@ -11,6 +12,10 @@ from pint.converters import ScaleConverter
 units = UnitRegistry(autoconvert_offset_to_baseunit=True)
 Q_ = units.Quantity
 units.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1.0/100.0)))
+
+
+def isclose_quant(a, b, *args, **kwargs):
+    return isclose(a.magnitude, b.magnitude, *args, **kwargs)
 
 
 class StateError(Exception):
@@ -85,6 +90,26 @@ class State(object):
                                  'Perhaps one of the letters was capitalized improperly?\n'
                                  'key={}'.format(key))
         object.__setattr__(self, key, value)
+
+    def __eq__(self, other):
+        """Use any two independent and intensive properties to
+        test for equality. Choose T and v because the EOS tends
+        to be defined in terms of T and density.
+        """
+        if isclose_quant(other.T, self.T) and isclose_quant(other.v, self.v):
+            return True
+
+    def __le__(self, other):
+        return NotImplemented
+
+    def __lt__(self, other):
+        return NotImplemented
+
+    def __gt__(self, other):
+        return NotImplemented
+
+    def __ge__(self, other):
+        return NotImplemented
 
     def __init__(self, substance, **kwargs):
         if substance.upper() in self.allowed_subs:
