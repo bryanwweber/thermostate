@@ -107,7 +107,7 @@ class State(object):
     def __getattr__(self, key):
         if key in self._all_props:
             return object.__getattribute__(self, '_' + key)
-        elif key in self._allowed_pairs:
+        elif key in self._all_pairs:
             val_0 = object.__getattribute__(self, '_' + key[0])
             val_1 = object.__getattribute__(self, '_' + key[1])
             return val_0, val_1
