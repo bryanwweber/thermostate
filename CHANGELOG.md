@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.2.0]
+### Added
 - Equality comparison of `State` instances
 
 ### Changed
@@ -63,7 +72,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.1.7...master
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.2.0...master
+[0.2.0]: https://github.com/bryanwweber/thermostate/compare/v0.1.7...v0.2.0
 [0.1.7]: https://github.com/bryanwweber/thermostate/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/bryanwweber/thermostate/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/bryanwweber/thermostate/compare/v0.1.4...v0.1.5

@@ -1,4 +1,4 @@
-__version_info__ = ('0', '1', '7', '')
+__version_info__ = ('0', '2', '0', '')
 __version__ = '.'.join(__version_info__[:3])
 if len(__version_info__) == 4:
     __version__ += __version_info__[-1]
