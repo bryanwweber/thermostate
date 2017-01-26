@@ -100,9 +100,7 @@ class State(object):
             raise StateError("The pair of input properties entered ({}) isn't supported yet. "
                              "Sorry!".format(key))
         else:
-            raise AttributeError('The pair of properties entered is not one of the allowed pairs '
-                                 'of properties. Perhaps one of the letters was capitalized '
-                                 'improperly?\nThe pair of properties was "{}".'.format(key))
+            raise AttributeError('Unknown attribute {}'.format(key))
 
     def __getattr__(self, key):
         if key in self._all_props:
@@ -116,7 +114,7 @@ class State(object):
         elif key in self._read_only_props:
             return object.__getattribute__(self, '_' + key)
         else:
-            raise AttributeError("Property unknown")
+            raise AttributeError("Unknown attribute {}".format(key))
 
     def __eq__(self, other):
         """Use any two independent and intensive properties to
