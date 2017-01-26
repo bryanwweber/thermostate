@@ -51,14 +51,18 @@ class State(object):
     """
     allowed_subs = ['AIR', 'AMMONIA', 'WATER', 'PROPANE', 'R134A', 'R22', 'ISOBUTANE']
 
-    CP_allowed_pairs = [munge_coolprop_input_prop(k) for k in dir(CoolProp.constants)
-                        if 'INPUTS' in k and 'molar' not in k]
-    CP_allowed_pairs.extend([k[::-1] for k in CP_allowed_pairs])
+    _all_pairs = [munge_coolprop_input_prop(k) for k in dir(CoolProp.constants)
+                  if 'INPUTS' in k and 'molar' not in k]
+    _all_pairs.extend([k[::-1] for k in _all_pairs])
 
-    CP_unsupported_pairs = ['Tu', 'Th', 'us']
-    CP_unsupported_pairs.extend([k[::-1] for k in CP_unsupported_pairs])
+    _unsupported_pairs = ['Tu', 'Th', 'us']
+    _unsupported_pairs.extend([k[::-1] for k in _unsupported_pairs])
 
-    all_props = list('Tpvuhsx')
+    # This weird lambda construct is necessary because _unsupported_pairs can't be accessed
+    # inside the list comprehension because of the namespacing rules for class attributes.
+    # Trying to set _allowed_pairs in the __init__ leads to infinite recursion because of
+    # how we're messing with __setattr__.
+    _allowed_pairs = (lambda x=_unsupported_pairs, y=_all_pairs: [p for p in y if p not in x])()
 
 
     other_props = ['cp', 'cv']
@@ -86,10 +90,10 @@ class State(object):
     }
 
     def __setattr__(self, key, value):
-        if key in self.CP_allowed_pairs and key not in self.CP_unsupported_pairs:
+        if key in self._allowed_pairs:
             self._check_dimensions(key, value)
             self._set_properties(key, value)
-        elif key in self.CP_unsupported_pairs:
+        elif key in self._unsupported_pairs:
             raise StateError("The pair of input properties entered ({}) isn't supported yet. "
                              "Sorry!".format(key))
         elif key.startswith('_') or key == 'sub':
@@ -102,7 +106,7 @@ class State(object):
     def __getattr__(self, key):
         if key in self.all_props:
             return object.__getattribute__(self, '_' + key)
-        elif key in self.CP_allowed_pairs:
+        elif key in self._allowed_pairs:
             val_0 = object.__getattribute__(self, '_' + key[0])
             val_1 = object.__getattribute__(self, '_' + key[1])
             return val_0, val_1
@@ -134,11 +138,11 @@ class State(object):
         return NotImplemented
 
     def __init__(self, substance, **kwargs):
-        if substance.upper() in self.allowed_subs:
+        if substance.upper() in self._allowed_subs:
             self.sub = substance.upper()
         else:
             raise ValueError('{} is not an allowed substance. Choose one of {}.'.format(
-                substance, self.allowed_subs,
+                substance, self._allowed_subs,
             ))
 
         input_props = ''
