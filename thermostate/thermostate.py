@@ -86,9 +86,9 @@ class State(object):
 
     def __setattr__(self, key, value):
         if key not in self.all_pairs and key != 'sub' and not key.startswith('_'):
-            raise AttributeError('The key entered is not one of the allowed pairs of properties. '
-                                 'Perhaps one of the letters was capitalized improperly?\n'
-                                 'key={}'.format(key))
+            raise AttributeError('The pair of properties entered is not one of the allowed pairs of'
+                                 'properties. Perhaps one of the letters was capitalized'
+                                 'improperly?\n The pair of properties was "{}"'.format(key))
         object.__setattr__(self, key, value)
 
     def __eq__(self, other):
@@ -130,8 +130,8 @@ class State(object):
             raise ValueError('Incorrect number of properties specified. Must be 2 or 0.')
 
         if len(input_props) > 0 and input_props not in self.allowed_pairs:
-            raise ValueError('The supplied pair of properties, {props[0]} and {props[1]} is not a '
-                             'valid set of independent properties.'.format(props=input_props))
+            raise ValueError('The supplied pair of properties, {props[0]} and {props[1]} is not an '
+                             'implemented set of independent properties.'.format(props=input_props))
 
         if len(input_props) > 0:
             setattr(self, input_props, (kwargs[input_props[0]], kwargs[input_props[1]]))

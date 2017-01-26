@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Equality comparison of `State` instances
 
 ### Changed
+- Improve several error messages
 
 ### Fixed
 
