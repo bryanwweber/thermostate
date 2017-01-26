@@ -91,14 +91,14 @@ class State(object):
     }
 
     def __setattr__(self, key, value):
-        if key in self._allowed_pairs:
+        if key.startswith('_') or key == 'sub':
+            object.__setattr__(self, key, value)
+        elif key in self._allowed_pairs:
             self._check_dimensions(key, value)
             self._set_properties(key, value)
         elif key in self._unsupported_pairs:
             raise StateError("The pair of input properties entered ({}) isn't supported yet. "
                              "Sorry!".format(key))
-        elif key.startswith('_') or key == 'sub':
-            object.__setattr__(self, key, value)
         else:
             raise AttributeError('The pair of properties entered is not one of the allowed pairs '
                                  'of properties. Perhaps one of the letters was capitalized '
