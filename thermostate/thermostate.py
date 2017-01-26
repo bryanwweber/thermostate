@@ -3,7 +3,6 @@ Base ThermoState module
 """
 from math import isclose
 
-from CoolProp.CoolProp import PropsSI, PhaseSI
 import CoolProp
 from pint import UnitRegistry
 from pint.unit import UnitsContainer, UnitDefinition
@@ -12,6 +11,8 @@ from pint.converters import ScaleConverter
 units = UnitRegistry(autoconvert_offset_to_baseunit=True)
 Q_ = units.Quantity
 units.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1.0/100.0)))
+
+phase_map = {getattr(CoolProp, i): i.split('_')[1] for i in dir(CoolProp) if 'iphase' in i}
 
 
 def munge_coolprop_input_prop(prop):
@@ -66,7 +67,7 @@ class State(object):
 
     _all_props = list('Tpvuhsx')
 
-    _read_only_props = ['cp', 'cv']
+    _read_only_props = ['cp', 'cv', 'phase']
 
     _dimensions = {
         'T': UnitsContainer({'[temperature]': 1.0}),
@@ -88,6 +89,7 @@ class State(object):
         'x': 'dimensionless',
         'cp': 'joules/(kilogram*kelvin)',
         'cv': 'joules/(kilogram*kelvin)',
+        'phase': None,
     }
 
     def __setattr__(self, key, value):
@@ -144,6 +146,8 @@ class State(object):
                 substance, self._allowed_subs,
             ))
 
+        self._abstract_state = CoolProp.AbstractState("HEOS", self.sub)
+
         input_props = ''
         for arg in kwargs:
             if arg not in self._all_props:
@@ -181,57 +185,42 @@ class State(object):
         if len(known_props) != 2 or len(known_values) != 2 or len(known_props) != len(known_values):
             raise StateError('Only specify two properties to _set_properties')
 
-        props = []
-        vals = []
-
-        if known_props == 'Tp' or known_props == 'pT':
-            try:
-                PropsSI('Phase',
-                        known_props[0].upper(), self.to_PropsSI(known_props[0], known_values[0]),
-                        known_props[1].upper(), self.to_PropsSI(known_props[1], known_values[1]),
-                        self.sub)
-            except ValueError as e:
-                if 'Saturation pressure' in str(e):
-                    raise StateError('The given values for T and p are not independent.')
-                else:
-                    raise
+        known_state = []
 
         for prop, val in zip(known_props, known_values):
             if prop == 'x':
-                props.append('Q')
-                vals.append(self.to_PropsSI('x', val))
+                known_state.append(('Q', self.to_PropsSI(prop, val)))
             elif prop == 'v':
-                props.append('DMASS')
-                vals.append(1.0/self.to_PropsSI('v', val))
+                known_state.append(('Dmass', 1.0/self.to_PropsSI(prop, val)))
             else:
-                postfix = '' if prop in 'Tp' else 'MASS'
-                props.append(prop.upper() + postfix)
-                vals.append(self.to_PropsSI(prop, val))
+                postfix = '' if prop in ['T', 'p'] else 'mass'
+                known_state.append((prop.upper() + postfix, self.to_PropsSI(prop, val)))
 
-            setattr(self, '_' + prop, self.to_SI(prop, val))
+        known_state.sort(key=lambda p: p[0])
 
-        # unknown_props has to be a copy of the _all_props list here,
-        # otherwise, properties get permanently removed
-        unknown_props = self._all_props[:]
-        unknown_props.remove(known_props[0])
-        unknown_props.remove(known_props[1])
-        unknown_props += self._read_only_props
+        inputs = getattr(CoolProp, ''.join([p[0] for p in known_state]) + '_INPUTS')
+        try:
+            self._abstract_state.update(inputs, known_state[0][1], known_state[1][1])
+        except ValueError as e:
+            if 'Saturation pressure' in str(e):
+                raise StateError('The given values for {} and {} are not '
+                                 'independent.'.format(known_props[0], known_props[1]))
+            else:
+                raise
 
-        for prop in unknown_props:
+        for prop in self._all_props + self._read_only_props:
             if prop == 'v':
-                value = Q_(1.0/PropsSI('DMASS', props[0], vals[0], props[1], vals[1], self.sub),
+                value = Q_(1.0/self._abstract_state.keyed_output(CoolProp.iDmass),
                            self._SI_units[prop])
             elif prop == 'x':
-                value = Q_(PropsSI('Q', props[0], vals[0], props[1], vals[1], self.sub),
-                           self._SI_units[prop])
+                value = Q_(self._abstract_state.keyed_output(CoolProp.iQ), self._SI_units[prop])
                 if value == -1.0:
                     value = None
+            elif prop == 'phase':
+                value = phase_map[self._abstract_state.keyed_output(CoolProp.iPhase)]
             else:
-                postfix = '' if prop in 'Tp' else 'MASS'
-                p = prop.upper() + postfix
-                value = Q_(PropsSI(p, props[0], vals[0], props[1], vals[1], self.sub),
-                           self._SI_units[prop])
+                postfix = '' if prop in ['T', 'p'] else 'mass'
+                p = getattr(CoolProp, 'i' + prop.title() + postfix)
+                value = Q_(self._abstract_state.keyed_output(p), self._SI_units[prop])
 
             setattr(self, '_' + prop, value)
-
-        self._phase = PhaseSI(props[0], vals[0], props[1], vals[1], self.sub)
