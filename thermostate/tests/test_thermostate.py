@@ -55,7 +55,7 @@ class TestState(object):
 
     def test_invalid_input_prop(self):
         with pytest.raises(ValueError):
-            State(substance='water', x=Q_(0.5, 'dimensionless'), P=Q_(101325, 'Pa'))
+            State(substance='water', x=Q_(0.5, 'dimensionless'), bad_prop=Q_(101325, 'Pa'))
 
     def test_bad_T_dimensions(self):
         with pytest.raises(StateError):
@@ -104,6 +104,7 @@ class TestState(object):
     def test_bad_property_setting(self):
         s = State(substance='water')
         with pytest.raises(AttributeError):
+            # Should be lowercase p
             s.TP = Q_(400., 'K'), Q_(101325., 'Pa')
 
     def test_set_Tp(self):
