@@ -28,6 +28,12 @@ class TestState(object):
         with pytest.raises(TypeError):
             st_1 >= st_2
 
+    def test_unit_definitions(self):
+        st = State('water')
+        l = st._all_props[:]
+        l.extend(st._read_only_props)
+        assert all([a in st._SI_units.keys() for a in l])
+
     def test_lowercase_input(self):
         State(substance='water')
         State(substance='r22')
@@ -138,6 +144,10 @@ class TestState(object):
         assert isclose_quant(s.h, Q_(2730301.3859201893, 'J/kg'))
         assert s.x is None
         assert s.phase == 'gas'
+
+    def test_unallowed_pair(self):
+        with pytest.raises(StateError):
+            State(substance='water', T=Q_(400., 'K'), u=Q_(2547715.3635084038, 'J/kg'))
 
     # This set of tests fails because T and u are not valid inputs for PhaseSI
     # in CoolProp 6.1.0
