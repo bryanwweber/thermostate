@@ -5,6 +5,7 @@ from itertools import permutations
 from math import isclose
 
 from CoolProp.CoolProp import PropsSI, PhaseSI
+import CoolProp
 from pint import UnitRegistry
 from pint.unit import UnitsContainer, UnitDefinition
 from pint.converters import ScaleConverter
@@ -12,6 +13,11 @@ from pint.converters import ScaleConverter
 units = UnitRegistry(autoconvert_offset_to_baseunit=True)
 Q_ = units.Quantity
 units.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1.0/100.0)))
+
+
+def munge_coolprop_input_prop(prop):
+    prop = prop.replace('_INPUTS', '').replace('mass', '').replace('D', 'V')
+    return prop.replace('Q', 'X').lower().replace('t', 'T')
 
 
 def isclose_quant(a, b, *args, **kwargs):
@@ -46,17 +52,14 @@ class State(object):
     """
     allowed_subs = ['AIR', 'AMMONIA', 'WATER', 'PROPANE', 'R134A', 'R22', 'ISOBUTANE']
 
-    allowed_pairs = [
-        'Tp', 'Ts', 'Tv', 'Tx',
-        'pT', 'pu', 'ps', 'pv', 'ph', 'px',
-        'up', 'uv',
-        'sT', 'sp', 'sv', 'sh',
-        'vT', 'vp', 'vu', 'vs', 'vh',
-        'hp', 'hs', 'hv',
-        'xT', 'xp'
-    ]
+    CP_allowed_pairs = [munge_coolprop_input_prop(k) for k in dir(CoolProp.constants)
+                        if 'INPUTS' in k and 'molar' not in k]
+    CP_allowed_pairs.extend([k[::-1] for k in CP_allowed_pairs])
 
-    all_props = 'Tpvuhsx'
+    CP_unsupported_pairs = ['Tu', 'Th', 'us']
+    CP_unsupported_pairs.extend([k[::-1] for k in CP_unsupported_pairs])
+
+    all_props = list('Tpvuhsx')
 
     all_pairs = [''.join(a) for a in permutations(all_props, 2)]
 
@@ -85,11 +88,32 @@ class State(object):
     }
 
     def __setattr__(self, key, value):
-        if key not in self.all_pairs and key != 'sub' and not key.startswith('_'):
-            raise AttributeError('The pair of properties entered is not one of the allowed pairs of'
-                                 'properties. Perhaps one of the letters was capitalized'
-                                 'improperly?\n The pair of properties was "{}"'.format(key))
-        object.__setattr__(self, key, value)
+        if key in self.CP_allowed_pairs and key not in self.CP_unsupported_pairs:
+            self._check_dimensions(key, value)
+            self._set_properties(key, value)
+        elif key in self.CP_unsupported_pairs:
+            raise StateError("The pair of input properties entered ({}) isn't supported yet. "
+                             "Sorry!".format(key))
+        elif key.startswith('_') or key == 'sub':
+            object.__setattr__(self, key, value)
+        else:
+            raise AttributeError('The pair of properties entered is not one of the allowed pairs '
+                                 'of properties. Perhaps one of the letters was capitalized '
+                                 'improperly?\nThe pair of properties was "{}".'.format(key))
+
+    def __getattr__(self, key):
+        if key in self.all_props:
+            return object.__getattribute__(self, '_' + key)
+        elif key in self.CP_allowed_pairs:
+            val_0 = object.__getattribute__(self, '_' + key[0])
+            val_1 = object.__getattribute__(self, '_' + key[1])
+            return val_0, val_1
+        elif key == 'phase':
+            return object.__getattribute__(self, '_' + key)
+        elif key in self.other_props:
+            return object.__getattribute__(self, '_' + key)
+        else:
+            raise AttributeError("Property unknown")
 
     def __eq__(self, other):
         """Use any two independent and intensive properties to
@@ -159,6 +183,18 @@ class State(object):
         props = []
         vals = []
 
+        if known_props == 'Tp' or known_props == 'pT':
+            try:
+                PropsSI('Phase',
+                        known_props[0].upper(), self.to_PropsSI(known_props[0], known_values[0]),
+                        known_props[1].upper(), self.to_PropsSI(known_props[1], known_values[1]),
+                        self.sub)
+            except ValueError as e:
+                if 'Saturation pressure' in str(e):
+                    raise StateError('The given values for T and p are not independent.')
+                else:
+                    raise
+
         for prop, val in zip(known_props, known_values):
             if prop == 'x':
                 props.append('Q')
@@ -173,7 +209,11 @@ class State(object):
 
             setattr(self, '_' + prop, self.to_SI(prop, val))
 
-        unknown_props = list(self.all_props.replace(known_props[0], '').replace(known_props[1], ''))
+        # unknown_props has to be a copy of the all_props list here,
+        # otherwise, properties get permanently removed
+        unknown_props = self.all_props[:]
+        unknown_props.remove(known_props[0])
+        unknown_props.remove(known_props[1])
         unknown_props += self.other_props
 
         for prop in unknown_props:
@@ -194,345 +234,3 @@ class State(object):
             setattr(self, '_' + prop, value)
 
         self._phase = PhaseSI(props[0], vals[0], props[1], vals[1], self.sub)
-
-    @property
-    def T(self):
-        return self._T
-
-    @property
-    def p(self):
-        return self._p
-
-    @property
-    def u(self):
-        return self._u
-
-    @property
-    def s(self):
-        return self._s
-
-    @property
-    def v(self):
-        return self._v
-
-    @property
-    def h(self):
-        return self._h
-
-    @property
-    def x(self):
-        return self._x
-
-    @property
-    def Tp(self):
-        return self._T, self._p
-
-    @property
-    def cp(self):
-        return self._cp
-
-    @property
-    def cv(self):
-        return self._cv
-
-    @property
-    def phase(self):
-        return self._phase
-
-    @Tp.setter
-    def Tp(self, value):
-        self._check_dimensions(['T', 'p'], value)
-        try:
-            PropsSI('Phase',
-                    'T', self.to_PropsSI('T', value[0]),
-                    'P', self.to_PropsSI('p', value[1]),
-                    self.sub)
-        except ValueError as e:
-            if 'Saturation pressure' in str(e):
-                raise StateError('The given values for T and P are not independent.')
-            else:
-                raise
-
-        self._set_properties(['T', 'p'], value)
-
-    @property
-    def pT(self):
-        return self._p, self._T
-
-    @pT.setter
-    def pT(self, value):
-        self.Tp = value[1], value[0]
-
-    @property
-    def Tu(self):
-        return self._T, self._u
-
-    @Tu.setter
-    def Tu(self, value):
-        self._check_dimensions(['T', 'u'], value)
-        try:
-            self._set_properties(['T', 'u'], value)
-        except ValueError as e:
-            if str(e).startswith('This pair of inputs'):
-                raise StateError('Setting T and u simultaneously is not allowed.')
-            else:
-                raise
-
-    @property
-    def uT(self):
-        return self._u, self._T
-
-    @uT.setter
-    def uT(self, value):
-        self.Tu = value[1], value[0]
-
-    @property
-    def Th(self):
-        return self._T, self._h
-
-    @Th.setter
-    def Th(self, value):
-        self._check_dimensions(['T', 'h'], value)
-        try:
-            self._set_properties(['T', 'h'], value)
-        except ValueError as e:
-            if str(e).startswith('This pair of inputs'):
-                raise StateError('Setting T and h simultaneously is not allowed.')
-            else:
-                raise
-
-    @property
-    def hT(self):
-        return self._h, self._T
-
-    @hT.setter
-    def hT(self, value):
-        self.Th = value[1], value[0]
-
-    @property
-    def Ts(self):
-        return self._T, self._s
-
-    @Ts.setter
-    def Ts(self, value):
-        self._check_dimensions(['T', 's'], value)
-
-        self._set_properties(['T', 's'], value)
-
-    @property
-    def sT(self):
-        return self._s, self._T
-
-    @sT.setter
-    def sT(self, value):
-        self.Ts = value[1], value[0]
-
-    @property
-    def Tv(self):
-        return self._T, self._v
-
-    @Tv.setter
-    def Tv(self, value):
-        self._check_dimensions(['T', 'v'], value)
-        self._set_properties(['T', 'v'], value)
-
-    @property
-    def vT(self):
-        return self._v, self._T
-
-    @vT.setter
-    def vT(self, value):
-        self.Tv = value[1], value[0]
-
-    @property
-    def Tx(self):
-        return self._T, self._x
-
-    @Tx.setter
-    def Tx(self, value):
-        self._check_dimensions(['T', 'x'], value)
-        self._set_properties(['T', 'x'], value)
-
-    @property
-    def xT(self):
-        return self._x, self._T
-
-    @xT.setter
-    def xT(self, value):
-        self.Tx = value[1], value[0]
-
-    @property
-    def pu(self):
-        return self._p, self._u
-
-    @pu.setter
-    def pu(self, value):
-        self._check_dimensions(['p', 'u'], value)
-        self._set_properties(['p', 'u'], value)
-
-    @property
-    def up(self):
-        return self._u, self._p
-
-    @up.setter
-    def up(self, value):
-        self.pu = value[1], value[0]
-
-    @property
-    def ps(self):
-        return self._p, self._s
-
-    @ps.setter
-    def ps(self, value):
-        self._check_dimensions(['p', 's'], value)
-        self._set_properties(['p', 's'], value)
-
-    @property
-    def sp(self):
-        return self._s, self._p
-
-    @sp.setter
-    def sp(self, value):
-        self.ps = value[1], value[0]
-
-    @property
-    def pv(self):
-        return self._p, self._v
-
-    @pv.setter
-    def pv(self, value):
-        self._check_dimensions(['p', 'v'], value)
-        self._set_properties(['p', 'v'], value)
-
-    @property
-    def vp(self):
-        return self._v, self._p
-
-    @vp.setter
-    def vp(self, value):
-        self.pv = value[1], value[0]
-
-    @property
-    def ph(self):
-        return self._p, self._h
-
-    @ph.setter
-    def ph(self, value):
-        self._check_dimensions(['p', 'h'], value)
-        self._set_properties(['p', 'h'], value)
-
-    @property
-    def hp(self):
-        return self._h, self._p
-
-    @hp.setter
-    def hp(self, value):
-        self.ph = value[1], value[0]
-
-    @property
-    def px(self):
-        return self._p, self._x
-
-    @px.setter
-    def px(self, value):
-        self._check_dimensions(['p', 'x'], value)
-        self._set_properties(['p', 'x'], value)
-
-    @property
-    def xp(self):
-        return self._x, self._p
-
-    @xp.setter
-    def xp(self, value):
-        self.px = value[1], value[0]
-
-    @property
-    def us(self):
-        return self._u, self._s
-
-    @us.setter
-    def us(self, value):
-        self._check_dimensions(['u', 's'], value)
-        try:
-            self._set_properties(['u', 's'], value)
-        except ValueError as e:
-            if str(e).startswith('This pair of inputs'):
-                raise StateError('Setting s and u simultaneously is not allowed.')
-            else:
-                raise
-
-    @property
-    def su(self):
-        return self._s, self._u
-
-    @su.setter
-    def su(self, value):
-        self.us = value[1], value[0]
-
-    @property
-    def uv(self):
-        return self._u, self._v
-
-    @uv.setter
-    def uv(self, value):
-        self._check_dimensions(['u', 'v'], value)
-        self._set_properties(['u', 'v'], value)
-
-    @property
-    def vu(self):
-        return self._v, self._u
-
-    @vu.setter
-    def vu(self, value):
-        self.uv = value[1], value[0]
-
-    @property
-    def vs(self):
-        return self._v, self._s
-
-    @vs.setter
-    def vs(self, value):
-        self._check_dimensions(['v', 's'], value)
-        self._set_properties(['v', 's'], value)
-
-    @property
-    def sv(self):
-        return self._s, self._v
-
-    @sv.setter
-    def sv(self, value):
-        self.vs = value[1], value[0]
-
-    @property
-    def hs(self):
-        return self._h, self._s
-
-    @hs.setter
-    def hs(self, value):
-        self._check_dimensions(['h', 's'], value)
-        self._set_properties(['h', 's'], value)
-
-    @property
-    def sh(self):
-        return self._s, self._h
-
-    @sh.setter
-    def sh(self, value):
-        self.hs = value[1], value[0]
-
-    @property
-    def hv(self):
-        return self._h, self._v
-
-    @hv.setter
-    def hv(self, value):
-        self._check_dimensions(['h', 'v'], value)
-        self._set_properties(['h', 'v'], value)
-
-    @property
-    def vh(self):
-        return self._v, self._h
-
-    @vh.setter
-    def vh(self, value):
-        self.hv = value[1], value[0]
