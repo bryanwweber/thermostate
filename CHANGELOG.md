@@ -6,14 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-- Carbon dioxide is available as a substance
-- The software version is available as the module-level `__version__` attribute
 
 ### Changed
 
 ### Fixed
 
 ### Removed
+
+## [0.2.1]
+### Added
+- Carbon dioxide is available as a substance
+- The software version is available as the module-level `__version__` attribute
 
 ## [0.2.0]
 ### Added
@@ -70,7 +73,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.2.0...master
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.2.1...master
+[0.2.1]: https://github.com/bryanwweber/thermostate/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/bryanwweber/thermostate/compare/v0.1.7...v0.2.0
 [0.1.7]: https://github.com/bryanwweber/thermostate/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/bryanwweber/thermostate/compare/v0.1.5...v0.1.6
