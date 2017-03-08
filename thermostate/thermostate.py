@@ -50,7 +50,8 @@ class State(object):
     x : `pint.UnitRegistry.Quantity`
         Quality
     """
-    _allowed_subs = ['AIR', 'AMMONIA', 'WATER', 'PROPANE', 'R134A', 'R22', 'ISOBUTANE']
+    _allowed_subs = ['AIR', 'AMMONIA', 'WATER', 'PROPANE', 'R134A', 'R22', 'ISOBUTANE',
+                     'CARBONDIOXIDE']
 
     _all_pairs = [munge_coolprop_input_prop(k) for k in dir(CoolProp.constants)
                   if 'INPUTS' in k and 'molar' not in k]

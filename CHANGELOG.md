@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- Carbon dioxide is available as a substance
 - The software version is available as the module-level `__version__` attribute
 
 ### Changed
