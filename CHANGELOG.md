@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- The software version is available as the module-level `__version__` attribute
 
 ### Changed
 
@@ -22,10 +23,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Refactor property getting/setting to use less boilerplate code
 - Preface all class attributes with `_`
 - Refactor `_set_properties` to use CoolProp low-level API
-
-### Fixed
-
-### Removed
 
 ## [0.1.7]
 ### Added
