@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-- Oxygen is available as a substance
+- Oxygen (O2) is available as a substance
+- Nitrogen (N2) is available as a substance
 
 ### Changed
 

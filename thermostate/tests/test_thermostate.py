@@ -44,6 +44,7 @@ class TestState(object):
         State(substance='isobutane')
         State(substance='carbondioxide')
         State(substance='oxygen')
+        State(substance='nitrogen')
 
     def test_bad_substance(self):
         with pytest.raises(ValueError):
