@@ -51,7 +51,7 @@ class State(object):
         Quality
     """
     _allowed_subs = ['AIR', 'AMMONIA', 'WATER', 'PROPANE', 'R134A', 'R22', 'ISOBUTANE',
-                     'CARBONDIOXIDE']
+                     'CARBONDIOXIDE', 'OXYGEN']
 
     _all_pairs = [munge_coolprop_input_prop(k) for k in dir(CoolProp.constants)
                   if 'INPUTS' in k and 'molar' not in k]
