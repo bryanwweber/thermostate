@@ -6,15 +6,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-- Oxygen (O2) is available as a substance
-- Nitrogen (N2) is available as a substance
 
 ### Changed
 
 ### Fixed
-- Deploy doctr to the root directory (see [drdoctr/doctr#157](https://github.com/drdoctr/doctr/issues/157) and [drdoctr/doctr#160](https://github.com/drdoctr/doctr/issues/160))
 
 ### Removed
+
+## [0.2.2] - 13-APR-2017
+### Added
+- Oxygen (O2) is available as a substance
+- Nitrogen (N2) is available as a substance
+
+### Fixed
+- Deploy doctr to the root directory (see [drdoctr/doctr#157](https://github.com/drdoctr/doctr/issues/157) and [drdoctr/doctr#160](https://github.com/drdoctr/doctr/issues/160))
 
 ## [0.2.1]
 ### Added
@@ -76,7 +81,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.2.1...master
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.2.2...master
+[0.2.2]: https://github.com/bryanwweber/thermostate/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/bryanwweber/thermostate/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/bryanwweber/thermostate/compare/v0.1.7...v0.2.0
 [0.1.7]: https://github.com/bryanwweber/thermostate/compare/v0.1.6...v0.1.7
