@@ -51,7 +51,7 @@ script:
         cd docs;
         make html SPHINXOPTS="-W";
         cd ..;
-        doctr deploy --gh-pages-docs .;
+        doctr deploy .;
       fi
     else
       conda build conda.recipe --python=${PYTHON};

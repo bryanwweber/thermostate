@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 ### Fixed
+- Deploy doctr to the root directory (see [drdoctr/doctr#157](https://github.com/drdoctr/doctr/issues/157) and [drdoctr/doctr#160](https://github.com/drdoctr/doctr/issues/160))
 
 ### Removed
 
