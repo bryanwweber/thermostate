@@ -35,5 +35,10 @@ test:
 
 about:
   home: https://github.com/bryanwweber/thermostate
-  license: BSD
+  license: BSD 3-clause
   license_file: LICENSE.md
+  license_family: BSD
+  summary: "{{ data['description'] }}"
+  description: "{{ data['long_description'] }}"
+  doc_url: https://bryanwweber.github.io/thermostate
+  dev_url: https://github.com/bryanwweber/thermostate
