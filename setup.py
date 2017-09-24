@@ -2,14 +2,25 @@ from setuptools import setup, find_packages
 import os.path as op
 import sys
 
-with open(op.join(op.dirname(op.realpath(__file__)), 'thermostate', '_version.py')) as version_file:
+here = op.abspath(op.dirname(__file__))
+
+with open(op.join(here, 'thermostate', '_version.py')) as version_file:
     exec(version_file.read())
 
-with open(op.join(op.dirname(op.realpath(__file__)), 'README.md')) as readme_file:
+with open(op.join(here, 'README.md')) as readme_file:
     readme = readme_file.read()
 
-with open(op.join(op.dirname(op.realpath(__file__)), 'CHANGELOG.md')) as changelog_file:
+with open(op.join(here, 'CHANGELOG.md')) as changelog_file:
     changelog = changelog_file.read()
+
+desc = readme + '\n\n' + changelog
+try:
+    import pypandoc
+    long_description = pypandoc.convert_text(desc, 'rst', format='md')
+    with open(op.join(here, 'README.rst'), 'w') as rst_readme:
+        rst_readme.write(long_description)
+except (ImportError, OSError, IOError):
+    long_description = desc
 
 install_requires = [
     'coolprop>=6.1.0,<6.2',
@@ -28,11 +39,11 @@ setup(
     name='thermostate',
     version=__version__,
     description='A package to manage thermodynamic states',
-    long_description=readme + '\n\n' + changelog,
+    long_description=long_description,
     url='https://github.com/bryanwweber/thermostate',
     author='Bryan W. Weber',
-    author_email='bryan.weber@uconn.edu',
-    license='MIT',
+    author_email='bryan.w.weber@gmail.com',
+    license='BSD 3-clause',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: BSD License',
