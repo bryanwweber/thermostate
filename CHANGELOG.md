@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
+## [0.2.3] - 24-SEP-2017
+### Added
+- Distributions are now uploaded to PyPI
+
+### Changed
+- Conda packages are `noarch` builds
+- Appveyor tests run in a single job to speed them up
+- Minimum Python version is 3.5
+
 ## [0.2.2] - 13-APR-2017
 ### Added
 - Oxygen (O2) is available as a substance
