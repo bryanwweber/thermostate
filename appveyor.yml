@@ -1,13 +1,11 @@
 version: 1.0.{build}
+skip_tags: true
 environment:
-  ANACONDA_KEY:
-    secure: j+gQbqTaDRlQ1+n6jfVoWVCtfqxM8lVM5Ri62cGXc1Vs5Q8IWH7UtZH2SBsabIyf
-
   matrix:
-    - PYTHON_LOC: "C:\\Miniconda35-x64"
+    - PYTHON_LOC: "C:\\Miniconda36-x64"
       PYTHON_VERSION: "3.5"
 
-    - PYTHON_LOC: "C:\\Miniconda35-x64"
+    - PYTHON_LOC: "C:\\Miniconda36-x64"
       PYTHON_VERSION: "3.6"
 
 install:
@@ -16,15 +14,10 @@ install:
   - cmd: conda config --append channels bryanwweber
   - cmd: conda config --append channels conda-forge
   - cmd: conda update --all -q
-  - cmd: IF "%APPVEYOR_REPO_TAG%"=="false" conda create -q -n test-environment python=%PYTHON_VERSION% pytest pytest-cov coolprop pint
-  - cmd: IF "%APPVEYOR_REPO_TAG%"=="false" call %PYTHON_LOC%\Scripts\activate.bat test-environment
-  - cmd: IF "%APPVEYOR_REPO_TAG%"=="true" conda install -yq anaconda-client conda-build
+  - cmd: conda create -q -n test-environment python=%PYTHON_VERSION% pytest pytest-cov coolprop pint
+  - cmd: call %PYTHON_LOC%\Scripts\activate.bat test-environment
   - cmd: conda info -a
   - cmd: conda list
 
 build_script:
-  - cmd: IF "%APPVEYOR_REPO_TAG%"=="false" python setup.py test
-  - cmd: IF "%APPVEYOR_REPO_TAG%"=="true" conda build conda.recipe --python=%PYTHON_VERSION%
-
-deploy_script:
-  - cmd: IF "%APPVEYOR_REPO_TAG%"=="true" anaconda -t %ANACONDA_KEY% upload "%PYTHON_LOC%\conda-bld\win-64\thermostate*.tar.bz2"
+  - cmd: python setup.py test

@@ -45,7 +45,7 @@ script:
   - set -e
   - if [[ -z "$TRAVIS_TAG" ]]; then
       python setup.py test;
-      if [[ "$TRAVIS_OS_NAME" == "linux" && "$PYTHON" == "3.5" ]]; then
+      if [[ "$TRAVIS_OS_NAME" == "linux" && "$PYTHON" == "3.6" ]]; then
         conda install -q sphinx doctr nbsphinx ipython ipykernel pandoc;
         python setup.py install;
         cd docs;
@@ -54,8 +54,10 @@ script:
         doctr deploy .;
       fi
     else
-      conda build conda.recipe --python=${PYTHON};
-      anaconda -t $ANACONDA_TOKEN upload $HOME/miniconda/conda-bld/*/thermostate*.tar.bz2;
+      if [[ "$TRAVIS_OS_NAME" == "linux" && "$PYTHON" == "3.6" ]]; then
+        conda build conda.recipe;
+        anaconda -t $ANACONDA_TOKEN upload $HOME/miniconda/conda-bld/*/thermostate*.tar.bz2;
+      fi
     fi
   - set +e
 
