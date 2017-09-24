@@ -10,17 +10,17 @@ source:
 build:
   number: 0
   script: python setup.py install --single-version-externally-managed --record=record.txt
-
+  noarch: python
 
 requirements:
   build:
-    - python >=3.4,{{PY_VER}}*
+    - python >=3.5
     - setuptools
 
   run:
-    - python {{PY_VER}}*
-    - coolprop >=6.1.0
-    - pint >=0.7.2
+    - python >=3.5
+    - coolprop >=6.1.0,<6.2
+    - pint >=0.7.2,<0.9
 
 test:
   imports:
