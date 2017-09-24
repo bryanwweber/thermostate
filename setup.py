@@ -12,8 +12,8 @@ with open(op.join(op.dirname(op.realpath(__file__)), 'CHANGELOG.md')) as changel
     changelog = changelog_file.read()
 
 install_requires = [
-    'coolprop>=6.1.0',
-    'pint>=0.7.2',
+    'coolprop>=6.1.0,<6.2',
+    'pint>=0.7.2,<0.9',
 ]
 
 tests_require = [
