@@ -43,7 +43,7 @@ setup(
     url='https://github.com/bryanwweber/thermostate',
     author='Bryan W. Weber',
     author_email='bryan.w.weber@gmail.com',
-    license='BSD 3-clause',
+    license='BSD-3-clause',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: BSD License',
