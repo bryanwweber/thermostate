@@ -65,3 +65,17 @@ after_success:
   - if [[ -z "$TRAVIS_TAG" ]]; then
       bash <(curl -s https://codecov.io/bash);
     fi
+
+before_deploy:
+  - conda install pandoc pypandoc
+
+deploy:
+  provider: pypi
+  user: bryanwweber
+  password:
+    secure: "gZ7ioizu4slVbqwmLl8/SIOQCvUu8ocqcJR99u8O8aLajcEtdY64f+XreYCS/rWJRnOgPAPAqIfO03uFhcRnVeXQlCLLMc99cjRuSQW+xIW5wpCaji1yxRsswqIUV9Zbt4Boo1A/qLoofC3rYYsuuK2708fKwOaMl6fJX+B84pQLf0LQmM9Hbobu8cjYzdn4o6EXgpjKVXhqcXNPgikvVs1W2DVHIzZ08cLyp3X5D/5TkOfCO0LjiLtE+jdAwqkbkuToJ4UBOFXXyMPxj/EM3jHUqSbDuqD3pRgGOKTomBPXLONefKh8IU7fJeLsB8Iq2o9wKR6kfwCaakW6PQ21Ow6ULgsdyPr9Q7klgltSvtDnFyzIZNAB8u4EWbUE9b6xKdZT6vpaXFc4Bz8gOhFeicjRUJNV1aUGpb0FrI9w1mjcrR673elOPnUlZ60oF9wzhpdXL+h74PXvPm1ZiMxIuKAwu+oqUkXlkGXfsBPTupQj6qtamrfTE3piaxCz4dewqnA3qyUdwUPNkzfwEuOkG8YA3IxZ5Rx2HmpFssd+CxyNrR+aVGn1unDZUQjp/x37aJZTnPNvAHPmqSJHG7t3AWf7DDdLcy1vokmM0JF/wPl3OI1MNWqvHtyJxyosfpWZLeK2IYfd5uLmKnsIKmJS1BTWkAw1fmFpgtldPGH2r88="
+  on:
+    condition: $TRAVIS_OS_NAME == "linux" && $PYTHON == "3.6"
+  distributions: "sdist bdist_wheel"
+  skip_upload_docs: true
+  server: https://testing.pypi.org/pypi
