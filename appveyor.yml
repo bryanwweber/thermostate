@@ -1,23 +1,24 @@
 version: 1.0.{build}
 skip_tags: true
-environment:
-  matrix:
-    - PYTHON_LOC: "C:\\Miniconda36-x64"
-      PYTHON_VERSION: "3.5"
-
-    - PYTHON_LOC: "C:\\Miniconda36-x64"
-      PYTHON_VERSION: "3.6"
 
 install:
-  - cmd: call %PYTHON_LOC%\Scripts\activate.bat
+  - cmd: call "C:\\Miniconda36-x64\\Scripts\\activate.bat"
   - cmd: conda config --set always_yes yes --set changeps1 no
   - cmd: conda config --append channels bryanwweber
   - cmd: conda config --append channels conda-forge
   - cmd: conda update --all -q
-  - cmd: conda create -q -n test-environment python=%PYTHON_VERSION% pytest pytest-cov coolprop pint
-  - cmd: call %PYTHON_LOC%\Scripts\activate.bat test-environment
+  - cmd: conda create -q -n py35 python=3.5 pytest pytest-cov coolprop pint codecov
+  - cmd: conda create -q -n py36 python=3.6 pytest pytest-cov coolprop pint codecov
   - cmd: conda info -a
   - cmd: conda list
 
 build_script:
+  - cmd: call "C:\\Miniconda36-x64\\Scripts\\activate.bat" py35
   - cmd: python setup.py test
+  - Remove-Item –path thermostate.egg-info –recurse
+  - Remove-Item –path .eggs –recurse -force
+  - cmd: call "C:\\Miniconda36-x64\\Scripts\\activate.bat" py36
+  - cmd: python setup.py test
+
+after_test:
+  - codecov
