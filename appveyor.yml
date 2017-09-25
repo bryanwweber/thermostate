@@ -20,4 +20,4 @@ build_script:
   - cmd: pytest -vv --cov=./ --cov-append
   - cmd: call %PYTHON_LOC%\Scripts\\activate.bat py36
   - cmd: pytest -vv --cov=./ --cov-append
-  - cmd: codecov
+  - cmd: codecov -X gcov
