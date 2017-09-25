@@ -1,8 +1,11 @@
 version: 1.0.{build}
 skip_tags: true
 
+environment:
+  PYTHON_LOC: "C:\\Miniconda36-x64"
+
 install:
-  - cmd: call "C:\\Miniconda36-x64\\Scripts\\activate.bat"
+  - cmd: call %PYTHON_LOC%\Scripts\activate.bat
   - cmd: conda config --set always_yes yes --set changeps1 no
   - cmd: conda config --append channels bryanwweber
   - cmd: conda config --append channels conda-forge
@@ -13,11 +16,11 @@ install:
   - cmd: conda list
 
 build_script:
-  - cmd: call "C:\\Miniconda36-x64\\Scripts\\activate.bat" py35
+  - cmd: call %PYTHON_LOC\Scripts\activate.bat py35
   - cmd: python setup.py test
   - cmd: rmdir /s /q thermostate.egg-info
   - cmd: rmdir /s /q .eggs
-  - cmd: call "C:\\Miniconda36-x64\\Scripts\\activate.bat" py36
+  - cmd: call %PYTHON_LOC%\Scripts\\activate.bat py36
   - cmd: python setup.py test
 
 after_test:
