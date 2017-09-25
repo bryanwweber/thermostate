@@ -16,7 +16,7 @@ install:
   - cmd: conda list
 
 build_script:
-  - cmd: call %PYTHON_LOC\Scripts\activate.bat py35
+  - cmd: call %PYTHON_LOC%\Scripts\activate.bat py35
   - cmd: python setup.py test
   - cmd: codecov
   - cmd: rmdir /s /q thermostate.egg-info
