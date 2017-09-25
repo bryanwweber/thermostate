@@ -10,18 +10,14 @@ install:
   - cmd: conda config --append channels bryanwweber
   - cmd: conda config --append channels conda-forge
   - cmd: conda update --all -q
-  - cmd: conda create -q -n py35 python=3.5 pytest pytest-cov coolprop pint codecov
+  - cmd: conda create -q -n py35 python=3.5 pytest pytest-cov coolprop pint
   - cmd: conda create -q -n py36 python=3.6 pytest pytest-cov coolprop pint codecov
   - cmd: conda info -a
   - cmd: conda list
 
 build_script:
   - cmd: call %PYTHON_LOC%\Scripts\activate.bat py35
-  - cmd: python setup.py test
-  - cmd: codecov
-  - cmd: rmdir /s /q thermostate.egg-info
-  - cmd: rmdir /s /q .eggs
-  - cmd: rm .coverage
+  - cmd: pytest -vv --cov=./ --cov-append
   - cmd: call %PYTHON_LOC%\Scripts\\activate.bat py36
-  - cmd: python setup.py test
+  - cmd: pytest -vv --cov=./ --cov-append
   - cmd: codecov
