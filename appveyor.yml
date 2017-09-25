@@ -18,10 +18,10 @@ install:
 build_script:
   - cmd: call %PYTHON_LOC\Scripts\activate.bat py35
   - cmd: python setup.py test
+  - cmd: codecov
   - cmd: rmdir /s /q thermostate.egg-info
   - cmd: rmdir /s /q .eggs
+  - cmd: rm .coverage
   - cmd: call %PYTHON_LOC%\Scripts\\activate.bat py36
   - cmd: python setup.py test
-
-after_test:
-  - codecov
+  - cmd: codecov
