@@ -2,15 +2,34 @@
 Base ThermoState module
 """
 from math import isclose
+import sys
 
 import CoolProp
-from pint import UnitRegistry
+from pint import UnitRegistry, DimensionalityError
 from pint.unit import UnitsContainer, UnitDefinition
 from pint.converters import ScaleConverter
+from IPython.core.ultratb import AutoFormattedTB
 
 units = UnitRegistry(autoconvert_offset_to_baseunit=True)
 Q_ = units.Quantity
 units.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1.0/100.0)))
+
+
+def render_traceback(self):
+    a = AutoFormattedTB(mode='Context',
+                        color_scheme='Neutral',
+                        tb_offset=1)
+    etype, evalue, tb = sys.exc_info()
+    stb = a.structured_traceback(etype, evalue, tb, tb_offset=1)
+    for i, line in enumerate(stb):
+        if 'site-packages' in line:
+            first_line = i
+            break
+    new_stb = stb[:first_line] + stb[-1:]
+    return new_stb
+
+
+DimensionalityError._render_traceback_ = render_traceback.__get__(DimensionalityError)
 
 phase_map = {getattr(CoolProp, i): i.split('_')[1] for i in dir(CoolProp) if 'iphase' in i}
 
