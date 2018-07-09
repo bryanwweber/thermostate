@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.2.4] - 08-JUL-2018
+### Added
 - Added `_render_traceback_` function to improve traceback formatting of `pint.DimensionalityError`
 
 ### Changed
@@ -92,7 +101,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.2.2...master
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.2.4...master
+[0.2.4]: https://github.com/bryanwweber/thermostate/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/bryanwweber/thermostate/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/bryanwweber/thermostate/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/bryanwweber/thermostate/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/bryanwweber/thermostate/compare/v0.1.7...v0.2.0
