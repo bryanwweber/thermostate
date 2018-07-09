@@ -10,10 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 ### Fixed
-- Added flake8 configuration to setup.cfg since linter-flake8 reads it and ignores built-in options
-- Only define `_render_traceback_` if IPython is installed
 
 ### Removed
+
+## [0.3.0] - 09-JUL-2018
+### Fixed
+- Added flake8 configuration to setup.cfg since linter-flake8 reads it and ignores built-in options
+- Only define `_render_traceback_` if IPython is installed
 
 ## [0.2.4] - 08-JUL-2018
 ### Added
@@ -99,7 +102,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.2.4...master
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.3.0...master
+[0.3.0]: https://github.com/bryanwweber/thermostate/compare/v0.2.4...v0.3.0
 [0.2.4]: https://github.com/bryanwweber/thermostate/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/bryanwweber/thermostate/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/bryanwweber/thermostate/compare/v0.2.1...v0.2.2
