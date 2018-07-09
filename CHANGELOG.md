@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Added flake8 configuration to setup.cfg since linter-flake8 reads it and ignores built-in options
+- Only define `_render_traceback_` if IPython is installed
 
 ### Removed
 

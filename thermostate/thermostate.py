@@ -8,28 +8,40 @@ import CoolProp
 from pint import UnitRegistry, DimensionalityError
 from pint.unit import UnitsContainer, UnitDefinition
 from pint.converters import ScaleConverter
-from IPython.core.ultratb import AutoFormattedTB
+try:  # pragma: no cover
+    from IPython.core.ultratb import AutoFormattedTB
+except ImportError:
+    AutoFormattedTB = None
 
 units = UnitRegistry(autoconvert_offset_to_baseunit=True)
 Q_ = units.Quantity
 units.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1.0/100.0)))
 
+# Don't add the _render_traceback_ function to DimensionalityError if
+# IPython isn't present. This function is only used by the IPython/ipykernel
+# anyways, so it doesn't matter if it's missing if IPython isn't available.
+if AutoFormattedTB is not None:  # pragma: no cover
+    def render_traceback(self):
+        """Render a minimized version of the DimensionalityError traceback
 
-def render_traceback(self):
-    a = AutoFormattedTB(mode='Context',
-                        color_scheme='Neutral',
-                        tb_offset=1)
-    etype, evalue, tb = sys.exc_info()
-    stb = a.structured_traceback(etype, evalue, tb, tb_offset=1)
-    for i, line in enumerate(stb):
-        if 'site-packages' in line:
-            first_line = i
-            break
-    new_stb = stb[:first_line] + stb[-1:]
-    return new_stb
+        The default Jupyter/IPython traceback includes a lot of
+        context from within pint that actually raises the
+        DimensionalityError. This context isn't really needed for
+        this particular error, since the problem is almost certainly in
+        the user code. This function removes the additional context.
+        """
+        a = AutoFormattedTB(mode='Context',
+                            color_scheme='Neutral',
+                            tb_offset=1)
+        etype, evalue, tb = sys.exc_info()
+        stb = a.structured_traceback(etype, evalue, tb, tb_offset=1)
+        for i, line in enumerate(stb):
+            if 'site-packages' in line:
+                first_line = i
+                break
+        return stb[:first_line] + stb[-1:]
 
-
-DimensionalityError._render_traceback_ = render_traceback.__get__(DimensionalityError)
+    DimensionalityError._render_traceback_ = render_traceback.__get__(DimensionalityError)
 
 phase_map = {getattr(CoolProp, i): i.split('_')[1] for i in dir(CoolProp) if 'iphase' in i}
 
