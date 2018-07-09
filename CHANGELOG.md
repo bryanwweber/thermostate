@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 ### Fixed
+- Added flake8 configuration to setup.cfg since linter-flake8 reads it and ignores built-in options
+- Only define `_render_traceback_` if IPython is installed
 
 ### Removed
 
@@ -17,12 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Added `_render_traceback_` function to improve traceback formatting of `pint.DimensionalityError`
 
-### Changed
-
 ### Fixed
 - Added `oxygen`, `nitrogen`, and `carbondioxide` as available substances to the Tutorial
-
-### Removed
 
 ## [0.2.3] - 24-SEP-2017
 ### Added
