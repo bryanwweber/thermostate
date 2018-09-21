@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [0.4.0] - 21-SEP-2018
 ### Added=
 - `_render_traceback_` function added to `StateError` to improve formatting of the traceback in IPython and Jupyter
 - Add several examples demonstrating the use of ThermoState
@@ -107,7 +107,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.3.0...master
+[0.4.0]: https://github.com/bryanwweber/thermostate/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/bryanwweber/thermostate/compare/v0.2.4...v0.3.0
 [0.2.4]: https://github.com/bryanwweber/thermostate/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/bryanwweber/thermostate/compare/v0.2.2...v0.2.3

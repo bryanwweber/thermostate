@@ -1,4 +1,5 @@
-__version_info__ = ('0', '3', '0', '')
-__version__ = '.'.join(__version_info__[:3])
-if len(__version_info__) == 4:
-    __version__ += __version_info__[-1]
+"""The version of thermohw."""
+from typing import Tuple
+
+__version_info__: Tuple[int, int, int, str] = (0, 4, 0, '')
+__version__ = '.'.join([str(v) for v in __version_info__ if str(v)])
