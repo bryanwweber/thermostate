@@ -10,7 +10,7 @@
       "affiliation": "University of Connecticut"
     }
   ],
-  "identifier": "https://doi.org/10.5281/zenodo.1432509",
+  "identifier": "https://doi.org/10.5281/zenodo.995682",
   "codeRepository": "https://github.com/bryanwweber/thermostate",
   "datePublished": "2018-09-21",
   "dateModified": "2018-09-21",
@@ -19,5 +19,5 @@
   "keywords": "thermodynamics, engineering, coolprop, pint",
   "license": "BSD",
   "title": "ThermoState",
-  "version": "v0.4.0"
+  "version": "v0.4.1"
 }
