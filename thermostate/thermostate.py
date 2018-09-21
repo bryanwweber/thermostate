@@ -10,7 +10,7 @@ from pint.unit import UnitsContainer, UnitDefinition
 from pint.converters import ScaleConverter
 try:  # pragma: no cover
     from IPython.core.ultratb import AutoFormattedTB
-except ImportError:
+except ImportError:  # pragma: no cover
     AutoFormattedTB = None
 
 units = UnitRegistry(autoconvert_offset_to_baseunit=True)
@@ -56,7 +56,27 @@ def isclose_quant(a, b, *args, **kwargs):
 
 
 class StateError(Exception):
-    pass
+    """Errors associated with setting the `State` object"""
+
+    def _render_traceback_(self):  # pragma: no cover
+        """Render a minimized version of the `StateError` traceback
+
+        The default Jupyter/IPython traceback includes a lot of
+        context from within `State` where the `StateError` is raised.
+        This context isn't really needed, since the problem is almost certainly in
+        the user code. This function removes the additional context.
+        """
+        if AutoFormattedTB is not None:
+            a = AutoFormattedTB(mode='Context',
+                                color_scheme='Neutral',
+                                tb_offset=1)
+            etype, evalue, tb = sys.exc_info()
+            stb = a.structured_traceback(etype, evalue, tb, tb_offset=1)
+            for i, line in enumerate(stb):
+                if 'site-packages' in line:
+                    first_line = i
+                    break
+            return stb[:first_line] + stb[-1:]
 
 
 class State(object):

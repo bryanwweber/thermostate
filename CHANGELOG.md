@@ -6,10 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- `_render_traceback_` function added to `StateError` to improve formatting of the traceback in IPython and Jupyter
 
 ### Changed
 
 ### Fixed
+- Ignore more pytest files
 
 ### Removed
 
