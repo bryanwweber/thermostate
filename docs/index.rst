@@ -11,6 +11,7 @@ Welcome to thermostate's documentation!
    :caption: Contents:
 
    Tutorial
+   examples
    thermostate
 
 Indices and tables
