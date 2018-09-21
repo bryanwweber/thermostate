@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 ### Fixed
+- Ignore more pytest files
 
 ### Removed
 
