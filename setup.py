@@ -4,23 +4,17 @@ import sys
 
 here = op.abspath(op.dirname(__file__))
 
-with open(op.join(here, 'thermostate', '_version.py')) as version_file:
-    exec(version_file.read())
+version = {}
+with open(op.join(here, 'thermostate', '_version.py'), mode='r') as version_file:
+    exec(version_file.read(), version)
 
-with open(op.join(here, 'README.md')) as readme_file:
+with open(op.join(here, 'README.md'), mode='r') as readme_file:
     readme = readme_file.read()
 
-with open(op.join(here, 'CHANGELOG.md')) as changelog_file:
+with open(op.join(here, 'CHANGELOG.md'), mode='r') as changelog_file:
     changelog = changelog_file.read()
 
-desc = readme + '\n\n' + changelog
-try:
-    import pypandoc
-    long_description = pypandoc.convert_text(desc, 'rst', format='md')
-    with open(op.join(here, 'README.rst'), 'w') as rst_readme:
-        rst_readme.write(long_description)
-except (ImportError, OSError, IOError):
-    long_description = desc
+long_description = readme + '\n\n' + changelog
 
 install_requires = [
     'coolprop>=6.1.0,<6.2',
@@ -37,9 +31,10 @@ setup_requires = ['pytest-runner'] if needs_pytest else []
 
 setup(
     name='thermostate',
-    version=__version__,
+    version=version['__version__'],
     description='A package to manage thermodynamic states',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/bryanwweber/thermostate',
     author='Bryan W. Weber',
     author_email='bryan.w.weber@gmail.com',
@@ -50,6 +45,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Operating System :: MacOS',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft',
