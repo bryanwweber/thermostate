@@ -113,6 +113,6 @@ Markdown and equations that explains their process.
 
 A tutorial on the basic use of the package and several examples can be found in the `docs` folder
 of the [repository](https://github.com/bryanwweber/thermostate) as well as the
-[online documentation](https://bryanwweber.github.io/ThermoState).
+[online documentation](https://bryanwweber.github.io/thermostate).
 
 # References
