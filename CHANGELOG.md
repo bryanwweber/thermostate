@@ -5,10 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-### Added
+### Added=
 - `_render_traceback_` function added to `StateError` to improve formatting of the traceback in IPython and Jupyter
+- Add several examples demonstrating the use of ThermoState
 
 ### Changed
+- Bump intersphinx mapping to Python 3.7
+- Change docs license to CC-BY 4.0
 
 ### Fixed
 - Ignore more pytest files
