@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- Add several examples demonstrating the use of ThermoState
 
 ### Changed
+- Bump intersphinx mapping to Python 3.7
+- Change docs license to CC-BY 4.0
 
 ### Fixed
 
