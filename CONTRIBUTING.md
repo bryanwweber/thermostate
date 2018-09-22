@@ -15,12 +15,11 @@ You can find a [list of current issues](https://github.com/bryanwweber/thermosta
  * If you're unfamiliar with Pull Requests, please take a look at the [GitHub documentation for them](https://help.github.com/articles/proposing-changes-to-a-project-with-pull-requests/).
  * **Make sure the test suite passes** on your computer, and that test coverage doesn't go down. To do this, run `pytest -vv --cov=./` from the top-level directory.
  * *Always* add tests and docs for your code.
- * The use of emoji in Pull Requests is encouraged with the format ":emoji: Commit summary". See [this list of suggested emoji.](https://github.com/slashsBin/styleguide-git-commit-message#suggested-emojis)
  * Please reference relevant GitHub issues in your commit messages using `GH123` or `#123`.
  * Changes should be [PEP8](https://www.python.org/dev/peps/pep-0008/) and [PEP257](https://www.python.org/dev/peps/pep-0257/) compatible.
  * Keep style fixes to a separate commit to make your pull request more readable.
  * Add your changes into the [`CHANGELOG`](https://github.com/bryanwweber/thermostate/blob/master/CHANGELOG.md)
- * Docstrings are required and should follow the [Google style](http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
+ * Docstrings are required and should follow the [NumPy style](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html).
  * When you start working on a pull request, start by creating a new branch pointing at the latest commit on [GitHub master](https://github.com/bryanwweber/thermostate/tree/master).
  * The copyright policy is detailed in the [`LICENSE`](https://github.com/bryanwweber/thermostate/blob/master/LICENSE).
 
