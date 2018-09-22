@@ -83,7 +83,7 @@ copyright = '{}, {}'.format(this_year, author)
 # The full version, including alpha/beta/rc tags.
 try:
     release = pkg_resources.get_distribution(project).version
-except:
+except pkg_resources.DistributionNotFound:
     release = 'unknown'
 # The short X.Y version.
 version = '.'.join(release.split('.')[:1])
