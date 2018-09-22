@@ -4,14 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
-### Added
-
-### Changed
-
+## [0.4.2] - 21-SEP-2018
 ### Fixed
-
-### Removed
+- Travis PyPI password
 
 ## [0.4.1] - 21-SEP-2018
 ### Added
@@ -122,7 +117,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.4.1...HEAD
+[0.4.2]: https://github.com/bryanwweber/thermostate/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/bryanwweber/thermostate/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/bryanwweber/thermostate/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/bryanwweber/thermostate/compare/v0.2.4...v0.3.0
