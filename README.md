@@ -11,3 +11,6 @@ Appveyor: [![Build status](https://ci.appveyor.com/api/projects/status/my7m8k82u
 # Anaconda Package Version
 [![Anaconda-Server Badge Version](https://anaconda.org/bryanwweber/thermostate/badges/version.svg)](https://anaconda.org/bryanwweber/thermostate)
 [![Anaconda-Server Badge Downloads](https://anaconda.org/bryanwweber/thermostate/badges/downloads.svg)](https://anaconda.org/bryanwweber/thermostate)
+
+# Documentation
+Documentation can be found at https://bryanwweber.github.io/thermostate/
