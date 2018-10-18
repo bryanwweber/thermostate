@@ -41,7 +41,7 @@ script:
       conda activate py36;
       pytest -vv --cov=./ --cov-append;
       if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        conda install -q sphinx doctr nbsphinx ipython ipykernel pandoc;
+        conda install -q sphinx doctr nbsphinx ipython ipykernel pandoc conda-forge::numpy;
         python setup.py install;
         cd docs;
         make html SPHINXOPTS="-W";
