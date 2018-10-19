@@ -45,12 +45,16 @@ with EE units.
 
 ThermoState combines the CoolProp [@coolprop; @cp-article] and Pint [@pint] packages to enable easy
 evaluation of equations of state without needing tables as well as automatic unit conversion. In
-addition, ThermoState has an easy to understand API that utilizes class attributes to store the
-properties of interest. Because of the simplicity of use and because students do not have to perform
-trivial arithmetic, ThermoState also enables students to engage in higher levels of learning by
-evaluating the performance of systems for a range of input parameters. This type of analysis would
-not be possible with traditional table-based techniques because of the sheer number of calculations
-required.
+addition, ThermoState has an easy to understand API that utilizes instance attributes to store the
+properties of interest.
+
+Because of the simplicity of use and because students do not have to perform trivial arithmetic,
+ThermoState also enables students to engage in higher levels of learning by evaluating the
+performance of systems for a range of input parameters. Packages such as NumPy [@numpy] and
+Matplotlib [@matplotlib] can be used to generate ranges of input parameters and plot the output.
+Students can interpret the plots and understand the behavior of systems for a range of input values.
+This type of analysis would not be possible with traditional table-based techniques because of the
+sheer number of calculations required.
 
 # Functionality and Usage
 
@@ -108,8 +112,8 @@ ThermoState, strongly preferring using the software to using tables.
 
 To avoid having to have students install any software on their personal computers, I use a
 JupyterHub instance hosted by the University where students can log in and work on their homework
-and projects. Using Jupyter Notebooks, students can combine their code to solve the problem with
-Markdown and equations that explains their process.
+and projects. Using Jupyter Notebooks [@jupyter_notebook], students can combine their code to solve
+the problem with Markdown and equations that explains their process.
 
 A tutorial on the basic use of the package and several examples can be found in the `docs` folder
 of the [repository](https://github.com/bryanwweber/thermostate) as well as the
