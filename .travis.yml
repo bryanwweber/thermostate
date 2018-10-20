@@ -42,6 +42,7 @@ script:
       pytest -vv --cov=./ --cov-append;
       if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         conda install -q sphinx doctr nbsphinx ipython ipykernel conda-forge::numpy matplotlib recommonmark;
+        pip install .;
         cd docs;
         make html SPHINXOPTS="-W";
         cd ..;
