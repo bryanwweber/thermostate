@@ -42,9 +42,8 @@ if not on_travis:
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
+    'sphinx.ext.mathjax',
     'nbsphinx',
 ]
 
