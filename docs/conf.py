@@ -17,6 +17,11 @@ import os
 import sys
 import pkg_resources
 import datetime
+import shutil
+
+shutil.copy2('../CHANGELOG.md', 'CHANGELOG.md')
+shutil.copy2('../CODE_OF_CONDUCT.md', 'CODE_OF_CONDUCT.md')
+shutil.copy2('../CONTRIBUTING.md', 'CONTRIBUTING.md')
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -63,7 +68,11 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+
+source_parsers = {
+   '.md': 'recommonmark.parser.CommonMarkParser',
+}
 
 # The master toctree document.
 master_doc = 'index'

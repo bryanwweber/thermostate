@@ -20,6 +20,9 @@ evaluate properties when solving for the behavior of systems.
    Tutorial
    examples
    thermostate
+   CHANGELOG
+   CODE_OF_CONDUCT
+   CONTRIBUTING
 
 Indices and tables
 ==================
