@@ -41,8 +41,7 @@ script:
       conda activate py36;
       pytest -vv --cov=./ --cov-append;
       if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        conda install -q sphinx doctr nbsphinx ipython ipykernel pandoc conda-forge::numpy matplotlib;
-        python setup.py install;
+        conda install -q sphinx doctr nbsphinx ipython ipykernel conda-forge::numpy matplotlib recommonmark;
         cd docs;
         make html SPHINXOPTS="-W";
         cd ..;
