@@ -56,7 +56,7 @@ napoleon_google_docstring = False
 nbsphinx_allow_errors = True
 nbsphinx_execute = 'always'
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.7', None),
+    'python': ('https://docs.python.org/3', None),
     'pint': ('https://pint.readthedocs.io/en/latest/', None),
 }
 
