@@ -27,6 +27,7 @@ install:
   - if [[ -z "$TRAVIS_TAG" ]]; then
       conda create -q -n py35 python=3.5 pytest pytest-cov coolprop pint;
       conda create -q -n py36 python=3.6 pytest pytest-cov coolprop pint;
+      conda create -q -n py37 python=3.7 pytest pytest-cov pint;
     else
       conda install -q conda-build anaconda-client;
     fi
@@ -40,6 +41,8 @@ script:
       pytest -vv --cov=./ --cov-append;
       conda activate py36;
       pytest -vv --cov=./ --cov-append;
+      conda activate py37;
+      pip install -vvv --pre --trusted-host www.coolprop.dreamhosters.com --find-links http://www.coolprop.dreamhosters.com/binaries/Python/ -U --force-reinstall CoolProp;
       if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         conda install -q sphinx doctr nbsphinx ipython ipykernel conda-forge::numpy matplotlib recommonmark;
         pip install .;
