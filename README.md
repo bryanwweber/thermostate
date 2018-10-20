@@ -44,6 +44,10 @@ pip install .
 Documentation can be found at https://bryanwweber.github.io/thermostate/. The documentation contains a short [tutorial](https://bryanwweber.github.io/thermostate/Tutorial.html), [examples](https://bryanwweber.github.io/thermostate/examples.html), and [API documentation](https://bryanwweber.github.io/thermostate/thermostate.html) for the package.
 <!-- markdownlint-enable MD034 -->
 
+## Code of Conduct & Contributing
+
+We welcome contributions from anyone in the community. Please look at the [Contributing instructions](https://github.com/bryanwweber/thermostate/blob/master/CONTRIBUTING.md) for more information. This project follows the [Contributor Covenant Code of Conduct](https://github.com/bryanwweber/thermostate/blob/master/CODE_OF_CONDUCT.md), version 1.4. In short, be excellent to each other.
+
 ## Continuous Integration Status
 
 TravisCI: [![Build Status](https://travis-ci.org/bryanwweber/thermostate.svg?branch=master)](https://travis-ci.org/bryanwweber/thermostate)
