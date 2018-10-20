@@ -43,6 +43,7 @@ script:
       pytest -vv --cov=./ --cov-append;
       conda activate py37;
       pip install -vvv --pre --trusted-host www.coolprop.dreamhosters.com --find-links http://www.coolprop.dreamhosters.com/binaries/Python/ -U --force-reinstall CoolProp;
+      pytest -vv --cov=./ --cov-append;
       if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         conda install -q sphinx doctr nbsphinx ipython ipykernel conda-forge::numpy matplotlib recommonmark;
         pip install .;
