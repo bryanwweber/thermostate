@@ -41,8 +41,6 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     'nbsphinx',
-    # This line is a workaround for https://github.com/spatialaudio/nbsphinx/issues/24
-    'IPython.sphinxext.ipython_console_highlighting',
 ]
 
 # add_function_parentheses = False
