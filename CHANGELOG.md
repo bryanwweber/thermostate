@@ -1,17 +1,29 @@
 # Change Log
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+<!-- markdownlint-disable MD022 MD032 MD024 -->
+
 ## [Unreleased]
 ### Added
+- Add JOSE paper
+- Add installation, documentation, code of conduct, and contributing links to README
+- Document the classes in the `abbreviations` module
+- Example of a cascade refrigeration cycle using EE units
+- Test on Python 3.7 using the nightly version of CoolProp
 
 ### Changed
+- Use the generic Python 3 for the intersphinx config rather than version specific
 
 ### Fixed
+- Fix numpy and matplotlib need to be installed on Travis to build the docs
+- Fix typo in code of conduct
 
 ### Removed
+- Don't load the Sphinx coverage extensions
 
 ## [0.4.2] - 21-SEP-2018
 ### Fixed
@@ -94,7 +106,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.1.6]
 ### Added
 - Tutorial in the docs using `nbsphinx` for formatting
-- Specific heat capacities at constant pressure and volume are now accesible via cp and cv attributes
+- Specific heat capacities at constant pressure and volume are now accessible via `cp` and `cv` attributes
 
 ### Changed
 - Offset units are automatically converted to base units in Pint

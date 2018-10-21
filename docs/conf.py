@@ -17,6 +17,11 @@ import os
 import sys
 import pkg_resources
 import datetime
+import shutil
+
+shutil.copy2('../CHANGELOG.md', 'CHANGELOG.md')
+shutil.copy2('../CODE_OF_CONDUCT.md', 'CODE_OF_CONDUCT.md')
+shutil.copy2('../CONTRIBUTING.md', 'CONTRIBUTING.md')
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -37,12 +42,9 @@ if not on_travis:
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
+    'sphinx.ext.mathjax',
     'nbsphinx',
-    # This line is a workaround for https://github.com/spatialaudio/nbsphinx/issues/24
-    'IPython.sphinxext.ipython_console_highlighting',
 ]
 
 # add_function_parentheses = False
@@ -54,7 +56,7 @@ napoleon_google_docstring = False
 nbsphinx_allow_errors = True
 nbsphinx_execute = 'always'
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.7', None),
+    'python': ('https://docs.python.org/3', None),
     'pint': ('https://pint.readthedocs.io/en/latest/', None),
 }
 
@@ -65,7 +67,11 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+
+source_parsers = {
+   '.md': 'recommonmark.parser.CommonMarkParser',
+}
 
 # The master toctree document.
 master_doc = 'index'

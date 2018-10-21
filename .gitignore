@@ -46,6 +46,7 @@ coverage.xml
 *,cover
 .hypothesis/
 .pytest_cache/
+.mypy_cache/
 
 # Translations
 *.mo
@@ -89,3 +90,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# VSCode project settings
+.vscode/

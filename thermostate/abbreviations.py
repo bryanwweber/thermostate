@@ -8,6 +8,21 @@ class EnglishEngineering(object):
 
     The attributes of this class are strings that represent the common units for
     thermodynamics calculations.
+
+    Attributes
+    ----------
+    h : `str`
+        BTU/lb
+    p : `str`
+        psi
+    s : `str`
+        BTU/(lb*degR)
+    T : `str`
+        degF
+    u : `str`
+        BTU/lb
+    v : `str`
+        ft**3/lb
     """
 
     s = 'BTU/(lb*degR)'
@@ -23,6 +38,21 @@ class SystemInternational(object):
 
     The attributes of this class are strings that represent the common units for
     thermodynamics calculations.
+
+    Attributes
+    ----------
+    h : `str`
+        kJ/kg
+    p : `str`
+        bar
+    s : `str`
+        kJ/(kg*K)
+    T : `str`
+        degC
+    u : `str`
+        kJ/kg
+    v : `str`
+        m**3/lb
     """
 
     s = 'kJ/(kg*K)'

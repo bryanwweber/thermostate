@@ -15,3 +15,4 @@ tables, due to the number of calculations required from the property tables.
    diesel-cycle-example
    rankine-cycle-example
    regen-reheat-rankine-cycle-example
+   cascade-refrigeration-cycle-example
