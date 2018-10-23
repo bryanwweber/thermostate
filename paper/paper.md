@@ -1,5 +1,5 @@
 ---
-title: "ThermoState: A State manager for Thermodynamics Courses"
+title: "ThermoState: A state manager for thermodynamics courses"
 tags:
 - thermodynamics
 - engineering
@@ -10,7 +10,7 @@ authors:
   ORCID: 0000-0003-0815-9270
   affiliation: 1
 affiliations:
-- name: University of Connecticut
+- name: Department of Mechanical Engineering, University of Connecticut, Storrs, CT USA 06269
   index: 1
 date: 21 September 2018
 bibliography: paper.bib
@@ -30,7 +30,7 @@ In traditional engineering thermodynamics courses, properties of simple compress
 as the temperature, pressure, specific volume, specific enthalpy, etc.) are evaluated from tabulated
 data. This process often involves an inordinate number of arithmetic calculations, simply to
 determine the appropriate properties at a given state. The length of the simple calculations
-inhibits students ability to recognize patterns in problems; they get lost in the calculations, and
+inhibits students' ability to recognize patterns in problems; they get lost in the calculations, and
 fail to see the larger point of a problem. Aside from calculations from a table, students also often
 get stuck performing unit conversions, especially in the so-called "English Engineering" (EE) units
 system.
@@ -39,13 +39,13 @@ Therefore, there is a need for a software package that simplifies or reduces the
 calculations the students must accomplish and removes the burden of improper unit conversion.
 Existing software packages that solve the equation of state for a substance have APIs that are
 confusing for students who are learning not only thermodynamics, but Python as well. In addition,
-packages such as CoolProp [@coolprop; @cp-article] don't have a facility to automatically manage
+packages such as CoolProp [@coolprop; @cp-article] do not have a facility to automatically manage
 units and require all quantities to be in base SI units, which is inconvenient for problems working
 with EE units.
 
 ThermoState combines the CoolProp [@coolprop; @cp-article] and Pint [@pint] packages to enable easy
 evaluation of equations of state without needing tables as well as automatic unit conversion. In
-addition, ThermoState has an easy to understand API that utilizes instance attributes to store the
+addition, ThermoState has an easy to understand API that uses instance attributes to store the
 properties of interest.
 
 Because of the simplicity of use and because students do not have to perform trivial arithmetic,
@@ -66,6 +66,7 @@ must be instances of the `Quantity` class from Pint [@pint], and must have the a
 dimensions for the property being set.
 
 ```python
+from thermostate import State, Q_
 T_1 = Q_(100.0, 'degC')
 p_1 = Q_(0.5, 'bar')
 st_1a = State('water', T=T_1, p=p_1)
@@ -106,7 +107,7 @@ that implement one or more of the previously mentioned cycles, and I expect stud
 level of analysis of the cycle with respect to varying the input parameters.
 
 Since then, I have used ThermoState in two other Applied Thermodynamics courses (Spring 2017 and
-2018). I have also used ThermoState in my Thermodynamic Principles course, a pre-requisite for
+2018). I have also used ThermoState in my Thermodynamic Principles course, a prerequisite for
 Applied Thermodynamics. In all the courses, students had positive feedback about the use of
 ThermoState, strongly preferring using the software to using tables.
 
