@@ -44,6 +44,32 @@ pip install .
 Documentation can be found at https://bryanwweber.github.io/thermostate/. The documentation contains a short [tutorial](https://bryanwweber.github.io/thermostate/Tutorial.html), [examples](https://bryanwweber.github.io/thermostate/examples.html), and [API documentation](https://bryanwweber.github.io/thermostate/thermostate.html) for the package.
 <!-- markdownlint-enable MD034 -->
 
+## Citation
+
+If you have used ThermoState in your work, we would appreciate including a citation to the software! ThermoState has been published in [JOSE](https://jose.theoj.org/), available at the link below.
+
+[![DOI](https://jose.theoj.org/papers/10.21105/jose.00033/status.svg)](https://doi.org/10.21105/jose.00033)
+
+For those using Bib(La)TeX, you can use the following entry
+
+```bibtex
+@article{weber_thermostate_2018,
+    title = {{ThermoState}: {A} state manager for thermodynamics courses},
+    volume = {1},
+    issn = {2577-3569},
+    shorttitle = {{ThermoState}},
+    url = {https://jose.theoj.org/papers/10.21105/jose.00033},
+    doi = {10.21105/jose.00033},
+    number = {8},
+    urldate = {2018-10-24},
+    journal = {Journal of Open Source Education},
+    author = {Weber, Bryan},
+    month = oct,
+    year = {2018},
+    pages = {33}
+}
+```
+
 ## Code of Conduct & Contributing
 
 We welcome contributions from anyone in the community. Please look at the [Contributing instructions](https://github.com/bryanwweber/thermostate/blob/master/CONTRIBUTING.md) for more information. This project follows the [Contributor Covenant Code of Conduct](https://github.com/bryanwweber/thermostate/blob/master/CODE_OF_CONDUCT.md), version 1.4. In short, be excellent to each other.
