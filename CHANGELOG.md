@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Allow version 6.2.* of CoolProp
+- Install CoolProp package for Python 3.7 from conda
 
 ### Fixed
 
