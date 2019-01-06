@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Install CoolProp package for Python 3.7 from conda
 
 ### Fixed
+- License year in LICENSE.md. Happy new year! :tada:
 
 ### Removed
 
