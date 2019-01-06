@@ -6,7 +6,7 @@ Conda
 -----
 
 The preferred installation method is to use `conda <https://anaconda.com/download>`__.
-Using Conda, ThermoState can be installed for either Python 3.5 or 3.6. If you have an existing
+Using Conda, ThermoState can be installed for either Python 3.5, 3.6, or 3.7. If you have an existing
 Conda environment with one of those Python versions, installing ThermoState can be done by
 
 .. code-block:: bash
@@ -15,10 +15,11 @@ Conda environment with one of those Python versions, installing ThermoState can 
 
 
 This installs Pint from the ``conda-forge`` channel; if you would like to use another channel to
-install Pint, or Pint is already installed in your environment, the ``conda-forge::pint`` can be
-omitted.
+install Pint, change the ``conda-forge`` to be the name of the channel you prefer. If Pint is
+already installed in your environment, the ``conda-forge::pint`` can be omitted entirely.
 
-If you do not have an environment with Python 3.5 or 3.6, you can create a new environment with
+If you do not have an environment with Python 3.5, 3.6, or 3.7, you can create a new environment
+with
 
 .. code-block:: bash
 
@@ -27,8 +28,7 @@ If you do not have an environment with Python 3.5 or 3.6, you can create a new e
 Pip
 ---
 
-Alternatively, ThermoState can be installed with pip, for Python 3.5 only. This is because version
-6.1.0 of CoolProp is only available for Python 3.5 from pip.
+Alternatively, ThermoState can be installed with pip.
 
 .. code-block:: bash
 
@@ -37,12 +37,8 @@ Alternatively, ThermoState can be installed with pip, for Python 3.5 only. This 
 From Source
 -----------
 
-ThermoState is a pure-Python package that supports any Python version 3.5 and higher. Binary
-installers for CoolProp (which has a C-extension for its Python interface) are only available for
-Python 3.5 (pip) and Pythons 3.5 and 3.6 (Conda). Other versions of Python can be supported by
-compiling CoolProp locally, for which instructions are available on the
-`CoolProp documentation <http://www.coolprop.org/dev/coolprop/wrappers/Python/index.html#manual-installation>`__.
-Once CoolProp is installed, installing ThermoState can be done by
+ThermoState is a pure-Python package that supports any Python version 3.5 and higher.
+To install from source, clone the source code repository and install using ``pip``.
 
 .. code-block:: bash
 
