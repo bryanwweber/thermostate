@@ -21,7 +21,7 @@ You can find a [list of current issues](https://github.com/bryanwweber/thermosta
 * Add your changes into the [`CHANGELOG`](https://github.com/bryanwweber/thermostate/blob/master/CHANGELOG.md)
 * Docstrings are required and should follow the [NumPy style](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html).
 * When you start working on a pull request, start by creating a new branch pointing at the latest commit on [GitHub master](https://github.com/bryanwweber/thermostate/tree/master).
-* The copyright policy is detailed in the [`LICENSE`](https://github.com/bryanwweber/thermostate/blob/master/LICENSE).
+* The copyright policy is detailed in the [`LICENSE`](https://github.com/bryanwweber/thermostate/blob/master/LICENSE.md).
 
 ## Meta
 
