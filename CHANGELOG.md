@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - JOSE badge to README
 
 ### Changed
+- Allow version 6.2.* of CoolProp
 
 ### Fixed
 

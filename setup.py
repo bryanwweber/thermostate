@@ -17,7 +17,7 @@ with open(op.join(here, 'CHANGELOG.md'), mode='r') as changelog_file:
 long_description = readme + '\n\n' + changelog
 
 install_requires = [
-    'coolprop>=6.1.0,<6.2',
+    'coolprop>=6.1.0,<6.3',
     'pint>=0.7.2,<0.9',
 ]
 
