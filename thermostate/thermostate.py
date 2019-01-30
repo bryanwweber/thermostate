@@ -171,11 +171,9 @@ class State(object):
             raise AttributeError("Unknown attribute {}".format(key))
 
     def __eq__(self, other):
-        """Use any two independent and intensive properties to
-        test for equality. Choose T and v because the EOS tends
-        to be defined in terms of T and density.
+        """Checking if two objects are the same using the substance
         """
-        if isclose_quant(other.T, self.T) and isclose_quant(other.v, self.v):
+        if self.sub == other.sub:
             return True
 
     def __le__(self, other):
