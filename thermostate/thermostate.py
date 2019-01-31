@@ -172,12 +172,10 @@ class State(object):
 
     def __eq__(self, other):
         """Checking if two objects are the same using the substance
+        and two properties that are always independent T and v
         """
-        if self.sub == other.sub:
-            for i in self._all_props:
-                if self.__getattr__(i) == other.__getattr__(i):
-                    return True
-        return False
+        if self.sub == other.sub and isclose_quant(other.T, self.T) and isclose_quant(other.v, self.v):
+            return True
 
     def __le__(self, other):
         return NotImplemented
