@@ -174,10 +174,9 @@ class State(object):
         """Checking if two objects are the same using the substance
         """
         if self.sub == other.sub:
-            return True
-        for i in self._all_props:
-            if self.__getattr__(i) == other.__getattr__(i):
-                return True
+            for i in self._all_props:
+                if self.__getattr__(i) == other.__getattr__(i):
+                    return True
         return False
 
     def __le__(self, other):
