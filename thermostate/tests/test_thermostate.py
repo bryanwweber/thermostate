@@ -13,7 +13,15 @@ class TestState(object):
         st_1 = State(substance='water', T=Q_(400.0, 'K'), p=Q_(101325.0, 'Pa'))
         st_2 = State(substance='water', T=Q_(400.0, 'K'), p=Q_(101325.0, 'Pa'))
         assert st_1 == st_2
-        st_2.Tp = Q_(300.0, 'K'), Q_(101325.0, 'Pa')
+
+    def test_not_eq(self):
+        st_1 = State(substance='water', T=Q_(400.0, 'K'), p=Q_(101325.0, 'Pa'))
+        st_2 = State(substance='water', T=Q_(300.0, 'K'), p=Q_(101325.0, 'Pa'))
+        assert not st_1 == st_2
+
+    def test_not_eq_sub(self):
+        st_1 = State(substance='water', T=Q_(400.0, 'K'), p=Q_(101325.0, 'Pa'))
+        st_2 = State(substance='ammonia', T=Q_(400.0, 'K'), p=Q_(101325.0, 'Pa'))
         assert not st_1 == st_2
 
     def test_comparison(self):
