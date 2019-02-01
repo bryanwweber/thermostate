@@ -171,10 +171,17 @@ class State(object):
             raise AttributeError("Unknown attribute {}".format(key))
 
     def __eq__(self, other):
-        """Checking if two objects are the same using the substance
-        and two properties that are always independent T and v
+        """Check if two `State`s are equivalent.
+
+        Check that they are using the same substance and two properties that are
+        always independent. Choose T and v because the EOS tends to be defined
+        in terms of T and density.
         """
-        if self.sub == other.sub and isclose_quant(other.T, self.T) and isclose_quant(other.v, self.v):
+        if (
+            self.sub == other.sub
+            and isclose_quant(other.T, self.T)
+            and isclose_quant(other.v, self.v)
+        ):
             return True
 
     def __le__(self, other):
