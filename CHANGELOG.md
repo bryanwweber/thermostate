@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
 
-## [Unreleased]
+## [0.5.2]
 ### Added
 - Install `conda-verify` on Travis when building tags to fix a warning from `conda-build`
 
@@ -17,9 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Broken link in `CONTRIBUTING.md` to `LICENSE.md`
 - Installation instructions for CoolProp updated for Python 3.7
-- Equality checking for `State`s now considers the substance [[#17](https://github.com/bryanwweber/thermostate/pulls/17)]. Resolves [#16](https://github.com/bryanwweber/thermostate/issues/16) (Thanks [@egurra](https://github.com/egurra)!)
-
-### Removed
+- Equality checking for `State`s now considers the substance [[#17](https://github.com/bryanwweber/thermostate/pull/17)]. Resolves [#16](https://github.com/bryanwweber/thermostate/issues/16) (Thanks [@egurra](https://github.com/egurra)!)
 
 ## [0.5.1] - 05-JAN-2019
 ### Added
@@ -163,7 +161,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.5.1...HEAD
+[0.5.2]: https://github.com/bryanwweber/thermostate/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/bryanwweber/thermostate/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/bryanwweber/thermostate/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/bryanwweber/thermostate/compare/v0.4.1...v0.4.2
