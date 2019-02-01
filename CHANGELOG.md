@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
 
+## [Unreleased]
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
 ## [0.5.2]
 ### Added
 - Install `conda-verify` on Travis when building tags to fix a warning from `conda-build`
@@ -161,6 +170,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.5.2...HEAD
 [0.5.2]: https://github.com/bryanwweber/thermostate/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/bryanwweber/thermostate/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/bryanwweber/thermostate/compare/v0.4.2...v0.5.0
