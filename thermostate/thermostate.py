@@ -1,6 +1,4 @@
-"""
-Base ThermoState module
-"""
+"""Base ThermoState module."""
 from math import isclose
 import sys
 
@@ -22,7 +20,7 @@ units.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1.0/100.0)))
 # anyways, so it doesn't matter if it's missing if IPython isn't available.
 if AutoFormattedTB is not None:  # pragma: no cover
     def render_traceback(self):
-        """Render a minimized version of the DimensionalityError traceback
+        """Render a minimized version of the DimensionalityError traceback.
 
         The default Jupyter/IPython traceback includes a lot of
         context from within pint that actually raises the
@@ -56,10 +54,10 @@ def isclose_quant(a, b, *args, **kwargs):
 
 
 class StateError(Exception):
-    """Errors associated with setting the `State` object"""
+    """Errors associated with setting the `State` object."""
 
     def _render_traceback_(self):  # pragma: no cover
-        """Render a minimized version of the `StateError` traceback
+        """Render a minimized version of the `StateError` traceback.
 
         The default Jupyter/IPython traceback includes a lot of
         context from within `State` where the `StateError` is raised.
@@ -80,7 +78,7 @@ class StateError(Exception):
 
 
 class State(object):
-    """Basic State manager for thermodyanmic states
+    """Basic State manager for thermodyanmic states.
 
     Parameters
     ----------
@@ -100,9 +98,8 @@ class State(object):
         Mass-specific enthalpy
     x : `pint.UnitRegistry.Quantity`
         Quality
+
     """
-    _allowed_subs = ['AIR', 'AMMONIA', 'WATER', 'PROPANE', 'R134A', 'R22', 'ISOBUTANE',
-                     'CARBONDIOXIDE', 'OXYGEN', 'NITROGEN']
 
     _all_pairs = [munge_coolprop_input_prop(k) for k in dir(CoolProp.constants)
                   if 'INPUTS' in k and 'molar' not in k]
