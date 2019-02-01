@@ -9,10 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- Install `conda-verify` on Travis when building tags to fix a warning from `conda-build`
 
 ### Changed
+- Formatted `thermostate.py` with the Black formatter
 
 ### Fixed
+- Broken link in `CONTRIBUTING.md` to `LICENSE.md`
+- Installation instructions for CoolProp updated for Python 3.7
+- Equality checking for `State`s now considers the substance [[#17](https://github.com/bryanwweber/thermostate/pulls/17)]. Resolves [#16](https://github.com/bryanwweber/thermostate/issues/16) (Thanks [@egurra](https://github.com/egurra)!)
 
 ### Removed
 
