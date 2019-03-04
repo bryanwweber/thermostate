@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- Check if temperature, pressure, and specific volume are positive (in absolute units)
+- Check if the quality is between 0 and 1
 
 ### Changed
 

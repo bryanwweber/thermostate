@@ -166,6 +166,7 @@ class State(object):
             object.__setattr__(self, key, value)
         elif key in self._allowed_pairs:
             self._check_dimensions(key, value)
+            self._check_values(key, value)
             self._set_properties(key, value)
         elif key in self._unsupported_pairs:
             raise StateError(
@@ -253,6 +254,20 @@ class State(object):
 
     def to_PropsSI(self, prop, value):
         return self.to_SI(prop, value).magnitude
+
+    def _check_values(self, properties, value):
+        for i in range(len(properties)):
+            if properties[i] in "Tvp" and value[i].to_base_units().magnitude < 0.0:
+                raise StateError(
+                    "The value of {} must be positive in absolute units".format(
+                        properties[i]
+                    )
+                )
+            elif properties[i] in "x" and (
+                value[i].to_base_units().magnitude < 0.0
+                or value[i].to_base_units().magnitude > 1.0
+            ):
+                raise StateError("The value of the quality must be between 0 and 1")
 
     def _check_dimensions(self, properties, value):
         if value[0].dimensionality != self._dimensions[properties[0]]:

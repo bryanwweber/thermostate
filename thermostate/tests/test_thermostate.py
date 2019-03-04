@@ -66,6 +66,26 @@ class TestState(object):
         with pytest.raises(ValueError):
             State(substance='water', T=Q_(300, 'K'))
 
+    def test_negative_temperature(self):
+        with pytest.raises(StateError):
+            State(substance='water', T=Q_(-100, "K"), p=Q_(101325, "Pa"))
+
+    def test_negative_pressure(self):
+        with pytest.raises(StateError):
+            State(substance='water', T=Q_(300, "K"), p=Q_(-101325, "Pa"))
+
+    def test_negative_volume(self):
+        with pytest.raises(StateError):
+            State(substance='water', T=Q_(300, "K"), v=Q_(-10.13, "m**3/kg"))
+
+    def test_quality_lt_zero(self):
+        with pytest.raises(StateError):
+            State(substance='water', x=Q_(-1.0, "dimensionless"), p=Q_(101325, "Pa"))
+
+    def test_quality_gt_one(self):
+        with pytest.raises(StateError):
+            State(substance='water', x=Q_(2.0, "dimensionless"), p=Q_(101325, "Pa"))
+
     def test_invalid_pair(self):
         with pytest.raises(ValueError):
             State(substance='water', x=Q_(0.5, 'dimensionless'), h=Q_(300, 'kJ/kg'))
