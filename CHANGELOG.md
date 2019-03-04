@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
 
+## [Unreleased]
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
 ## [0.5.3] - 04-MAR-2019
 ### Added
 - Check if temperature, pressure, and specific volume are positive (in absolute units)
@@ -169,6 +178,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.5.3...HEAD
 [0.5.3]: https://github.com/bryanwweber/thermostate/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/bryanwweber/thermostate/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/bryanwweber/thermostate/compare/v0.5.0...v0.5.1
