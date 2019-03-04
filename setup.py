@@ -18,7 +18,7 @@ long_description = readme + '\n\n' + changelog
 
 install_requires = [
     'coolprop>=6.1.0,<6.3',
-    'pint>=0.7.2,<0.9',
+    'pint>=0.7.2,<0.10',
 ]
 
 tests_require = [

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Check if the quality is between 0 and 1
 
 ### Changed
+- Bump maximum allowed version of Pint
 
 ### Fixed
 

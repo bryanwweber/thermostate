@@ -21,7 +21,7 @@ requirements:
   run:
     - python >=3.5
     - coolprop >=6.1.0,<6.3
-    - pint >=0.7.2,<0.9
+    - pint >=0.7.2,<0.10
 
 test:
   imports:
