@@ -1,5 +1,14 @@
 """
-This module contains classes with attributes representing the common property units
+This module contains classes with attributes representing the common property units.
+
+Example
+-------
+
+These classes are shortcuts to the units for common properties::
+
+    >>> st = State("water", T=Q_(300.0, "K"), p=Q_(101325, "Pa"))
+    >>> h = st.h.to(SI.h)
+    >>> u = st.u.to(EE.u)
 """
 
 
@@ -23,6 +32,7 @@ class EnglishEngineering(object):
         BTU/lb
     v : `str`
         ft**3/lb
+
     """
 
     s = 'BTU/(lb*degR)'
@@ -53,6 +63,7 @@ class SystemInternational(object):
         kJ/kg
     v : `str`
         m**3/lb
+
     """
 
     s = 'kJ/(kg*K)'

@@ -3,7 +3,8 @@ Test module for the main ThermoState code
 """
 import pytest
 
-from ..thermostate import State, StateError, Q_, isclose_quant
+from thermostate import State, Q_
+from thermostate.thermostate import StateError, isclose_quant
 
 
 class TestState(object):
