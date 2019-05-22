@@ -126,10 +126,10 @@ class State(object):
     _unsupported_pairs = ["Tu", "Th", "us", "hx"]
     _unsupported_pairs.extend([k[::-1] for k in _unsupported_pairs])
 
-    # This weird lambda construct is necessary because _unsupported_pairs can't be accessed
-    # inside the list comprehension because of the namespacing rules for class attributes.
-    # Trying to set _allowed_pairs in the __init__ leads to infinite recursion because of
-    # how we're messing with __setattr__.
+    # This weird lambda construct is necessary because _unsupported_pairs can't be
+    # accessed inside the list comprehension because of the namespacing rules for class
+    # attributes. Trying to set _allowed_pairs in the __init__ leads to infinite
+    # recursion because of how we're messing with __setattr__.
     _allowed_pairs = (
         lambda x=_unsupported_pairs, y=_all_pairs: [p for p in y if p not in x]
     )()
