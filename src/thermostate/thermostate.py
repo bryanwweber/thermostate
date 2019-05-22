@@ -123,7 +123,7 @@ class State(object):
     ]
     _all_pairs.extend([k[::-1] for k in _all_pairs])
 
-    _unsupported_pairs = ["Tu", "Th", "us"]
+    _unsupported_pairs = ["Tu", "Th", "us", "hx"]
     _unsupported_pairs.extend([k[::-1] for k in _unsupported_pairs])
 
     # This weird lambda construct is necessary because _unsupported_pairs can't be accessed
