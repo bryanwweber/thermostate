@@ -1,0 +1,21 @@
+resources:
+  repositories:
+  - repository: tox
+    type: github
+    endpoint: github
+    name: tox-dev/azure-pipelines-template
+    ref: refs/tags/0.2
+
+jobs:
+- template: run-tox-env.yml@tox
+  parameters:
+    tox_version: 'tox'
+    jobs:
+      py37:
+        image: [linux, windows, macOs]
+      py36:
+        image: [linux, windows, macOs]
+      flake8: null
+    coverage:
+      with_toxenv: 'coverage'
+      for_envs: [py37, py36]
