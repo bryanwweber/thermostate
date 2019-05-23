@@ -31,7 +31,6 @@ setup(
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Operating System :: MacOS",
@@ -49,5 +48,5 @@ setup(
     package_dir={"": "src"},
     install_requires=install_requires,
     tests_require=tests_require,
-    python_requires="~=3.5",
+    python_requires="~=3.6",
 )
