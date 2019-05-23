@@ -11,8 +11,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 ### Changed
+- Switch to src directory source layout
+- Move tests outside of the package
+- Apply Black formatter to tests
+- Use tox to test against multiple Python versions
+- Use Azure Pipelines for CI services
+- Run Black formatter on abbreviations.py
 
 ### Fixed
+- README.md and CHANGELOG.md are now included in the sdist
+- hx and xh are added to the disallowed property pairs because they raise ValueErrors in CoolProp
+- Missing docstrings from some functions in thermostate.py
 
 ### Removed
 
