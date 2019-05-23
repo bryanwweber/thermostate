@@ -49,11 +49,29 @@ phase_map = {
 
 
 def munge_coolprop_input_prop(prop):
+    """Munge an input property pair from CoolProp into our format.
+
+    Example CoolProp input: ``XY_INPUTS``, where ``X`` and ``Y`` are one of
+    ``T``, ``P``, ``Dmass``, ``Hmass``, ``Umass``, ``Q``, or ``Smass``. For
+    use in ThermoState, we use lower case letters (except for T), replace
+    ``D`` with ``v``, and replace ``Q`` with ``x``.
+
+    Examples
+    --------
+    * ``DmassHmass_INPUTS``: ``vh``
+    * ``DmassT_INPUTS``: ``vT``
+    * ``PUmass_INPUTS``: ``pu``
+
+    """
     prop = prop.replace("_INPUTS", "").replace("mass", "").replace("D", "V")
     return prop.replace("Q", "X").lower().replace("t", "T")
 
 
 def isclose_quant(a, b, *args, **kwargs):
+    """Compare Pint Quantities to each other using `math.isclose`.
+
+    The Quantities must be in the same units.
+    """
     return isclose(a.magnitude, b.magnitude, *args, **kwargs)
 
 
@@ -123,13 +141,13 @@ class State(object):
     ]
     _all_pairs.extend([k[::-1] for k in _all_pairs])
 
-    _unsupported_pairs = ["Tu", "Th", "us"]
+    _unsupported_pairs = ["Tu", "Th", "us", "hx"]
     _unsupported_pairs.extend([k[::-1] for k in _unsupported_pairs])
 
-    # This weird lambda construct is necessary because _unsupported_pairs can't be accessed
-    # inside the list comprehension because of the namespacing rules for class attributes.
-    # Trying to set _allowed_pairs in the __init__ leads to infinite recursion because of
-    # how we're messing with __setattr__.
+    # This weird lambda construct is necessary because _unsupported_pairs can't be
+    # accessed inside the list comprehension because of the namespacing rules for class
+    # attributes. Trying to set _allowed_pairs in the __init__ leads to infinite
+    # recursion because of how we're messing with __setattr__.
     _allowed_pairs = (
         lambda x=_unsupported_pairs, y=_all_pairs: [p for p in y if p not in x]
     )()
@@ -250,9 +268,14 @@ class State(object):
             setattr(self, input_props, (kwargs[input_props[0]], kwargs[input_props[1]]))
 
     def to_SI(self, prop, value):
+        """Convert the input ``value`` to the appropriate SI base units."""
         return value.to(self._SI_units[prop])
 
-    def to_PropsSI(self, prop, value):
+    def to_PropsSI(self, prop, value):  # noqa: D403
+        """CoolProp can't handle Pint Quantites so return the magnitude only.
+
+        Convert to the appropriate SI units first.
+        """
         return self.to_SI(prop, value).magnitude
 
     def _check_values(self, properties, value):
