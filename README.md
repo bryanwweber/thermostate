@@ -82,9 +82,7 @@ We welcome contributions from anyone in the community. Please look at the [Contr
 
 ## Continuous Integration Status
 
-TravisCI: [![Build Status](https://travis-ci.org/bryanwweber/thermostate.svg?branch=master)](https://travis-ci.org/bryanwweber/thermostate)
-Appveyor: [![Build status](https://ci.appveyor.com/api/projects/status/my7m8k82udbkts9h/branch/master?svg=true)](https://ci.appveyor.com/project/bryanwweber/thermostate/branch/master)
-[![codecov](https://codecov.io/gh/bryanwweber/thermostate/branch/master/graph/badge.svg)](https://codecov.io/gh/bryanwweber/thermostate)
+[![Build Status](https://dev.azure.com/bryanwweber/ThermoState/_apis/build/status/bryanwweber.thermostate?branchName=master)](https://dev.azure.com/bryanwweber/ThermoState/_build/latest?definitionId=2&branchName=master) ![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/bryanwweber/thermostate/2.svg)
 
 ## Anaconda Package Version
 
