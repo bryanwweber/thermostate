@@ -35,12 +35,12 @@ class EnglishEngineering(object):
 
     """
 
-    s = 'BTU/(lb*degR)'
-    h = 'BTU/lb'
-    T = 'degF'
-    u = 'BTU/lb'
-    v = 'ft**3/lb'
-    p = 'psi'
+    s = "BTU/(lb*degR)"
+    h = "BTU/lb"
+    T = "degF"
+    u = "BTU/lb"
+    v = "ft**3/lb"
+    p = "psi"
 
 
 class SystemInternational(object):
@@ -66,9 +66,9 @@ class SystemInternational(object):
 
     """
 
-    s = 'kJ/(kg*K)'
-    h = 'kJ/kg'
-    T = 'degC'
-    u = 'kJ/kg'
-    v = 'm**3/kg'
-    p = 'bar'
+    s = "kJ/(kg*K)"
+    h = "kJ/kg"
+    T = "degC"
+    u = "kJ/kg"
+    v = "m**3/kg"
+    p = "bar"
