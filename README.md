@@ -74,7 +74,7 @@ We welcome contributions from anyone in the community. Please look at the [Contr
 
 ## Continuous Integration Status
 
-[![Build Status](https://dev.azure.com/bryanwweber/ThermoState/_apis/build/status/bryanwweber.thermostate?branchName=master)](https://dev.azure.com/bryanwweber/ThermoState/_build/latest?definitionId=2&branchName=master) ![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/bryanwweber/thermostate/2.svg)
+[![codecov](https://codecov.io/gh/bryanwweber/thermostate/branch/master/graph/badge.svg)](https://codecov.io/gh/bryanwweber/thermostate)[![Python package](https://github.com/bryanwweber/thermostate/workflows/Python%20package/badge.svg)](https://github.com/bryanwweber/thermostate/actions?query=workflow%3A%22Python+package%22)
 
 ## Anaconda Package Version
 
