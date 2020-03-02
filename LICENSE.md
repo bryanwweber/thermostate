@@ -1,6 +1,6 @@
 BSD 3-Clause License
 
-Copyright (c) 2017-2019, Bryan W. Weber
+Copyright (c) 2017-2020, Bryan W. Weber
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
