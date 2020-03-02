@@ -9,18 +9,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- Switch to ReadTheDocs for documentation website
+- Use `setup.cfg` and `pyproject.toml` for PEP 517 compliance
 
 ### Changed
 - Switch to src directory source layout
 - Move tests outside of the package
 - Apply Black formatter to tests
 - Use tox to test against multiple Python versions
-- Use Azure Pipelines for CI services
+- Use GitHub Actions for CI services
 - Run Black formatter on abbreviations.py
+- License year in `LICENSE.md`. Happy New Year :tada:
 
 ### Fixed
 - README.md and CHANGELOG.md are now included in the sdist
-- hx and xh are added to the disallowed property pairs because they raise ValueErrors in CoolProp
+- hx and xh are added to the disallowed property pairs because they raise `ValueError`s in CoolProp
 - Missing docstrings from some functions in thermostate.py
 
 ### Removed
