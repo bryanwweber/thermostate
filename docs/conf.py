@@ -23,12 +23,13 @@ shutil.copy2('../CHANGELOG.md', 'CHANGELOG.md')
 shutil.copy2('../CODE_OF_CONDUCT.md', 'CODE_OF_CONDUCT.md')
 shutil.copy2('../CONTRIBUTING.md', 'CONTRIBUTING.md')
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-on_travis = os.environ.get('TRAVIS') == 'True'
-if not on_travis:
-    sys.path.insert(0, os.path.abspath('..'))
+# If Sphinx is not running on a CI service, then we're probably building
+# locally and don't have the package installed. In that case, we need to add
+# src directory from one up for autodoc to work.
+on_rtd = os.environ.get('READTHEDOCS') == 'True'
+on_gh_actions = os.environ.get('GITHUB_ACTIONS') == 'true'
+if not any([on_rtd, on_gh_actions]):
+    sys.path.insert(0, os.path.abspath(os.path.join('..', 'src')))
 
 # -- General configuration ------------------------------------------------
 
@@ -45,10 +46,11 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.mathjax',
     'nbsphinx',
+    'recommonmark',
 ]
 
 # add_function_parentheses = False
-autodoc_default_flags = ['members']
+autodoc_default_options = {'members': True}
 # autodoc_member_order = 'bysource'
 autoclass_content = 'class'
 napoleon_numpy_docstring = True
@@ -67,10 +69,9 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = ['.rst', '.md']
-
-source_parsers = {
-   '.md': 'recommonmark.parser.CommonMarkParser',
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
 }
 
 # The master toctree document.
