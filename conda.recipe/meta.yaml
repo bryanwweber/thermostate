@@ -19,11 +19,14 @@ requirements:
     - setuptools
 
   run:
-    - python >=3.5
-    - coolprop >=6.1.0,<6.3
-    - pint >=0.7.2,<0.10
+    - python >=3.6
+    - coolprop >=6.1.0,<6.4
+    - pint >=0.7.2,<0.12
 
 test:
+  source_files:
+    - tests
+
   imports:
     - thermostate
 
@@ -32,7 +35,7 @@ test:
     - pytest-cov >=2.3.1
 
   commands:
-    - pytest -vv --pyargs thermostate
+    - pytest -vv tests
 
 about:
   home: https://github.com/bryanwweber/thermostate
@@ -40,6 +43,9 @@ about:
   license_file: LICENSE.md
   license_family: BSD
   summary: "{{ data['description'] }}"
-  description: "{{ data['long_description'] }}"
+  description: |
+    This package provides a wrapper around [CoolProp](https://github.com/CoolProp/CoolProp)
+    that integrates [Pint](https://pint.readthedocs.io) for easy thermodynamic state management
+    in any unit system.
   doc_url: https://bryanwweber.github.io/thermostate
   dev_url: https://github.com/bryanwweber/thermostate
