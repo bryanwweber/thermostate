@@ -18,7 +18,7 @@ This installs Pint from the ``conda-forge`` channel; if you would like to use an
 install Pint, change the ``conda-forge`` to be the name of the channel you prefer. If Pint is
 already installed in your environment, the ``conda-forge::pint`` can be omitted entirely.
 
-If you do not have an environment with Python 3.5, 3.6, or 3.7, you can create a new environment
+If you do not have an environment with Python 3.6 or higher you can create a new environment
 with
 
 .. code-block:: bash
@@ -37,7 +37,7 @@ Alternatively, ThermoState can be installed with pip.
 From Source
 -----------
 
-ThermoState is a pure-Python package that supports any Python version 3.5 and higher.
+ThermoState is a pure-Python package that supports any Python version 3.6 and higher.
 To install from source, clone the source code repository and install using ``pip``.
 
 .. code-block:: bash
