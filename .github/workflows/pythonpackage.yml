@@ -1,6 +1,17 @@
 name: Python package
 
-on: [push]
+on:
+  push:
+    # Build on tags that look like releases
+    tags:
+      - v*
+    # Build when master is pushed to
+    branches:
+      - master
+  pull_request:
+    # Build when a pull request targets master
+    branches:
+      - master
 
 jobs:
   build:
