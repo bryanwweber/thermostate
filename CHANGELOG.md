@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
 
-## [Unreleased]
+## [1.0.0] - 03-MAR-2020
 ### Added
 - Switch to ReadTheDocs for documentation website
 - Use `setup.cfg` and `pyproject.toml` for PEP 517 compliance
@@ -18,15 +18,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Apply Black formatter to tests
 - Use tox to test against multiple Python versions
 - Use GitHub Actions for CI services
-- Run Black formatter on abbreviations.py
+- Run Black formatter on `abbreviations.py` and `_version.py`
 - License year in `LICENSE.md`. Happy New Year :tada:
 
 ### Fixed
 - README.md and CHANGELOG.md are now included in the sdist
-- hx and xh are added to the disallowed property pairs because they raise `ValueError`s in CoolProp
-- Missing docstrings from some functions in thermostate.py
-
-### Removed
+- `hx` and `xh` are added to the disallowed property pairs because they raise `ValueError`s in CoolProp
+- Missing docstrings from some functions in `thermostate.py`
 
 ## [0.5.3] - 04-MAR-2019
 ### Added
@@ -190,7 +188,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v0.5.3...HEAD
+[1.0.0]: https://github.com/bryanwweber/thermostate/compare/v0.5.3...v1.0.0
 [0.5.3]: https://github.com/bryanwweber/thermostate/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/bryanwweber/thermostate/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/bryanwweber/thermostate/compare/v0.5.0...v0.5.1
