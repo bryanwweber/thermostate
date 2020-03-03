@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
 
+## [Unreleased]
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
 ## [1.0.0] - 03-MAR-2020
 ### Added
 - Switch to ReadTheDocs for documentation website
@@ -188,6 +197,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First Release
 
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/bryanwweber/thermostate/compare/v0.5.3...v1.0.0
 [0.5.3]: https://github.com/bryanwweber/thermostate/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/bryanwweber/thermostate/compare/v0.5.1...v0.5.2
