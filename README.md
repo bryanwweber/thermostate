@@ -40,7 +40,10 @@ pip install .
 
 ## Documentation
 
-Documentation can be found at <https://bryanwweber.github.io/thermostate/>. The documentation contains a short [tutorial](https://bryanwweber.github.io/thermostate/Tutorial.html), [examples](https://bryanwweber.github.io/thermostate/examples.html), and [API documentation](https://bryanwweber.github.io/thermostate/thermostate.html) for the package.
+Documentation can be found at <https://thermostate.readthedocs.io/>. The documentation contains a short [tutorial](https://thermostate.readthedocs.io/en/stable/Tutorial.html), [examples](https://thermostate.readthedocs.io/en/stable/examples.html), and [API documentation](https://thermostate.readthedocs.io/en/stable/thermostate.html) for the package.
+
+[![Documentation Status](https://readthedocs.org/projects/thermostate/badge/?version=stable)](https://thermostate.readthedocs.io/en/stable/?badge=stable)
+
 
 ## Citation
 
