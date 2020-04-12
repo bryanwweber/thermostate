@@ -15,6 +15,7 @@ except ImportError:  # pragma: no cover
 units = UnitRegistry(autoconvert_offset_to_baseunit=True)
 Q_ = units.Quantity
 units.define(UnitDefinition("percent", "pct", (), ScaleConverter(1.0 / 100.0)))
+units.setup_matplotlib()
 
 # Don't add the _render_traceback_ function to DimensionalityError if
 # IPython isn't present. This function is only used by the IPython/ipykernel

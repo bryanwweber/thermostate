@@ -15,11 +15,10 @@ on:
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7]
         os: [ubuntu-latest, macos-latest, windows-latest]
       fail-fast: false
 
@@ -32,7 +31,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
+        python -m pip install --upgrade pip setuptools
         python -m pip install tox tox-gh-actions tox-venv
     - name: Test with tox
       run: tox -v
@@ -41,6 +40,73 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
+
+  # CoolProp has to be built from the master branch for Python 3.8
+  build-py38:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # Don't want to figure out compiling CoolProp on Windows for tests.
+        # These OS should be good enough
+        os: [ubuntu-latest, macos-latest]
+      fail-fast: false
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+        with:
+          path: main
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Clone CoolProp
+        uses: actions/checkout@v2
+        with:
+          repository: CoolProp/CoolProp
+          path: CoolProp
+          submodules: 'recursive'
+      - name: Install CoolProp dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          python -m pip install cython wheel
+      - name: Build CoolProp wheel
+        env:
+          MACOSX_DEPLOYMENT_TARGET: 10.13
+        run: |
+          pushd CoolProp/wrappers/Python
+          python ../../dev/generate_headers.py
+          python setup.py bdist_wheel
+          popd
+      - name: Install test dependencies
+        run: |
+          python -m pip install tox tox-venv
+      - name: Test with tox
+        env:
+          CP_PACKAGE_DIST_DIR: ${{ github.workspace }}/CoolProp/wrappers/Python/dist
+        run: |
+          pushd main
+          tox -v -e py38
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: main/coverage.xml
+
+  notebooks:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install test dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools
+        python -m pip install tox tox-venv
+    - name: Run notebooks test
+      run: tox -v -e notebooks
 
   flake8:
     runs-on: ubuntu-latest
