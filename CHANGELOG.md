@@ -2,18 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/)
-and this project adheres to [Semantic Versioning](http://semver.org/).
+The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
 
 ## [Unreleased]
 ### Added
+- Build CoolProp and run the tests on Python 3.8
+- Set up the Matplotlib functionality built into Pint. This bumps the minimum Pint version to 0.9 and adds Matplotlib as a dependency
 
 ### Changed
 - Updated documentation links in README and conda recipe to ReadTheDocs
 
 ### Fixed
+- The Rankine cycle example had a dimensionality error due to better NumPy support in Pint. Fixes #24.
 
 ### Removed
 
@@ -23,7 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Use `setup.cfg` and `pyproject.toml` for PEP 517 compliance
 
 ### Changed
-- Switch to src directory source layout
+- Switch to `src` directory source layout
 - Move tests outside of the package
 - Apply Black formatter to tests
 - Use tox to test against multiple Python versions
