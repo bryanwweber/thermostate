@@ -15,7 +15,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -32,7 +31,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
+        python -m pip install --upgrade pip setuptools
         python -m pip install tox tox-gh-actions tox-venv
     - name: Test with tox
       run: tox -v
@@ -41,6 +40,22 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
+
+  notebooks:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out the repository
+    uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install test dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools
+        python -m pip install tox tox-venv
+    - name: Run notebooks test
+      run: tox -v -e notebooks
 
   flake8:
     runs-on: ubuntu-latest
