@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
 
-## [Unreleased]
+## [1.1.0] - 12-APR-2020
 ### Added
 - Build CoolProp and run the tests on Python 3.8
 - Set up the Matplotlib functionality built into Pint. This bumps the minimum Pint version to 0.9 and adds Matplotlib as a dependency
@@ -16,8 +16,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Fixed
 - The Rankine cycle example had a dimensionality error due to better NumPy support in Pint. Fixes #24.
-
-### Removed
 
 ## [1.0.0] - 03-MAR-2020
 ### Added
@@ -200,7 +198,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v1.0.0...HEAD
+[1.1.0]: https://github.com/bryanwweber/thermostate/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/bryanwweber/thermostate/compare/v0.5.3...v1.0.0
 [0.5.3]: https://github.com/bryanwweber/thermostate/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/bryanwweber/thermostate/compare/v0.5.1...v0.5.2
