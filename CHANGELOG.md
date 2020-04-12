@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
 
+## [Unreleased]
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
 ## [1.1.0] - 12-APR-2020
 ### Added
 - Build CoolProp and run the tests on Python 3.8
@@ -198,6 +207,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - First Release
 
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v1.1.0...HEAD
 [1.1.0]: https://github.com/bryanwweber/thermostate/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/bryanwweber/thermostate/compare/v0.5.3...v1.0.0
 [0.5.3]: https://github.com/bryanwweber/thermostate/compare/v0.5.2...v0.5.3
