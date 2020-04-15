@@ -22,6 +22,7 @@ requirements:
     - python >=3.6
     - coolprop >=6.1.0,<6.4
     - pint >=0.9,<0.12
+    - matplotlib >=2.0
 
 test:
   source_files:
