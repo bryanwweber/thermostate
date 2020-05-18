@@ -83,7 +83,7 @@ jobs:
       - name: Build CoolProp wheel
         if: steps.cp-cache.outputs.cache-hit != 'true'
         env:
-          MACOSX_DEPLOYMENT_TARGET: 10.13
+          MACOSX_DEPLOYMENT_TARGET: 10.14
         run: |
           pushd CoolProp/wrappers/Python
           python ../../dev/generate_headers.py
