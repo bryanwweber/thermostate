@@ -63,11 +63,25 @@ jobs:
           repository: CoolProp/CoolProp
           path: CoolProp
           submodules: 'recursive'
-      - name: Install CoolProp dependencies
+      - name: Get CoolProp commit hash
+        id: cp-commit-hash
         run: |
-          python -m pip install --upgrade pip setuptools
-          python -m pip install cython wheel
+          pushd CoolProp
+          echo "::set-output name=cphash::$(git rev-parse HEAD)"
+          popd
+      - name: CoolProp cache
+        id: cp-cache
+        uses: actions/cache@v1
+        with:
+          path: ${{ github.workspace }}/CoolProp/wrappers/Python/dist
+          key: ${{ runner.os }}-cp-build-${{ steps.cp-commit-hash.outputs.cphash }}
+      - name: Install Pip and Setuptools
+        run: python -m pip install --upgrade pip setuptools
+      - name: Install CoolProp dependencies
+        run: python -m pip install cython wheel
+        if: steps.cp-cache.outputs.cache-hit != 'true'
       - name: Build CoolProp wheel
+        if: steps.cp-cache.outputs.cache-hit != 'true'
         env:
           MACOSX_DEPLOYMENT_TARGET: 10.13
         run: |
