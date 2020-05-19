@@ -8,10 +8,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 ### Added
+- Build CoolProp from the master branch to avoid any regressions
+- Cache the built CoolProp wheel, based on the CoolProp master commit hash
 
 ### Changed
+- CoolProp 6.4.0 was released which supports Python 3.8 with their built wheels. Move the tests for Python 3.8 to the main test build.
 
 ### Fixed
+- Bump the `MACOSX_DEPLOYMENT_TARGET` for GitHub Actions, seems like they moved to 10.14
+- Bump Pint version in the Conda recipe
+- Add Matplotlib as a dependency in the Conda recipe
 
 ### Removed
 
