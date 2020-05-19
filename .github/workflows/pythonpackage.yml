@@ -63,6 +63,8 @@ jobs:
         with:
           route: GET /repos/:repository/commits/master
           repository: CoolProp/CoolProp
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: CoolProp cache
         id: cp-cache
         uses: actions/cache@v1
