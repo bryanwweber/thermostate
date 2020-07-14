@@ -5,13 +5,13 @@ on:
     # Build on tags that look like releases
     tags:
       - v*
-    # Build when master is pushed to
+    # Build when main is pushed to
     branches:
-      - master
+      - main
   pull_request:
-    # Build when a pull request targets master
+    # Build when a pull request targets main
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -26,12 +26,12 @@ jobs:
     - name: Check out the repository
       uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools
+        python -m pip install --upgrade pip setuptools wheel
         python -m pip install tox tox-gh-actions tox-venv
     - name: Test with tox
       run: tox -v
@@ -53,11 +53,11 @@ jobs:
         with:
           path: main
       - name: Set up Python 3.8
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: 3.8
       - name: Install Pip and Setuptools
-        run: python -m pip install --upgrade pip setuptools
+        run: python -m pip install --upgrade pip setuptools wheel
       - uses: octokit/request-action@v2.x
         id: get-cp-hash
         with:
@@ -67,7 +67,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: CoolProp cache
         id: cp-cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/CoolProp/wrappers/Python/dist
           key: ${{ runner.os }}-cp-build-${{ fromJson(steps.get-cp-hash.outputs.data).sha }}
@@ -79,7 +79,7 @@ jobs:
           path: CoolProp
           submodules: 'recursive'
       - name: Install CoolProp dependencies
-        run: python -m pip install cython wheel
+        run: python -m pip install cython
         if: steps.cp-cache.outputs.cache-hit != 'true'
       - name: Build CoolProp wheel
         if: steps.cp-cache.outputs.cache-hit != 'true'
@@ -183,7 +183,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@2
       with:
         python-version: 3.8
     - name: Install build dependencies
@@ -192,7 +192,7 @@ jobs:
       run: python -m pep517.build --source --binary --out-dir dist/ .
     - name: Publish a Python distribution to PyPI
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@v1.0.0a0
+      uses: pypa/gh-action-pypi-publish@v1.3.1
       with:
         user: __token__
         password: ${{ secrets.PYPI_PASSWORD }}
