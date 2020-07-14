@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
 
-## [Unreleased]
+## [1.2.0] - 14-JUL-2020
 ### Added
 - Build CoolProp from the master branch to avoid any regressions
 - Cache the built CoolProp wheel, based on the CoolProp master commit hash
@@ -19,8 +19,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Bump the `MACOSX_DEPLOYMENT_TARGET` for GitHub Actions, seems like they moved to 10.14
 - Bump Pint version in the Conda recipe
 - Add Matplotlib as a dependency in the Conda recipe
-
-### Removed
 
 ## [1.1.0] - 12-APR-2020
 ### Added
@@ -214,7 +212,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v1.1.0...HEAD
+[1.2.0]: https://github.com/bryanwweber/thermostate/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/bryanwweber/thermostate/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/bryanwweber/thermostate/compare/v0.5.3...v1.0.0
 [0.5.3]: https://github.com/bryanwweber/thermostate/compare/v0.5.2...v0.5.3
