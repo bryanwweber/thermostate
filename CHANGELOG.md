@@ -10,8 +10,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 
 ### Changed
+- Allow Pint up to 1.0, they seem to be pretty stable between minor version releases
 
 ### Fixed
+- Typo in pythonpackage.yml
 
 ### Removed
 
