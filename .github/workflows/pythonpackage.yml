@@ -77,7 +77,7 @@ jobs:
         with:
           repository: CoolProp/CoolProp
           path: CoolProp
-          submodules: 'recursive'
+          submodules: recursive
       - name: Install CoolProp dependencies
         run: python -m pip install cython
         if: steps.cp-cache.outputs.cache-hit != 'true'
