@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
 
+## [Unreleased]
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
 ## [1.2.1] - 21-JUL-2020
 ### Changed
 - Allow Pint up to 1.0, they seem to be pretty stable between minor version releases
@@ -219,6 +228,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - First Release
 
+[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v1.2.1...HEAD
 [1.2.1]: https://github.com/bryanwweber/thermostate/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/bryanwweber/thermostate/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/bryanwweber/thermostate/compare/v1.0.0...v1.1.0
