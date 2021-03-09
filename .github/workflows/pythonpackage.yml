@@ -16,10 +16,22 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
         os: [ubuntu-latest, macos-latest, windows-latest]
+        experimental: [false]
+        include:
+          - os: ubuntu-latest
+            experimental: true
+            python-version: 3.9
+          - os: macos-latest
+            experimental: true
+            python-version: 3.9
+          - os: windows-latest
+            experimental: true
+            python-version: 3.9
       fail-fast: false
 
     steps:
@@ -42,6 +54,7 @@ jobs:
         file: ./coverage.xml
 
   build-coolprop-master:
+    continue-on-error: true
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -105,10 +118,10 @@ jobs:
     steps:
     - name: Check out the repository
       uses: actions/checkout@v2
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v1
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: 3.8
     - name: Install test dependencies
       run: |
         python -m pip install --upgrade pip setuptools
@@ -122,7 +135,7 @@ jobs:
     - name: Check out the repository
       uses: actions/checkout@v2
     - name: Set up Python 3.8
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: 3.8
     - name: Install tox and dependencies
@@ -138,7 +151,7 @@ jobs:
     - name: Check out the repository
       uses: actions/checkout@v2
     - name: Set up Python 3.8
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: 3.8
     - name: Install pandoc from Apt
@@ -153,30 +166,26 @@ jobs:
 
   conda-build-and-upload:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
     steps:
     - uses: actions/checkout@v2
-    - uses: goanpeca/setup-miniconda@v1
+    - uses: conda-incubator/setup-miniconda@77b16ed746da28724c61e1f1ad23395a4b695ef5
       with:
         auto-update-conda: true
-        activate-environment: ''
-        conda-build-version: '3.18'
+        conda-build-version: 3.21
         auto-activate-base: true
-    - name: Append conda-forge channel to conda config
-      run: |
-        conda config --append channels conda-forge
-      shell: bash -l {0}
+        activate-environment: ""
+        show-channel-urls: true
+        miniforge-version: latest
     - name: Install conda-build dependencies
-      run: |
-        conda install -q anaconda-client conda-verify ripgrep
-      shell: bash -l {0}
+      run: conda install -q anaconda-client conda-verify ripgrep
     - name: Run conda build
-      run: |
-        conda build conda.recipe
-      shell: bash -l {0}
+      run: conda build conda.recipe
     - name: Upload package to anaconda.org
       run: |
         anaconda -t ${{ secrets.ANACONDA_TOKEN }} upload $CONDA/conda-bld/*/thermostate*.tar.bz2
-      shell: bash -l {0}
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
 
   pypi-build-and-upload:
