@@ -42,6 +42,7 @@ jobs:
         file: ./coverage.xml
 
   build-coolprop-master:
+    continue-on-error: true
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
