@@ -61,6 +61,8 @@ class VaporDome:
                 self.set_xscale(x_axis, y_axis, "log")
             if y_axis in ("p", "v"):
                 self.set_yscale(x_axis, y_axis, "log")
+        else:
+            raise ValueError("Plot has already been added to this class instance")
 
     def add_state(self, state, key=None):
         if key is None:
@@ -84,21 +86,20 @@ class VaporDome:
 
     def remove_state(self, state=None, key=None):
         if state is None and key is None:
-            raise ValueError("""Raise a useful error message""")
+            raise ValueError("No state or key was entered. Unable to find state")
         if state is not None and repr(state) in self.states:
             state_to_be_removed = self.states[repr(state)]
         elif key is not None and key in self.states:
             state_to_be_removed = self.states[key]
         elif key is not None and key not in self.states and state is None:
-            raise ValueError("""Couldn't find key""")
+            raise ValueError("Couldn't find key")
         else:
             for key, s_2 in self.states.items():
                 if state == s_2.state:
-                    print("state found, Altered key:", key)
                     state_to_be_removed = self.states[key]
                     break
             else:
-                raise ValueError("""Couldn't find the state""")
+                raise ValueError("Couldn't find the state")
 
         for line in state_to_be_removed.markers.values():
             line.remove()
@@ -126,6 +127,10 @@ class VaporDome:
         missing_state_2 = True
         key_1 = None
         key_2 = None
+        sub1 = state_1.sub
+        sub2 = state_2.sub
+        if sub1 != sub2:
+            raise ValueError("Substance of input states do not match")
 
         for key, plotted_state in self.states.items():
             if state_1 is plotted_state.state:
@@ -165,7 +170,7 @@ class VaporDome:
 
             elif process_type == "isobaric":
                 if not np.isclose(state_1.p, state_2.p):
-                    raise ValueError()
+                    raise ValueError("Pressures of the states do not match")
                 v_range = (
                     np.logspace(
                         np.log10(state_1.v.magnitude), np.log10(state_2.v.magnitude)
@@ -173,11 +178,11 @@ class VaporDome:
                     * units.m ** 3
                     / units.kg
                 )
-                state = State("water", p=state_1.p, v=v_range[0])
+                state = State(sub1, p=state_1.p, v=v_range[0])
 
             elif process_type == "isothermal":
                 if not np.isclose(state_1.T, state_2.T):
-                    raise ValueError()
+                    raise ValueError("Temperatures of the states do not match")
                 v_range = (
                     np.logspace(
                         np.log10(state_1.v.magnitude), np.log10(state_2.v.magnitude)
@@ -185,11 +190,11 @@ class VaporDome:
                     * units.m ** 3
                     / units.kg
                 )
-                state = State("water", T=state_1.T, v=v_range[0])
+                state = State(sub1, T=state_1.T, v=v_range[0])
 
             elif process_type == "isoenergetic":
                 if not np.isclose(state_1.u, state_2.u):
-                    raise ValueError()
+                    raise ValueError("The internal energy of the states do not match")
                 v_range = (
                     np.logspace(
                         np.log10(state_1.v.magnitude), np.log10(state_2.v.magnitude)
@@ -197,11 +202,11 @@ class VaporDome:
                     * units.m ** 3
                     / units.kg
                 )
-                state = State("water", u=state_1.u, v=v_range[0])
+                state = State(sub1, u=state_1.u, v=v_range[0])
 
             elif process_type == "isoenthalpic":
                 if not np.isclose(state_1.h, state_2.h):
-                    raise ValueError()
+                    raise ValueError("The enthalpies of the states do not match")
                 v_range = (
                     np.logspace(
                         np.log10(state_1.v.magnitude), np.log10(state_2.v.magnitude)
@@ -209,11 +214,11 @@ class VaporDome:
                     * units.m ** 3
                     / units.kg
                 )
-                state = State("water", h=state_1.h, v=v_range[0])
+                state = State(sub1, h=state_1.h, v=v_range[0])
 
             elif process_type == "isentropic":
                 if not np.isclose(state_1.s, state_2.s):
-                    raise ValueError()
+                    raise ValueError("The entropies of the states do not match")
                 v_range = (
                     np.logspace(
                         np.log10(state_1.v.magnitude), np.log10(state_2.v.magnitude)
@@ -221,20 +226,20 @@ class VaporDome:
                     * units.m ** 3
                     / units.kg
                 )
-                state = State("water", s=state_1.s, v=v_range[0])
+                state = State(sub1, s=state_1.s, v=v_range[0])
 
             elif process_type == "isochoric" or process_type == "isovolumetric":
                 if not np.isclose(state_1.v, state_2.v):
-                    raise ValueError()
+                    raise ValueError("The specific volumes of the states do not match")
                 v_range = (
                     np.logspace(
                         np.log10(state_1.p.magnitude), np.log10(state_2.p.magnitude)
                     )
                     * units.pascal
                 )
-                state = State("water", v=state_1.v, p=v_range[0])
+                state = State(sub1, v=state_1.v, p=v_range[0])
             else:
-                raise ValueError("Please enter valid process type")
+                raise ValueError("Invalid process type")
 
             if process_type is not None:
                 for v in v_range:
