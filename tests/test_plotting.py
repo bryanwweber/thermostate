@@ -1,15 +1,32 @@
 import pytest
-from src.thermostate.plotting import PlottedState, VaporDome
-from src.thermostate.thermostate import State, Q_, units
+from thermostate.plotting import VaporDome
+from thermostate.thermostate import State, units
+import numpy as np
 
 
 def get_vapordome():
     return VaporDome(("v", "T"), ("s", "T"))
 
 
+def test_plot_additon():
+    v = get_vapordome()
+    v.plot("p", "v")
+    assert ("pv") in v.plots
+
+
+def test_plot_already_added():
+    v = get_vapordome()
+    with pytest.raises(
+        ValueError, match="Plot has already been added to this class instance"
+    ):
+        v.plot("v", "T")
+
+
 def test_remove_state_no_input():
     v = get_vapordome()
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="No state or key was entered. Unable to find state"
+    ):
         v.remove_state()
 
 
@@ -26,13 +43,15 @@ def test_remove_state_key_input():
     state_4 = State("water", T=400 * units.kelvin, v=1 * units.m ** 3 / units.kg)
     v.add_state(state_4, key="st4")  # test of key
     v.remove_state(key="st4")
+    # assert state_4 not in v.states #fails whether its "in" or "not in". whats a better
+    # way to define this
 
 
 def test_remove_state_wrong_key_no_state():
     v = get_vapordome()
     state_5 = State("water", T=700 * units.kelvin, v=1 * units.m ** 3 / units.kg)
     v.add_state(state_5, key="st5")  # test of wrong key and state = none
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Couldn't find key"):
         v.remove_state(key="wrong key")
 
 
@@ -46,8 +65,40 @@ def test_remove_state_altered_key():
 def test_remove_state_state_not_added():
     v = get_vapordome()
     state_7 = State("water", T=400 * units.kelvin, v=0.01 * units.m ** 3 / units.kg)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Couldn't find the state"):
         v.remove_state(state_7)  # test of removing a state that was never added
+
+
+def test_remove_process_without_remove_states():
+    v = get_vapordome()
+    state_1 = State(
+        "water", T=300 * units.degC, s=1.5 * units.kJ / (units.kg * units.K)
+    )
+    state_2 = State(
+        "water", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
+    )
+    v.add_state(state_1)
+    v.add_state(state_2)
+    v.add_process(state_1, state_2)
+    v.remove_process(state_1, state_2, remove_states=False)
+    # would like to assert if the states are in v.states and if process was
+    # removed from v.states
+
+
+def test_remove_process_with_remove_states():
+    v = get_vapordome()
+    state_1 = State(
+        "water", T=300 * units.degC, s=1.5 * units.kJ / (units.kg * units.K)
+    )
+    state_2 = State(
+        "water", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
+    )
+    v.add_state(state_1)
+    v.add_state(state_2)
+    v.add_process(state_1, state_2)
+    v.remove_process(state_1, state_2, remove_states=True)
+    # would like to assert if the states are removed from v.states and if process was
+    # removed from v.states
 
 
 def test_add_process_states_already_added():
@@ -63,7 +114,7 @@ def test_add_process_states_already_added():
     v.add_process(state_1, state_2)
 
 
-def test_add_process_isobaric():
+def test_add_process_states_not_added():
     v = get_vapordome()
     state_1 = State(
         "water", T=300 * units.degC, s=1.5 * units.kJ / (units.kg * units.K)
@@ -71,11 +122,42 @@ def test_add_process_isobaric():
     state_2 = State(
         "water", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
     )
+    v.add_process(state_1, state_2)
+
+
+def test_add_process_substance_match():
+    v = get_vapordome()
+    state_1 = State(
+        "water", T=300 * units.degC, s=1.5 * units.kJ / (units.kg * units.K)
+    )
+    state_2 = State(
+        "carbondioxide", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
+    )
+    v.add_state(state_1)
+    v.add_state(state_2)
+    with pytest.raises(ValueError, match="Substance of input states do not match"):
+        v.add_process(state_1, state_2)
+
+
+def test_add_process_isobaric():
+    v = get_vapordome()
+    state_1 = State("water", p=1500 * units.Pa, s=1.5 * units.kJ / (units.kg * units.K))
+    state_2 = State("water", p=3500 * units.Pa, s=3 * units.kJ / (units.K * units.kg))
     state_3 = State("water", p=state_2.p, v=100 * units.m ** 3 / units.kg)
-    with pytest.raises(ValueError):
+    v.add_state(state_1, key="st_1")
+    v.add_state(state_2, key="st_2")
+    v.add_state(state_3, key="st_3")
+    with pytest.raises(ValueError, match="Pressures of the states do not match"):
         v.add_process(state_1, state_2, "isobaric")
 
     v.add_process(state_2, state_3, "isobaric")
+    line = v.processes["st_2st_3"]["vT"]
+    v_range = (
+        np.logspace(np.log10(state_2.v.magnitude), np.log10(state_3.v.magnitude))
+        * units.m ** 3
+        / units.kg
+    )
+    assert np.all(np.isclose(line.get_xdata(), v_range))
 
 
 def test_add_process_isothermal():
@@ -87,10 +169,20 @@ def test_add_process_isothermal():
         "water", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
     )
     state_3 = State("water", T=state_2.T, v=100 * units.m ** 3 / units.kg)
-    with pytest.raises(ValueError):
+    v.add_state(state_1, key="st_1")
+    v.add_state(state_2, key="st_2")
+    v.add_state(state_3, key="st_3")
+    with pytest.raises(ValueError, match="Temperatures of the states do not match"):
         v.add_process(state_1, state_2, "isothermal")
 
     v.add_process(state_2, state_3, "isothermal")
+    line = v.processes["st_2st_3"]["vT"]
+    v_range = (
+        np.logspace(np.log10(state_2.v.magnitude), np.log10(state_3.v.magnitude))
+        * units.m ** 3
+        / units.kg
+    )
+    assert np.all(np.isclose(line.get_xdata(), v_range))
 
 
 def test_add_process_isoenergetic():
@@ -102,10 +194,22 @@ def test_add_process_isoenergetic():
         "water", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
     )
     state_3 = State("water", u=state_2.u, v=state_2.v + 5 * units.m ** 3 / units.kg)
-    with pytest.raises(ValueError):
+    v.add_state(state_1, key="st_1")
+    v.add_state(state_2, key="st_2")
+    v.add_state(state_3, key="st_3")
+    with pytest.raises(
+        ValueError, match="The internal energy of the states do not match"
+    ):
         v.add_process(state_1, state_2, "isoenergetic")
 
     v.add_process(state_2, state_3, "isoenergetic")
+    line = v.processes["st_2st_3"]["vT"]
+    v_range = (
+        np.logspace(np.log10(state_2.v.magnitude), np.log10(state_3.v.magnitude))
+        * units.m ** 3
+        / units.kg
+    )
+    assert np.all(np.isclose(line.get_xdata(), v_range))
 
 
 def test_add_process_isoenthalpic():
@@ -117,10 +221,20 @@ def test_add_process_isoenthalpic():
         "water", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
     )
     state_3 = State("water", h=state_2.h, v=state_2.v + 5 * units.m ** 3 / units.kg)
-    with pytest.raises(ValueError):
+    v.add_state(state_1, key="st_1")
+    v.add_state(state_2, key="st_2")
+    v.add_state(state_3, key="st_3")
+    with pytest.raises(ValueError, match="The enthalpies of the states do not match"):
         v.add_process(state_1, state_2, "isoenthalpic")
 
     v.add_process(state_2, state_3, "isoenthalpic")
+    line = v.processes["st_2st_3"]["vT"]
+    v_range = (
+        np.logspace(np.log10(state_2.v.magnitude), np.log10(state_3.v.magnitude))
+        * units.m ** 3
+        / units.kg
+    )
+    assert np.all(np.isclose(line.get_xdata(), v_range))
 
 
 def test_add_process_isentropic():
@@ -132,10 +246,20 @@ def test_add_process_isentropic():
         "water", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
     )
     state_3 = State("water", s=state_2.s, T=450 * units.kelvin)
-    with pytest.raises(ValueError):
+    v.add_state(state_1, key="st_1")
+    v.add_state(state_2, key="st_2")
+    v.add_state(state_3, key="st_3")
+    with pytest.raises(ValueError, match="The entropies of the states do not match"):
         v.add_process(state_1, state_2, "isentropic")
 
     v.add_process(state_2, state_3, "isentropic")
+    line = v.processes["st_2st_3"]["vT"]
+    v_range = (
+        np.logspace(np.log10(state_2.v.magnitude), np.log10(state_3.v.magnitude))
+        * units.m ** 3
+        / units.kg
+    )
+    assert np.all(np.isclose(line.get_xdata(), v_range))
 
 
 def test_add_process_isochoric():
@@ -147,7 +271,33 @@ def test_add_process_isochoric():
         "water", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
     )
     state_3 = State("water", v=state_2.v, T=450 * units.kelvin)
-    with pytest.raises(ValueError):
+    v.add_state(state_1, key="st_1")
+    v.add_state(state_2, key="st_2")
+    v.add_state(state_3, key="st_3")
+    with pytest.raises(
+        ValueError, match="The specific volumes of the states do not match"
+    ):
         v.add_process(state_1, state_2, "isochoric")
 
     v.add_process(state_2, state_3, "isochoric")
+    line = v.processes["st_2st_3"]["vT"]
+    v_range = (
+        np.logspace(np.log10(state_2.v.magnitude), np.log10(state_3.v.magnitude))
+        * units.m ** 3
+        / units.kg
+    )
+    assert np.all(np.isclose(line.get_xdata(), v_range))
+
+
+def test_add_process_invalid_process_type():
+    v = get_vapordome()
+    state_1 = State(
+        "water", T=300 * units.degC, s=1.5 * units.kJ / (units.kg * units.K)
+    )
+    state_2 = State(
+        "water", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
+    )
+    v.add_state(state_1, key="st_1")
+    v.add_state(state_2, key="st_2")
+    with pytest.raises(ValueError, match="Invalid process type"):
+        v.add_process(state_1, state_2, "hogwash")
