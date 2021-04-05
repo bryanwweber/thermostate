@@ -58,7 +58,7 @@ class PlottingBase(ABC):
         self.processes = {}
 
     @abstractmethod
-    def plot(self, x_axis, y_axis):
+    def plot(self, x_axis, y_axis):  # pragma: no cover
         """Hold the place of a plot function that a child class must establish."""
         pass
 
@@ -292,12 +292,7 @@ class PlottingBase(ABC):
 
 
 class VaporDome(PlottingBase):
-    """Class for plotting graphs with a vapor dome.
-
-    Parameters
-    ----------
-
-    """
+    """Class for plotting graphs with a vapor dome."""
 
     def __init__(self, substance, *args):
         super(VaporDome, self).__init__()
@@ -348,12 +343,7 @@ class VaporDome(PlottingBase):
 
 
 class IdealGas(PlottingBase):
-    """Class for plotting graphs modeled as an Ideal Gas.
-
-    Parameters
-    ----------
-
-    """
+    """Class for plotting graphs modeled as an Ideal Gas."""
 
     def __init__(self, *args):
         super(IdealGas, self).__init__()
