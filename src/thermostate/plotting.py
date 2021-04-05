@@ -1,13 +1,17 @@
+"""Base Plotting module."""
 from . import State, units
 from CoolProp.CoolProp import PropsSI
 import matplotlib.pyplot as plt
 import numpy as np
+from abc import ABC, abstractmethod
 
 from dataclasses import dataclass, field
 
 
 @dataclass
 class PlottedState:
+    """Data class to efficiently store states in the self.states dictionary."""
+
     key: str
     state: State
     # key: Plot axes string (Tv, pv)
@@ -15,7 +19,29 @@ class PlottedState:
     markers: dict = field(default_factory=dict)
 
 
-class VaporDome:
+class PlottingBase(ABC):
+    """Basic Plotting manager for thermodynamic states.
+
+    Parameters
+    ----------
+    substance : `str`
+        One of the substances supported by CoolProp
+    T : `pint.UnitRegistry.Quantity`
+        Temperature
+    p : `pint.UnitRegistry.Quantity`
+        Pressure
+    u : `pint.UnitRegistry.Quantity`
+        Mass-specific internal energy
+    s : `pint.UnitRegistry.Quantity`
+        Mass-specific entropy
+    v : `pint.UnitRegistry.Quantity`
+        Mass-specific volume
+    h : `pint.UnitRegistry.Quantity`
+        Mass-specific enthalpy
+    x : `pint.UnitRegistry.Quantity`
+        Quality
+    """
+
     axis_units = {
         "v": "m**3/kg",
         "T": "K",
@@ -26,45 +52,18 @@ class VaporDome:
         "x": "dimensionless",
     }
 
-    def __init__(self, *args):
-        min_temp = PropsSI("Tmin", "water")
-        max_temp = PropsSI("Tcrit", "water")
-
-        T_range = np.logspace(np.log10(min_temp), np.log10(max_temp), 400) * units.K
-        self.st_f = [State("water", T=T, x=0 * units.dimensionless) for T in T_range]
-        self.st_g = [State("water", T=T, x=1 * units.dimensionless) for T in T_range]
+    def __init__(self):
         self.states = {}
         self.plots = {}
         self.processes = {}
-        for axes in args:
-            self.plot(axes[0], axes[1])
 
+    @abstractmethod
     def plot(self, x_axis, y_axis):
-        if x_axis + y_axis not in self.plots:
-            fig, axis = plt.subplots()
-            self.plots[x_axis + y_axis] = (fig, axis)
-
-            x_f = [getattr(st, x_axis).magnitude for st in self.st_f]
-            x_f = np.array(x_f) * getattr(units, self.axis_units[x_axis])
-            y_f = [getattr(st, y_axis).magnitude for st in self.st_f]
-            y_f = np.array(y_f) * getattr(units, self.axis_units[y_axis])
-            axis.plot(x_f, y_f)
-
-            x_g = np.array(
-                [getattr(st, x_axis).magnitude for st in self.st_g]
-            ) * getattr(units, self.axis_units[x_axis])
-            y_g = np.array(
-                [getattr(st, y_axis).magnitude for st in self.st_g]
-            ) * getattr(units, self.axis_units[y_axis])
-            axis.plot(x_g, y_g)
-            if x_axis in ("p", "v"):
-                self.set_xscale(x_axis, y_axis, "log")
-            if y_axis in ("p", "v"):
-                self.set_yscale(x_axis, y_axis, "log")
-        else:
-            raise ValueError("Plot has already been added to this class instance")
+        """Hold the place of a plot function that a child class must establish."""
+        pass
 
     def add_state(self, state, key=None):
+        """Add a state to the self.states dictionary and plot it."""
         if key is None:
             key = repr(state)
 
@@ -85,6 +84,7 @@ class VaporDome:
         self.states[key] = plotted_state
 
     def remove_state(self, state=None, key=None):
+        """Remove a state from the self.states dictionary and plots."""
         if state is None and key is None:
             raise ValueError("No state or key was entered. Unable to find state")
         if state is not None and repr(state) in self.states:
@@ -106,6 +106,12 @@ class VaporDome:
         del self.states[state_to_be_removed.key]
 
     def remove_process(self, state_1, state_2, remove_states=False):
+        """Remove a process from the self.process dictionary.
+
+        The process to be removed is specified by the states that were used to
+        initially create the process. It is optional to keep the points associated
+        with the states while still removing the line object.
+        """
         key_1 = None
         key_2 = None
         for key, plotted_state in self.states.items():
@@ -123,6 +129,14 @@ class VaporDome:
             self.remove_state(state_2)
 
     def add_process(self, state_1, state_2, process_type=None):
+        """Add a thermodynamic process to the self.process dictionary and plots it.
+
+        A property of the states is held constant and all intermediate states are traced
+        out in a line between the two states on the graph. The property that is held
+        constant is specified by the user with the process_type input.
+        If no property is to be held constant then a straight line between the
+        two points is drawn.
+        """
         missing_state_1 = True
         missing_state_2 = True
         key_1 = None
@@ -245,7 +259,6 @@ class VaporDome:
                 for v in v_range:
                     if process_type == "isochoric" or process_type == "isovolumetric":
                         state.pv = v, state_1.v
-                        # pressure is stored in the variable v for the isochoric case
                     elif process_type == "isobaric":
                         state.pv = state_1.p, v
                     elif process_type == "isothermal":
@@ -266,11 +279,101 @@ class VaporDome:
                 self.processes[plot_key][key] = line
 
     def set_xscale(self, x_axis, y_axis, scale="linear"):
+        """Acceses a plot in self.plots and changes the scale of its x axis."""
         key = x_axis + y_axis
         fig, axis = self.plots[key]
         axis.set_xscale(scale)
 
     def set_yscale(self, x_axis, y_axis, scale="linear"):
+        """Acceses a plot in self.plots and changes the scale of its y axis."""
         key = x_axis + y_axis
         fig, axis = self.plots[key]
         axis.set_yscale(scale)
+
+
+class VaporDome(PlottingBase):
+    """Class for plotting graphs with a vapor dome.
+
+    Parameters
+    ----------
+
+    """
+
+    def __init__(self, substance, *args):
+        super(VaporDome, self).__init__()
+        min_temp = PropsSI("Tmin", substance)
+        max_temp = PropsSI("Tcrit", substance)
+
+        T_range = np.logspace(np.log10(min_temp), np.log10(max_temp), 400) * units.K
+        self.st_f = [State(substance, T=T, x=0 * units.dimensionless) for T in T_range]
+        self.st_g = [State(substance, T=T, x=1 * units.dimensionless) for T in T_range]
+        for axes in args:
+            self.plot(axes[0], axes[1])
+
+    def plot(self, x_axis, y_axis):
+        """Add a plot with a vapor dome to this instance with given x and y axes.
+
+        Parameters
+        -----------
+        x_axis: 'str'
+            The string representing the x axis for this plot. Allowed axes are
+            "T", "p", "u", "s", "v", and "h".
+        y_axis: 'str'
+            The string representing the y axis for this plot. Allowed axes are
+            "T", "p", "u", "s", "v", and "h".
+        """
+        if x_axis + y_axis not in self.plots:
+            fig, axis = plt.subplots()
+            self.plots[x_axis + y_axis] = (fig, axis)
+
+            x_f = [getattr(st, x_axis).magnitude for st in self.st_f]
+            x_f = np.array(x_f) * getattr(units, self.axis_units[x_axis])
+            y_f = [getattr(st, y_axis).magnitude for st in self.st_f]
+            y_f = np.array(y_f) * getattr(units, self.axis_units[y_axis])
+            axis.plot(x_f, y_f)
+
+            x_g = np.array(
+                [getattr(st, x_axis).magnitude for st in self.st_g]
+            ) * getattr(units, self.axis_units[x_axis])
+            y_g = np.array(
+                [getattr(st, y_axis).magnitude for st in self.st_g]
+            ) * getattr(units, self.axis_units[y_axis])
+            axis.plot(x_g, y_g)
+            if x_axis in ("p", "v"):
+                self.set_xscale(x_axis, y_axis, "log")
+            if y_axis in ("p", "v"):
+                self.set_yscale(x_axis, y_axis, "log")
+        else:
+            raise ValueError("Plot has already been added to this class instance")
+
+
+class IdealGas(PlottingBase):
+    """Class for plotting graphs modeled as an Ideal Gas.
+
+    Parameters
+    ----------
+
+    """
+
+    def __init__(self, *args):
+        super(IdealGas, self).__init__()
+        for axes in args:
+            self.plot(axes[0], axes[1])
+
+    def plot(self, x_axis, y_axis):
+        """Add a plot to this instance with given x and y axes.
+
+        Parameters
+        -----------
+        x_axis: 'str'
+            The string representing the x axis for this plot. Allowed axes are
+            "T", "p", "u", "s", "v", and "h".
+        y_axis: 'str'
+            The string representing the y axis for this plot. Allowed axes are
+            "T", "p", "u", "s", "v", and "h".
+        """
+        if x_axis + y_axis not in self.plots:
+            fig, axis = plt.subplots()
+            self.plots[x_axis + y_axis] = (fig, axis)
+        else:
+            raise ValueError("Plot has already been added to this class instance")
