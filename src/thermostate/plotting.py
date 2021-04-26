@@ -59,7 +59,7 @@ class PlottingBase(ABC):
         "isothermal": "T",
         "isoenergetic": "u",
         "isoenthalpic": "h",
-        "isentropic": "s"
+        "isentropic": "s",
     }
 
     def __init__(self):
@@ -147,15 +147,21 @@ class PlottingBase(ABC):
         If no property is to be held constant then a straight line between the
         two points is drawn.
         """
+        if (
+            process_type not in self.allowed_processes.keys()
+            and process_type is not None
+        ):
+            raise ValueError(
+                f"Not a supported process type: '{process_type}.\n"
+                f"Supported process types are: {list(self.allowed_processes.keys())}"
+            )
 
-        if process_type not in self.allowed_processes.keys():
-            raise ValueError("Not a supported process type")
-        
         if process_type is not None:
-            constant1 = getattr(state_1, self.allowed_processes[process_type])
-            constant2 = getattr(state_2, self.allowed_processes[process_type])
-            if not np.isclose(constant1,constant2):
-                raise ValueError("Property was not held constant")
+            constant_prop = self.allowed_processes[process_type]
+            constant1 = getattr(state_1, constant_prop)
+            constant2 = getattr(state_2, constant_prop)
+            if not np.isclose(constant1, constant2):
+                raise ValueError(f"Property: '{constant_prop}' was not held constant")
 
         missing_state_1 = True
         missing_state_2 = True
@@ -164,7 +170,9 @@ class PlottingBase(ABC):
         sub1 = state_1.sub
         sub2 = state_2.sub
         if sub1 != sub2:
-            raise ValueError("Substance of input states do not match")
+            raise ValueError(
+                f"Substance of input states do not match: '{sub1}', '{sub2}'"
+            )
 
         for key, plotted_state in self.states.items():
             if state_1 is plotted_state.state:
@@ -189,18 +197,18 @@ class PlottingBase(ABC):
         if process_type in ("isochoric", "isovolumetric"):
             p_1 = np.log10(state_1.p.magnitude)
             p_2 = np.log10(state_2.p.magnitude)
-            v_range = np.logspace(p_1, p_2)*units.pascal
+            v_range = np.logspace(p_1, p_2) * units.pascal
         elif process_type is not None:
             v_1 = np.log10(state_1.v.magnitude)
             v_2 = np.log10(state_2.v.magnitude)
             # Due to numerical approximation by CoolProp, an error occurs
             # if the state is too close to a saturated liquid. Here an
-            # imperceptibly small offset is introduced to the specific volume 
-            # to avoid this error. 
-            if np.isclose(state_1.x.magnitude,0.0):
-                v_1 *= 1.0 + 1.0E-14
+            # imperceptibly small offset is introduced to the specific volume
+            # to avoid this error.
+            if np.isclose(state_1.x.magnitude, 0.0):
+                v_1 *= 1.0 + 1.0e-14
             if np.isclose(state_2.x.magnitude, 0.0):
-                v_2 *= 1.0 + 1.0E-14
+                v_2 *= 1.0 + 1.0e-14
             v_range = np.logspace(v_1, v_2) * units("m**3/kg")
 
         for key, value in self.plots.items():
