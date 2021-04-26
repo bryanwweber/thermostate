@@ -52,6 +52,16 @@ class PlottingBase(ABC):
         "x": "dimensionless",
     }
 
+    allowed_processes = {
+        "isochoric": "v",
+        "isovolumetric": "v",
+        "isobaric": "p",
+        "isothermal": "T",
+        "isoenergetic": "u",
+        "isoenthalpic": "h",
+        "isentropic": "s"
+    }
+
     def __init__(self):
         self.states = {}
         self.plots = {}
@@ -137,6 +147,16 @@ class PlottingBase(ABC):
         If no property is to be held constant then a straight line between the
         two points is drawn.
         """
+
+        if process_type not in self.allowed_processes.keys():
+            raise ValueError("Not a supported process type")
+        
+        if process_type is not None:
+            constant1 = getattr(state_1, self.allowed_processes[process_type])
+            constant2 = getattr(state_2, self.allowed_processes[process_type])
+            if not np.isclose(constant1,constant2):
+                raise ValueError("Property was not held constant")
+
         missing_state_1 = True
         missing_state_2 = True
         key_1 = None
@@ -165,6 +185,24 @@ class PlottingBase(ABC):
         plot_key = key_1 + key_2
 
         self.processes[plot_key] = {}
+
+        if process_type in ("isochoric", "isovolumetric"):
+            p_1 = np.log10(state_1.p.magnitude)
+            p_2 = np.log10(state_2.p.magnitude)
+            v_range = np.logspace(p_1, p_2)*units.pascal
+        elif process_type is not None:
+            v_1 = np.log10(state_1.v.magnitude)
+            v_2 = np.log10(state_2.v.magnitude)
+            # Due to numerical approximation by CoolProp, an error occurs
+            # if the state is too close to a saturated liquid. Here an
+            # imperceptibly small offset is introduced to the specific volume 
+            # to avoid this error. 
+            if np.isclose(state_1.x.magnitude,0.0):
+                v_1 *= 1.0 + 1.0E-14
+            if np.isclose(state_2.x.magnitude, 0.0):
+                v_2 *= 1.0 + 1.0E-14
+            v_range = np.logspace(v_1, v_2) * units("m**3/kg")
+
         for key, value in self.plots.items():
             x_data = []
             y_data = []
@@ -181,81 +219,8 @@ class PlottingBase(ABC):
                 y_data = np.array(y_data) * getattr(units, self.axis_units[y_axis])
                 (line,) = axis.plot(x_data, y_data, marker="None", linestyle="--")
                 self.processes[plot_key][key] = line
-
-            elif process_type == "isobaric":
-                if not np.isclose(state_1.p, state_2.p):
-                    raise ValueError("Pressures of the states do not match")
-                v_range = (
-                    np.logspace(
-                        np.log10(state_1.v.magnitude), np.log10(state_2.v.magnitude)
-                    )
-                    * units.m ** 3
-                    / units.kg
-                )
-                state = State(sub1, p=state_1.p, v=v_range[0])
-
-            elif process_type == "isothermal":
-                if not np.isclose(state_1.T, state_2.T):
-                    raise ValueError("Temperatures of the states do not match")
-                v_range = (
-                    np.logspace(
-                        np.log10(state_1.v.magnitude), np.log10(state_2.v.magnitude)
-                    )
-                    * units.m ** 3
-                    / units.kg
-                )
-                state = State(sub1, T=state_1.T, v=v_range[0])
-
-            elif process_type == "isoenergetic":
-                if not np.isclose(state_1.u, state_2.u):
-                    raise ValueError("The internal energy of the states do not match")
-                v_range = (
-                    np.logspace(
-                        np.log10(state_1.v.magnitude), np.log10(state_2.v.magnitude)
-                    )
-                    * units.m ** 3
-                    / units.kg
-                )
-                state = State(sub1, u=state_1.u, v=v_range[0])
-
-            elif process_type == "isoenthalpic":
-                if not np.isclose(state_1.h, state_2.h):
-                    raise ValueError("The enthalpies of the states do not match")
-                v_range = (
-                    np.logspace(
-                        np.log10(state_1.v.magnitude), np.log10(state_2.v.magnitude)
-                    )
-                    * units.m ** 3
-                    / units.kg
-                )
-                state = State(sub1, h=state_1.h, v=v_range[0])
-
-            elif process_type == "isentropic":
-                if not np.isclose(state_1.s, state_2.s):
-                    raise ValueError("The entropies of the states do not match")
-                v_range = (
-                    np.logspace(
-                        np.log10(state_1.v.magnitude), np.log10(state_2.v.magnitude)
-                    )
-                    * units.m ** 3
-                    / units.kg
-                )
-                state = State(sub1, s=state_1.s, v=v_range[0])
-
-            elif process_type == "isochoric" or process_type == "isovolumetric":
-                if not np.isclose(state_1.v, state_2.v):
-                    raise ValueError("The specific volumes of the states do not match")
-                v_range = (
-                    np.logspace(
-                        np.log10(state_1.p.magnitude), np.log10(state_2.p.magnitude)
-                    )
-                    * units.pascal
-                )
-                state = State(sub1, v=state_1.v, p=v_range[0])
             else:
-                raise ValueError("Invalid process type")
-
-            if process_type is not None:
+                state = State(state_1.substance)
                 for v in v_range:
                     if process_type == "isochoric" or process_type == "isovolumetric":
                         state.pv = v, state_1.v
