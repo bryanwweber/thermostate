@@ -205,10 +205,16 @@ class PlottingBase(ABC):
             # if the state is too close to a saturated liquid. Here an
             # imperceptibly small offset is introduced to the specific volume
             # to avoid this error.
-            if np.isclose(state_1.x.magnitude, 0.0):
-                v_1 *= 1.0 + 1.0e-14
-            if np.isclose(state_2.x.magnitude, 0.0):
-                v_2 *= 1.0 + 1.0e-14
+            if state_1.x is not None:
+                if np.isclose(state_1.x.magnitude, 0.0):
+                    v_1 *= 1.0 + 1.0e-14
+                elif np.isclose(state_1.x.magnitude, 1.0):
+                    v_1 *= 1.0 - 1.0e-12
+            if state_2.x is not None:
+                if np.isclose(state_2.x.magnitude, 0.0):
+                    v_2 *= 1.0 + 1.0e-14
+                elif np.isclose(state_2.x.magnitude, 1.0):
+                    v_2 *= 1.0 - 1.0e-12
             v_range = np.logspace(v_1, v_2) * units("m**3/kg")
 
         for key, value in self.plots.items():
@@ -228,7 +234,7 @@ class PlottingBase(ABC):
                 (line,) = axis.plot(x_data, y_data, marker="None", linestyle="--")
                 self.processes[plot_key][key] = line
             else:
-                state = State(state_1.substance)
+                state = State(state_1.sub)
                 for v in v_range:
                     if process_type == "isochoric" or process_type == "isovolumetric":
                         state.pv = v, state_1.v
@@ -318,7 +324,7 @@ class VaporDome(PlottingBase):
 class IdealGas(PlottingBase):
     """Class for plotting graphs modeled as an Ideal Gas."""
 
-    def __init__(self, *args):
+    def __init__(self, substance, *args):
         super(IdealGas, self).__init__()
         for axes in args:
             self.plot(axes[0], axes[1])
