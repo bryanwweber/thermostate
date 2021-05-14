@@ -163,7 +163,7 @@ def test_add_process_isobaric():
     v.add_state(state_1, key="st_1")
     v.add_state(state_2, key="st_2")
     v.add_state(state_3, key="st_3")
-    with pytest.raises(ValueError, match="Pressures of the states do not match"):
+    with pytest.raises(ValueError, match="Property: 'p' was not held constant"):
         v.add_process(state_1, state_2, "isobaric")
 
     v.add_process(state_2, state_3, "isobaric")
@@ -189,7 +189,7 @@ def test_add_process_isothermal():
     v.add_state(state_1, key="st_1")
     v.add_state(state_2, key="st_2")
     v.add_state(state_3, key="st_3")
-    with pytest.raises(ValueError, match="Temperatures of the states do not match"):
+    with pytest.raises(ValueError, match="Property: 'T' was not held constant"):
         v.add_process(state_1, state_2, "isothermal")
 
     v.add_process(state_2, state_3, "isothermal")
@@ -215,9 +215,7 @@ def test_add_process_isoenergetic():
     v.add_state(state_1, key="st_1")
     v.add_state(state_2, key="st_2")
     v.add_state(state_3, key="st_3")
-    with pytest.raises(
-        ValueError, match="The internal energy of the states do not match"
-    ):
+    with pytest.raises(ValueError, match="Property: 'u' was not held constant"):
         v.add_process(state_1, state_2, "isoenergetic")
 
     v.add_process(state_2, state_3, "isoenergetic")
@@ -243,7 +241,7 @@ def test_add_process_isoenthalpic():
     v.add_state(state_1, key="st_1")
     v.add_state(state_2, key="st_2")
     v.add_state(state_3, key="st_3")
-    with pytest.raises(ValueError, match="The enthalpies of the states do not match"):
+    with pytest.raises(ValueError, match="Property: 'h' was not held constant"):
         v.add_process(state_1, state_2, "isoenthalpic")
 
     v.add_process(state_2, state_3, "isoenthalpic")
@@ -269,7 +267,7 @@ def test_add_process_isentropic():
     v.add_state(state_1, key="st_1")
     v.add_state(state_2, key="st_2")
     v.add_state(state_3, key="st_3")
-    with pytest.raises(ValueError, match="The entropies of the states do not match"):
+    with pytest.raises(ValueError, match="Property: 's' was not held constant"):
         v.add_process(state_1, state_2, "isentropic")
 
     v.add_process(state_2, state_3, "isentropic")
@@ -295,9 +293,7 @@ def test_add_process_isochoric():
     v.add_state(state_1, key="st_1")
     v.add_state(state_2, key="st_2")
     v.add_state(state_3, key="st_3")
-    with pytest.raises(
-        ValueError, match="The specific volumes of the states do not match"
-    ):
+    with pytest.raises(ValueError, match="Property: 'v' was not held constant"):
         v.add_process(state_1, state_2, "isochoric")
 
     v.add_process(state_2, state_3, "isochoric")
@@ -321,7 +317,7 @@ def test_add_process_invalid_process_type():
     )
     v.add_state(state_1, key="st_1")
     v.add_state(state_2, key="st_2")
-    with pytest.raises(ValueError, match="Invalid process type"):
+    with pytest.raises(ValueError, match="Not a supported process type"):
         v.add_process(state_1, state_2, "hogwash")
 
 
@@ -334,7 +330,7 @@ def test_IdealGas_plot_additon():
 
 def test_IdealGas_plot_already_added():
     """Test adding a plot that already exists in the instance."""
-    g = IdealGas(("v", "T"), ("s", "T"))
+    g = IdealGas("air", ("v", "T"))
     with pytest.raises(
         ValueError, match="Plot has already been added to this class instance"
     ):
