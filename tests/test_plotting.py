@@ -335,3 +335,19 @@ def test_IdealGas_plot_already_added():
         ValueError, match="Plot has already been added to this class instance"
     ):
         g.plot("v", "T")
+
+
+@pytest.mark.xfail(strict=True)
+def test_multiple_processes_with_the_same_states():
+    """Test adding multiple processes with the same states.
+
+    This expected failure is because no ValueError is raised.
+    """
+    g = IdealGas("air", ("v", "T"))
+    state_1 = State("air", T=300 * units.K, s=1.5 * units("kJ/kg/K"))
+    state_2 = State("air", T=300 * units.K, s=3.0 * units("kJ/kg/K"))
+    g.add_process(state_1, state_2)
+    with pytest.raises(ValueError):
+        g.add_process(state_1, state_2, "isothermal")
+    with pytest.raises(ValueError):
+        g.remove_process(state_1, state_2)
