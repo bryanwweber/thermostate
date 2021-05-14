@@ -1,3 +1,6 @@
+.vscode/
+graphs.ipynb
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -94,3 +97,6 @@ ENV/
 
 # VSCode project settings
 .vscode/
+
+# macOS files
+.DS_Store

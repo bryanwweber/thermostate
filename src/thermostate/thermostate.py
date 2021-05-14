@@ -276,7 +276,7 @@ class State(object):
         """CoolProp can't handle Pint Quantites so return the magnitude only.
 
         Convert to the appropriate SI units first.
-        """
+        """  # noqa: D403
         return self.to_SI(prop, value).magnitude
 
     def _check_values(self, properties, value):
