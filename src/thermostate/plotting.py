@@ -26,20 +26,6 @@ class PlottingBase(ABC):
     ----------
     substance : `str`
         One of the substances supported by CoolProp
-    T : `pint.UnitRegistry.Quantity`
-        Temperature
-    p : `pint.UnitRegistry.Quantity`
-        Pressure
-    u : `pint.UnitRegistry.Quantity`
-        Mass-specific internal energy
-    s : `pint.UnitRegistry.Quantity`
-        Mass-specific entropy
-    v : `pint.UnitRegistry.Quantity`
-        Mass-specific volume
-    h : `pint.UnitRegistry.Quantity`
-        Mass-specific enthalpy
-    x : `pint.UnitRegistry.Quantity`
-        Quality
     """
 
     axis_units = {
@@ -121,6 +107,15 @@ class PlottingBase(ABC):
         The process to be removed is specified by the states that were used to
         initially create the process. It is optional to keep the points associated
         with the states while still removing the line object.
+
+        Parameters
+        ----------
+        state_1: `~thermostate.thermostate.State`
+            The starting state for this process.
+        state_2: `~thermostate.thermostate.State`
+            The final state for this process.
+        remove_states: `bool`
+            If ``True``, the associated states are removed from the instance.
         """
         key_1 = None
         key_2 = None
@@ -143,9 +138,22 @@ class PlottingBase(ABC):
 
         A property of the states is held constant and all intermediate states are traced
         out in a line between the two states on the graph. The property that is held
-        constant is specified by the user with the process_type input.
+        constant is specified by the user with the ``process_type`` input.
         If no property is to be held constant then a straight line between the
         two points is drawn.
+
+        Parameters
+        ----------
+        state_1: `~thermostate.thermostate.State`
+            The starting state for this process.
+        state_2: `~thermostate.thermostate.State`
+            The final state for this process.
+        process_type: optional, `str`
+            If given, specifies the property that is held constant during the process.
+            Must be one of ``"isochoric"``, ``"isovolumetric"``, ``"isobaric"``,
+            ``"isothermal"``, ``"isoenergetic"``, ``"isoenthalpic"``,
+            ``"isentropic"``, or ``None``. If not specified, a straight line is drawn
+            between the states.
         """
         if (
             process_type not in self.allowed_processes.keys()
@@ -288,11 +296,11 @@ class VaporDome(PlottingBase):
         """Add a plot with a vapor dome to this instance with given x and y axes.
 
         Parameters
-        -----------
-        x_axis: 'str'
+        ----------
+        x_axis: `str`
             The string representing the x axis for this plot. Allowed axes are
             "T", "p", "u", "s", "v", and "h".
-        y_axis: 'str'
+        y_axis: `str`
             The string representing the y axis for this plot. Allowed axes are
             "T", "p", "u", "s", "v", and "h".
         """
@@ -334,10 +342,10 @@ class IdealGas(PlottingBase):
 
         Parameters
         -----------
-        x_axis: 'str'
+        x_axis: `str`
             The string representing the x axis for this plot. Allowed axes are
             "T", "p", "u", "s", "v", and "h".
-        y_axis: 'str'
+        y_axis: `str`
             The string representing the y axis for this plot. Allowed axes are
             "T", "p", "u", "s", "v", and "h".
         """
