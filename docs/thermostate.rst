@@ -11,3 +11,8 @@ ThermoState
 ------------------------------------
 
 .. automodule:: thermostate.abbreviations
+
+``thermostate.plotting`` module
+----------------------------------
+
+.. automodule:: thermostate.plotting

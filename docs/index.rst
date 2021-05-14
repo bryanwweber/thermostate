@@ -18,6 +18,7 @@ evaluate properties when solving for the behavior of systems.
 
    installation
    Tutorial
+   Plot-Tutorial
    examples
    thermostate
    CHANGELOG
