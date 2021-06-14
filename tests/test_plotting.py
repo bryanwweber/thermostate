@@ -335,6 +335,29 @@ def test_IdealGas_plot_already_added():
         ValueError, match="Plot has already been added to this class instance"
     ):
         g.plot("v", "T")
+        
+def test_label_add_state():
+    """Test using a label in add_state."""
+    vd = VaporDome('water', ('v', 'T'))
+    st_1 = State('water', x =Q_(1.0,''), T= Q_(100, "degC"))
+    st_2 = State('water', x =Q_(0.0,''), T= Q_(100, "degC"))
+    assert(st_1._label == None)
+    assert(st_2._label == None)
+    vd.add_state(st_1, 1)
+    vd.add_state(st_2, "2")
+    assert(st_1._label == 1)
+    assert(st_2._label =="2")
+    
+def test_label_add_process():
+    """Test using label in add_process"""
+    vd = VaporDome('water', ('v', 'T'))
+    st_1 = State('water', x =Q_(1.0,''), T= Q_(100, "degC"))
+    st_2 = State('water', x =Q_(0.0,''), T= Q_(100, "degC"))
+    assert(st_1._label == None)
+    assert(st_2._label == None)
+    vd.add_process(st_1, st_2, label_1 = 1, label_2 = "2")
+    assert(st_1._label == 1)
+    assert(st_2._label =="2")
 
 
 @pytest.mark.xfail(strict=True)

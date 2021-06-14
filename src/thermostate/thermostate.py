@@ -235,7 +235,8 @@ class State(object):
     def __ge__(self, other):
         return NotImplemented
 
-    def __init__(self, substance, **kwargs):
+    def __init__(self, substance, label = None, **kwargs):
+        self._label = label
         if substance.upper() in self._allowed_subs:
             self.sub = substance.upper()
         else:
