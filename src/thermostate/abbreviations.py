@@ -12,7 +12,7 @@ These classes are shortcuts to the units for common properties::
 """
 
 
-class EnglishEngineering(object):
+class EnglishEngineering:
     """String representations of common units.
 
     The attributes of this class are strings that represent the common units for
@@ -43,7 +43,7 @@ class EnglishEngineering(object):
     p = "psi"
 
 
-class SystemInternational(object):
+class SystemInternational:
     """String representations of common units.
 
     The attributes of this class are strings that represent the common units for
