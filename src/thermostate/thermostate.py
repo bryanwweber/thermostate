@@ -18,7 +18,7 @@ try:  # pragma: no cover
 except ImportError:  # pragma: no cover
     AutoFormattedTB = None
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     import pint
     from typing import Union
 
@@ -164,15 +164,11 @@ class State(object):
     _unsupported_pairs = set(("Tu", "Th", "us", "hx"))
     _unsupported_pairs.update([k[::-1] for k in _unsupported_pairs])
 
-    # This weird lambda construct is necessary because _unsupported_pairs can't be
-    # accessed inside the list comprehension because of the namespacing rules for class
-    # attributes. Trying to set _allowed_pairs in the __init__ leads to infinite
-    # recursion because of how we're messing with __setattr__.
     _allowed_pairs = _all_pairs - _unsupported_pairs
 
-    _all_props = list("Tpvuhsx")
+    _all_props = set("Tpvuhsx")
 
-    _read_only_props = ["cp", "cv", "phase"]
+    _read_only_props = set(("cp", "cv", "phase"))
 
     _dimensions = {
         "T": UnitsContainer({"[temperature]": 1.0}),
@@ -196,11 +192,15 @@ class State(object):
         "cv": "joules/(kilogram*kelvin)",
     }
 
-    def __setattr__(self, key: str, value: "Union[str, tuple[pint.Quantity]]") -> None:
+    def __setattr__(
+        self,
+        key: str,
+        value: "Union[str, pint.Quantity, tuple[pint.Quantity, pint.Quantity]]",
+    ) -> None:
         if key.startswith("_") or key == "sub":
             object.__setattr__(self, key, value)
         elif key in self._allowed_pairs:
-            if not isinstance(value, tuple):
+            if not isinstance(value, tuple):  # pragma: no cover, for typing
                 raise ValueError("Must pass a tuple of Quantities")
             self._check_dimensions(key, value)
             self._check_values(key, value)
@@ -213,7 +213,9 @@ class State(object):
         else:
             raise AttributeError(f"Unknown attribute {key}")
 
-    def __getattr__(self, key: str):
+    def __getattr__(
+        self, key: str
+    ) -> "Union[str, tuple[pint.Quantity, pint.Quantity], pint.Quantity]":
         if key in self._all_props:
             return object.__getattribute__(self, "_" + key)
         elif key in self._all_pairs:
@@ -238,8 +240,9 @@ class State(object):
             return NotImplemented
         if (
             self.sub == other.sub
-            and np.isclose(other.T, self.T)
-            and np.isclose(other.v, self.v)
+            # Pylance does not support NumPy ufuncs
+            and np.isclose(other.T, self.T)  # type: ignore
+            and np.isclose(other.v, self.v)  # type: ignore
         ):
             return True
         return False
@@ -256,7 +259,7 @@ class State(object):
     def __ge__(self, other: "State"):
         return NotImplemented
 
-    def __init__(self, substance: str, **kwargs: "dict[str, pint.Quantity]"):
+    def __init__(self, substance: str, **kwargs: "pint.Quantity"):
         if substance.upper() in self._allowed_subs:
             self.sub = substance.upper()
         else:
@@ -299,33 +302,33 @@ class State(object):
         """  # noqa: D403
         return self.to_SI(prop, value).magnitude
 
-    def _check_values(self, properties: str, values: "tuple[pint.Quantity]") -> None:
+    def _check_values(
+        self, properties: str, values: "tuple[pint.Quantity, pint.Quantity]"
+    ) -> None:
         for p, v in zip(properties, values):
             if p in "Tvp" and v.to_base_units().magnitude < 0.0:
                 raise StateError(f"The value of {p} must be positive in absolute units")
-            elif p == "x":
-                if not (0.0 < v.to_base_units().magnitude < 1.0):
-                    raise StateError("The value of the quality must be between 0 and 1")
+            elif p == "x" and not (0.0 <= v.to_base_units().magnitude <= 1.0):
+                raise StateError("The value of the quality must be between 0 and 1")
 
     def _check_dimensions(
-        self, properties: str, values: "tuple[pint.Quantity]"
+        self, properties: str, values: "tuple[pint.Quantity, pint.Quantity]"
     ) -> None:
         for p, v in zip(properties, values):
-            if not v.check(self._SI_units[p]):
+            # Dimensionless values are a special case and don't work with
+            # the "check" method.
+            try:
+                valid = v.check(self._SI_units[p])
+            except KeyError:
+                valid = v.dimensionality == self._dimensions[p]
+            if not valid:
                 raise StateError(
                     f"The dimensions for {p} must be {self._dimensions[p]}"
                 )
 
     def _set_properties(
-        self, known_props: str, known_values: "tuple[pint.Quantity]"
+        self, known_props: str, known_values: "tuple[pint.Quantity, pint.Quantity]"
     ) -> None:
-        if (
-            len(known_props) != 2
-            or len(known_values) != 2
-            or len(known_props) != len(known_values)
-        ):
-            raise StateError("Only specify two properties to _set_properties")
-
         known_state: OrderedDict[str, float] = OrderedDict()
 
         for prop, val in zip(known_props, known_values):
@@ -352,7 +355,7 @@ class State(object):
             else:
                 raise
 
-        for prop in self._all_props + self._read_only_props:
+        for prop in self._all_props.union(self._read_only_props):
             if prop == "v":
                 v = 1.0 / self._abstract_state.keyed_output(CoolProp.iDmass)
                 value = v * units(self._SI_units[prop])
