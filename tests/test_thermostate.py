@@ -1,8 +1,9 @@
 """Test module for the main ThermoState code."""
 import pytest
+import numpy as np
 
 from thermostate import State, Q_
-from thermostate.thermostate import StateError, isclose_quant
+from thermostate.thermostate import StateError
 
 
 class TestState(object):
@@ -17,6 +18,11 @@ class TestState(object):
         st_1 = State(substance="water", T=Q_(400.0, "K"), p=Q_(101325.0, "Pa"))
         st_2 = State(substance="water", T=Q_(400.0, "K"), p=Q_(101325.0, "Pa"))
         assert st_1 == st_2
+
+    def test_eq_not_two_states(self):
+        """Test that comparing a state with something else doesn't work."""
+        assert not State(substance="water") == 3
+        assert not 3 == State(substance="water")
 
     def test_not_eq(self):
         """States are not equal when properties are not equal."""
@@ -46,9 +52,8 @@ class TestState(object):
     def test_unit_definitions(self):
         """All of the properties should have units defined."""
         st = State("water")
-        props = st._all_props[:]
-        props.extend(st._read_only_props)
-        assert all([a in st._SI_units.keys() for a in props])
+        props = st._all_props.union(st._read_only_props) - {"phase"}  # type: ignore
+        assert all([a in st._SI_units.keys() for a in props])  # type: ignore
 
     def test_lowercase_input(self):
         """Substances should be able to be specified with lowercase letters."""
@@ -116,7 +121,7 @@ class TestState(object):
             )
 
     @pytest.mark.parametrize("prop", ["T", "p", "v", "u", "s", "h"])
-    def test_bad_dimensions(self, prop):
+    def test_bad_dimensions(self, prop: str):
         """Setting bad dimensions for the input property raises a StateError."""
         kwargs = {prop: Q_(1.0, "dimensionless")}
         if prop == "v":
@@ -141,19 +146,6 @@ class TestState(object):
         with pytest.raises(StateError):
             State(substance="water", T=Q_(373.1242958476844, "K"), p=Q_(101325.0, "Pa"))
 
-    def test_set_properties_too_many_props_and_values(self):
-        """Passing too many properties to _set_properties raises a StateError."""
-        s = State(substance="water")
-        with pytest.raises(StateError):
-            s._set_properties(
-                ["T", "v", "h"],
-                [
-                    Q_(373.1242958476844, "K"),
-                    Q_(1.801983936953226, "m**3/kg"),
-                    Q_(2730301.3859201893, "J/kg"),
-                ],
-            )
-
     def test_bad_get_property(self):
         """Accessing attributes that aren't one of the properties or pairs raises."""
         s = State(substance="water", T=Q_(400.0, "K"), p=Q_(101325.0, "Pa"))
@@ -174,16 +166,17 @@ class TestState(object):
         """
         s = State(substance="water")
         s.Tp = Q_(400.0, "K"), Q_(101325.0, "Pa")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.Tp[0], Q_(400.0, "K"))
-        assert isclose_quant(s.Tp[1], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.u, Q_(2547715.3635084038, "J/kg"))
-        assert isclose_quant(s.s, Q_(7496.2021523754065, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(1.801983936953226, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(2730301.3859201893, "J/kg"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.Tp[0], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.Tp[1], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.u, Q_(2547715.3635084038, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(7496.2021523754065, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(1.801983936953226, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(2730301.3859201893, "J/kg"))  # type: ignore
         assert s.x is None
         assert s.phase == "gas"
 
@@ -194,16 +187,17 @@ class TestState(object):
         """
         s = State(substance="water")
         s.pT = Q_(101325.0, "Pa"), Q_(400.0, "K")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.pT[1], Q_(400.0, "K"))
-        assert isclose_quant(s.pT[0], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.u, Q_(2547715.3635084038, "J/kg"))
-        assert isclose_quant(s.s, Q_(7496.2021523754065, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(1.801983936953226, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(2730301.3859201893, "J/kg"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.pT[1], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.pT[0], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.u, Q_(2547715.3635084038, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(7496.2021523754065, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(1.801983936953226, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(2730301.3859201893, "J/kg"))  # type: ignore
         assert s.x is None
         assert s.phase == "gas"
 
@@ -217,16 +211,17 @@ class TestState(object):
         """
         s = State(substance="water")
         s.uT = Q_(2547715.3635084038, "J/kg"), Q_(400.0, "K")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.uT[1], Q_(400.0, "K"))
-        assert isclose_quant(s.uT[0], Q_(2547715.3635084038, "J/kg"))
-        assert isclose_quant(s.u, Q_(2547715.3635084038, "J/kg"))
-        assert isclose_quant(s.s, Q_(7496.2021523754065, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(1.801983936953226, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(2730301.3859201893, "J/kg"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.uT[1], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.uT[0], Q_(2547715.3635084038, "J/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(2547715.3635084038, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(7496.2021523754065, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(1.801983936953226, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(2730301.3859201893, "J/kg"))  # type: ignore
         assert s.x is None
 
     @pytest.mark.xfail(strict=True, raises=StateError)
@@ -237,16 +232,17 @@ class TestState(object):
         """
         s = State(substance="water")
         s.Tu = Q_(400.0, "K"), Q_(2547715.3635084038, "J/kg")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.Tu[0], Q_(400.0, "K"))
-        assert isclose_quant(s.Tu[1], Q_(2547715.3635084038, "J/kg"))
-        assert isclose_quant(s.u, Q_(2547715.3635084038, "J/kg"))
-        assert isclose_quant(s.s, Q_(7496.2021523754065, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(1.801983936953226, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(2730301.3859201893, "J/kg"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.Tu[0], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.Tu[1], Q_(2547715.3635084038, "J/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(2547715.3635084038, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(7496.2021523754065, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(1.801983936953226, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(2730301.3859201893, "J/kg"))  # type: ignore
         assert s.x is None
 
     # This set of tests fails because T and h are not valid inputs for PhaseSI
@@ -259,16 +255,17 @@ class TestState(object):
         """
         s = State(substance="water")
         s.hT = Q_(2730301.3859201893, "J/kg"), Q_(400.0, "K")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.hT[1], Q_(400.0, "K"))
-        assert isclose_quant(s.hT[0], Q_(2730301.3859201893, "J/kg"))
-        assert isclose_quant(s.u, Q_(2547715.3635084038, "J/kg"))
-        assert isclose_quant(s.s, Q_(7496.2021523754065, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(1.801983936953226, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(2730301.3859201893, "J/kg"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.hT[1], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.hT[0], Q_(2730301.3859201893, "J/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(2547715.3635084038, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(7496.2021523754065, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(1.801983936953226, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(2730301.3859201893, "J/kg"))  # type: ignore
         assert s.x is None
 
     @pytest.mark.xfail(strict=True, raises=StateError)
@@ -279,16 +276,17 @@ class TestState(object):
         """
         s = State(substance="water")
         s.Th = Q_(400.0, "K"), Q_(2730301.3859201893, "J/kg")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.Th[0], Q_(400.0, "K"))
-        assert isclose_quant(s.Th[1], Q_(2730301.3859201893, "J/kg"))
-        assert isclose_quant(s.u, Q_(2547715.3635084038, "J/kg"))
-        assert isclose_quant(s.s, Q_(7496.2021523754065, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(1.801983936953226, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(2730301.3859201893, "J/kg"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.Th[0], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.Th[1], Q_(2730301.3859201893, "J/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(2547715.3635084038, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(7496.2021523754065, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(1.801983936953226, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(2730301.3859201893, "J/kg"))  # type: ignore
         assert s.x is None
 
     # This set of tests fails because x and h are not valid inputs for PhaseSI
@@ -301,17 +299,18 @@ class TestState(object):
         """
         s = State(substance="water")
         s.xh = Q_(0.5, "dimensionless"), Q_(1624328.2430353598, "J/kg")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(245769.34557103913, "Pa"))
-        assert isclose_quant(s.xT[1], Q_(400.0, "K"))
-        assert isclose_quant(s.xT[0], Q_(0.5, "dimensionless"))
-        assert isclose_quant(s.u, Q_(1534461.5163075812, "J/kg"))
-        assert isclose_quant(s.s, Q_(4329.703956664546, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(4056.471547685226, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(2913.7307270395363, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.3656547423394701, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1624328.2430353598, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.5, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(245769.34557103913, "Pa"))  # type: ignore
+        assert np.isclose(s.xT[1], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.xT[0], Q_(0.5, "dimensionless"))  # type: ignore
+        assert np.isclose(s.u, Q_(1534461.5163075812, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(4329.703956664546, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(4056.471547685226, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(2913.7307270395363, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.3656547423394701, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1624328.2430353598, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.5, "dimensionless"))  # type: ignore
 
     # This set of tests fails because x and h are not valid inputs for PhaseSI
     # in CoolProp 6.3.0
@@ -323,17 +322,18 @@ class TestState(object):
         """
         s = State(substance="water")
         s.hx = Q_(1624328.2430353598, "J/kg"), Q_(0.5, "dimensionless")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(245769.34557103913, "Pa"))
-        assert isclose_quant(s.xT[1], Q_(400.0, "K"))
-        assert isclose_quant(s.xT[0], Q_(0.5, "dimensionless"))
-        assert isclose_quant(s.u, Q_(1534461.5163075812, "J/kg"))
-        assert isclose_quant(s.s, Q_(4329.703956664546, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(4056.471547685226, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(2913.7307270395363, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.3656547423394701, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1624328.2430353598, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.5, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(245769.34557103913, "Pa"))  # type: ignore
+        assert np.isclose(s.xT[1], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.xT[0], Q_(0.5, "dimensionless"))  # type: ignore
+        assert np.isclose(s.u, Q_(1534461.5163075812, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(4329.703956664546, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(4056.471547685226, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(2913.7307270395363, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.3656547423394701, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1624328.2430353598, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.5, "dimensionless"))  # type: ignore
 
     def test_set_sT(self):
         """Set a pair of properties of the State and check the properties.
@@ -342,16 +342,17 @@ class TestState(object):
         """
         s = State(substance="water")
         s.sT = Q_(7496.2021523754065, "J/(kg*K)"), Q_(400.0, "K")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.sT[1], Q_(400.0, "K"))
-        assert isclose_quant(s.sT[0], Q_(7496.2021523754065, "J/(kg*K)"))
-        assert isclose_quant(s.u, Q_(2547715.3635084038, "J/kg"))
-        assert isclose_quant(s.s, Q_(7496.2021523754065, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(1.801983936953226, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(2730301.3859201893, "J/kg"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.sT[1], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.sT[0], Q_(7496.2021523754065, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.u, Q_(2547715.3635084038, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(7496.2021523754065, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(1.801983936953226, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(2730301.3859201893, "J/kg"))  # type: ignore
         assert s.x is None
 
     def test_set_Ts(self):
@@ -361,16 +362,17 @@ class TestState(object):
         """
         s = State(substance="water")
         s.Ts = Q_(400.0, "K"), Q_(7496.2021523754065, "J/(kg*K)")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.Ts[0], Q_(400.0, "K"))
-        assert isclose_quant(s.Ts[1], Q_(7496.2021523754065, "J/(kg*K)"))
-        assert isclose_quant(s.u, Q_(2547715.3635084038, "J/kg"))
-        assert isclose_quant(s.s, Q_(7496.2021523754065, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(1.801983936953226, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(2730301.3859201893, "J/kg"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.Ts[0], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.Ts[1], Q_(7496.2021523754065, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.u, Q_(2547715.3635084038, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(7496.2021523754065, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(1.801983936953226, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(2730301.3859201893, "J/kg"))  # type: ignore
         assert s.x is None
 
     def test_set_vT(self):
@@ -380,16 +382,17 @@ class TestState(object):
         """
         s = State(substance="water")
         s.vT = Q_(1.801983936953226, "m**3/kg"), Q_(400.0, "K")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.vT[1], Q_(400.0, "K"))
-        assert isclose_quant(s.vT[0], Q_(1.801983936953226, "m**3/kg"))
-        assert isclose_quant(s.u, Q_(2547715.3635084038, "J/kg"))
-        assert isclose_quant(s.s, Q_(7496.2021523754065, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(1.801983936953226, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(2730301.3859201893, "J/kg"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.vT[1], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.vT[0], Q_(1.801983936953226, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(2547715.3635084038, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(7496.2021523754065, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(1.801983936953226, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(2730301.3859201893, "J/kg"))  # type: ignore
         assert s.x is None
 
     def test_set_Tv(self):
@@ -399,16 +402,17 @@ class TestState(object):
         """
         s = State(substance="water")
         s.Tv = Q_(400.0, "K"), Q_(1.801983936953226, "m**3/kg")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.Tv[0], Q_(400.0, "K"))
-        assert isclose_quant(s.Tv[1], Q_(1.801983936953226, "m**3/kg"))
-        assert isclose_quant(s.u, Q_(2547715.3635084038, "J/kg"))
-        assert isclose_quant(s.s, Q_(7496.2021523754065, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(1.801983936953226, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(2730301.3859201893, "J/kg"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.Tv[0], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.Tv[1], Q_(1.801983936953226, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(2547715.3635084038, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(7496.2021523754065, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(2009.2902478486988, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(1509.1482452129906, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(1.801983936953226, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(2730301.3859201893, "J/kg"))  # type: ignore
         assert s.x is None
 
     def test_set_xT(self):
@@ -418,29 +422,30 @@ class TestState(object):
         """
         s = State(substance="water")
         s.xT = Q_(0.5, "dimensionless"), Q_(400.0, "K")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(245769.34557103913, "Pa"))
-        assert isclose_quant(s.xT[1], Q_(400.0, "K"))
-        assert isclose_quant(s.xT[0], Q_(0.5, "dimensionless"))
-        assert isclose_quant(s.u, Q_(1534461.5163075812, "J/kg"))
-        assert isclose_quant(s.s, Q_(4329.703956664546, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(4056.471547685226, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(2913.7307270395363, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.3656547423394701, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1624328.2430353598, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.5, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(245769.34557103913, "Pa"))  # type: ignore
+        assert np.isclose(s.xT[1], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.xT[0], Q_(0.5, "dimensionless"))  # type: ignore
+        assert np.isclose(s.u, Q_(1534461.5163075812, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(4329.703956664546, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(4056.471547685226, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(2913.7307270395363, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.3656547423394701, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1624328.2430353598, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.5, "dimensionless"))  # type: ignore
         s.xT = Q_(50, "percent"), Q_(400.0, "K")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(245769.34557103913, "Pa"))
-        assert isclose_quant(s.xT[1], Q_(400.0, "K"))
-        assert isclose_quant(s.xT[0], Q_(0.5, "dimensionless"))
-        assert isclose_quant(s.u, Q_(1534461.5163075812, "J/kg"))
-        assert isclose_quant(s.s, Q_(4329.703956664546, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(4056.471547685226, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(2913.7307270395363, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.3656547423394701, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1624328.2430353598, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.5, "dimensionless"))
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(245769.34557103913, "Pa"))  # type: ignore
+        assert np.isclose(s.xT[1], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.xT[0], Q_(0.5, "dimensionless"))  # type: ignore
+        assert np.isclose(s.u, Q_(1534461.5163075812, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(4329.703956664546, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(4056.471547685226, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(2913.7307270395363, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.3656547423394701, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1624328.2430353598, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.5, "dimensionless"))  # type: ignore
 
     def test_set_Tx(self):
         """Set a pair of properties of the State and check the properties.
@@ -449,29 +454,30 @@ class TestState(object):
         """
         s = State(substance="water")
         s.Tx = Q_(400.0, "K"), Q_(0.5, "dimensionless")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(245769.34557103913, "Pa"))
-        assert isclose_quant(s.Tx[0], Q_(400.0, "K"))
-        assert isclose_quant(s.Tx[1], Q_(0.5, "dimensionless"))
-        assert isclose_quant(s.u, Q_(1534461.5163075812, "J/kg"))
-        assert isclose_quant(s.s, Q_(4329.703956664546, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(4056.471547685226, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(2913.7307270395363, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.3656547423394701, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1624328.2430353598, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.5, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(245769.34557103913, "Pa"))  # type: ignore
+        assert np.isclose(s.Tx[0], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.Tx[1], Q_(0.5, "dimensionless"))  # type: ignore
+        assert np.isclose(s.u, Q_(1534461.5163075812, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(4329.703956664546, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(4056.471547685226, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(2913.7307270395363, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.3656547423394701, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1624328.2430353598, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.5, "dimensionless"))  # type: ignore
         s.Tx = Q_(400.0, "K"), Q_(50, "percent")
-        assert isclose_quant(s.T, Q_(400.0, "K"))
-        assert isclose_quant(s.p, Q_(245769.34557103913, "Pa"))
-        assert isclose_quant(s.Tx[0], Q_(400.0, "K"))
-        assert isclose_quant(s.Tx[1], Q_(0.5, "dimensionless"))
-        assert isclose_quant(s.u, Q_(1534461.5163075812, "J/kg"))
-        assert isclose_quant(s.s, Q_(4329.703956664546, "J/(kg*K)"))
-        assert isclose_quant(s.cp, Q_(4056.471547685226, "J/(kg*K)"))
-        assert isclose_quant(s.cv, Q_(2913.7307270395363, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.3656547423394701, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1624328.2430353598, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.5, "dimensionless"))
+        assert np.isclose(s.T, Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(245769.34557103913, "Pa"))  # type: ignore
+        assert np.isclose(s.Tx[0], Q_(400.0, "K"))  # type: ignore
+        assert np.isclose(s.Tx[1], Q_(0.5, "dimensionless"))  # type: ignore
+        assert np.isclose(s.u, Q_(1534461.5163075812, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(4329.703956664546, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cp, Q_(4056.471547685226, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.cv, Q_(2913.7307270395363, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.3656547423394701, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1624328.2430353598, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.5, "dimensionless"))  # type: ignore
 
     def test_set_pu(self):
         """Set a pair of properties of the State and check the properties.
@@ -480,24 +486,25 @@ class TestState(object):
         """
         s = State(substance="water")
         s.pu = Q_(101325.0, "Pa"), Q_(1013250.0, "J/kg")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.pu[0], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.pu[1], Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.u, Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.pu[0], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.pu[1], Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
         s.pu = Q_(101325.0, "Pa"), Q_(3013250.0, "J/kg")
-        assert isclose_quant(s.T, Q_(700.9882316847855, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.pu[0], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.pu[1], Q_(3013250.0, "J/kg"))
-        assert isclose_quant(s.u, Q_(3013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(8623.283568815832, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(3.189303132125469, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(3336406.139862406, "J/kg"))
+        assert np.isclose(s.T, Q_(700.9882316847855, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.pu[0], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.pu[1], Q_(3013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(3013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(8623.283568815832, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(3.189303132125469, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(3336406.139862406, "J/kg"))  # type: ignore
         assert s.x is None
 
     def test_set_up(self):
@@ -507,24 +514,25 @@ class TestState(object):
         """
         s = State(substance="water")
         s.up = Q_(1013250.0, "J/kg"), Q_(101325.0, "Pa")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.up[0], Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.up[1], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.u, Q_(1013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.up[0], Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.up[1], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
         s.up = Q_(3013250.0, "J/kg"), Q_(101325.0, "Pa")
-        assert isclose_quant(s.T, Q_(700.9882316847855, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.up[0], Q_(3013250.0, "J/kg"))
-        assert isclose_quant(s.up[1], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.u, Q_(3013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(8623.283568815832, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(3.189303132125469, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(3336406.139862406, "J/kg"))
+        assert np.isclose(s.T, Q_(700.9882316847855, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.up[0], Q_(3013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.up[1], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.u, Q_(3013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(8623.283568815832, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(3.189303132125469, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(3336406.139862406, "J/kg"))  # type: ignore
         assert s.x is None
 
     def test_set_ps(self):
@@ -534,24 +542,25 @@ class TestState(object):
         """
         s = State(substance="water")
         s.ps = Q_(101325.0, "Pa"), Q_(3028.9867985920914, "J/(kg*K)")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.ps[0], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.ps[1], Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.u, Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.ps[0], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.ps[1], Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
         s.ps = Q_(101325.0, "Pa"), Q_(8623.283568815832, "J/(kg*K)")
-        assert isclose_quant(s.T, Q_(700.9882316847855, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.ps[0], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.ps[1], Q_(8623.283568815832, "J/(kg*K)"))
-        assert isclose_quant(s.u, Q_(3013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(8623.283568815832, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(3.189303132125469, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(3336406.139862406, "J/kg"))
+        assert np.isclose(s.T, Q_(700.9882316847855, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.ps[0], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.ps[1], Q_(8623.283568815832, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.u, Q_(3013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(8623.283568815832, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(3.189303132125469, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(3336406.139862406, "J/kg"))  # type: ignore
         assert s.x is None
 
     def test_set_sp(self):
@@ -561,24 +570,25 @@ class TestState(object):
         """
         s = State(substance="water")
         s.sp = Q_(3028.9867985920914, "J/(kg*K)"), Q_(101325.0, "Pa")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.sp[0], Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.sp[1], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.u, Q_(1013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.sp[0], Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.sp[1], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
         s.sp = Q_(8623.283568815832, "J/(kg*K)"), Q_(101325.0, "Pa")
-        assert isclose_quant(s.T, Q_(700.9882316847855, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.sp[0], Q_(8623.283568815832, "J/(kg*K)"))
-        assert isclose_quant(s.sp[1], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.u, Q_(3013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(8623.283568815832, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(3.189303132125469, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(3336406.139862406, "J/kg"))
+        assert np.isclose(s.T, Q_(700.9882316847855, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.sp[0], Q_(8623.283568815832, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.sp[1], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.u, Q_(3013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(8623.283568815832, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(3.189303132125469, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(3336406.139862406, "J/kg"))  # type: ignore
         assert s.x is None
 
     def test_set_pv(self):
@@ -588,24 +598,25 @@ class TestState(object):
         """
         s = State(substance="water")
         s.pv = Q_(101325.0, "Pa"), Q_(0.4772010021515822, "m**3/kg")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.pv[0], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.pv[1], Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.u, Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.pv[0], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.pv[1], Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
         s.pv = Q_(101325.0, "Pa"), Q_(3.189303132125469, "m**3/kg")
-        assert isclose_quant(s.T, Q_(700.9882316847855, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.pv[0], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.pv[1], Q_(3.189303132125469, "m**3/kg"))
-        assert isclose_quant(s.u, Q_(3013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(8623.283568815832, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(3.189303132125469, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(3336406.139862406, "J/kg"))
+        assert np.isclose(s.T, Q_(700.9882316847855, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.pv[0], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.pv[1], Q_(3.189303132125469, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(3013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(8623.283568815832, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(3.189303132125469, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(3336406.139862406, "J/kg"))  # type: ignore
         assert s.x is None
 
     def test_set_vp(self):
@@ -615,24 +626,25 @@ class TestState(object):
         """
         s = State(substance="water")
         s.vp = Q_(0.4772010021515822, "m**3/kg"), Q_(101325.0, "Pa")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.vp[0], Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.vp[1], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.u, Q_(1013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.vp[0], Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.vp[1], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
         s.vp = Q_(3.189303132125469, "m**3/kg"), Q_(101325.0, "Pa")
-        assert isclose_quant(s.T, Q_(700.9882316847855, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.vp[0], Q_(3.189303132125469, "m**3/kg"))
-        assert isclose_quant(s.vp[1], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.u, Q_(3013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(8623.283568815832, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(3.189303132125469, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(3336406.139862406, "J/kg"))
+        assert np.isclose(s.T, Q_(700.9882316847855, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.vp[0], Q_(3.189303132125469, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.vp[1], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.u, Q_(3013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(8623.283568815832, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(3.189303132125469, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(3336406.139862406, "J/kg"))  # type: ignore
         assert s.x is None
 
     def test_set_ph(self):
@@ -642,24 +654,25 @@ class TestState(object):
         """
         s = State(substance="water")
         s.ph = Q_(101325.0, "Pa"), Q_(1061602.391543017, "J/kg")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.ph[0], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.ph[1], Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.u, Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.ph[0], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.ph[1], Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
         s.ph = Q_(101325.0, "Pa"), Q_(3336406.139862406, "J/kg")
-        assert isclose_quant(s.T, Q_(700.9882316847855, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.ph[0], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.ph[1], Q_(3336406.139862406, "J/kg"))
-        assert isclose_quant(s.u, Q_(3013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(8623.283568815832, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(3.189303132125469, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(3336406.139862406, "J/kg"))
+        assert np.isclose(s.T, Q_(700.9882316847855, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.ph[0], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.ph[1], Q_(3336406.139862406, "J/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(3013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(8623.283568815832, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(3.189303132125469, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(3336406.139862406, "J/kg"))  # type: ignore
         assert s.x is None
 
     def test_set_hp(self):
@@ -669,24 +682,25 @@ class TestState(object):
         """
         s = State(substance="water")
         s.hp = Q_(1061602.391543017, "J/kg"), Q_(101325.0, "Pa")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.hp[0], Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.hp[1], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.u, Q_(1013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.hp[0], Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.hp[1], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
         s.hp = Q_(3336406.139862406, "J/kg"), Q_(101325.0, "Pa")
-        assert isclose_quant(s.T, Q_(700.9882316847855, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.hp[0], Q_(3336406.139862406, "J/kg"))
-        assert isclose_quant(s.hp[1], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.u, Q_(3013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(8623.283568815832, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(3.189303132125469, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(3336406.139862406, "J/kg"))
+        assert np.isclose(s.T, Q_(700.9882316847855, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.hp[0], Q_(3336406.139862406, "J/kg"))  # type: ignore
+        assert np.isclose(s.hp[1], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.u, Q_(3013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(8623.283568815832, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(3.189303132125469, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(3336406.139862406, "J/kg"))  # type: ignore
         assert s.x is None
 
     def test_set_px(self):
@@ -696,15 +710,16 @@ class TestState(object):
         """
         s = State(substance="water")
         s.px = Q_(101325.0, "Pa"), Q_(0.28475636946248034, "dimensionless")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.px[0], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.px[1], Q_(0.28475636946248034, "dimensionless"))
-        assert isclose_quant(s.u, Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.px[0], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.px[1], Q_(0.2847563694624, "dimensionless"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
 
     def test_set_xp(self):
         """Set a pair of properties of the State and check the properties.
@@ -713,15 +728,16 @@ class TestState(object):
         """
         s = State(substance="water")
         s.xp = Q_(0.28475636946248034, "dimensionless"), Q_(101325.0, "Pa")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.xp[0], Q_(0.28475636946248034, "dimensionless"))
-        assert isclose_quant(s.xp[1], Q_(101325.0, "Pa"))
-        assert isclose_quant(s.u, Q_(1013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.xp[0], Q_(0.2847563694624, "dimensionless"))  # type: ignore
+        assert np.isclose(s.xp[1], Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
 
     # This set of tests fails because s and u are not valid inputs for PhaseSI
     # in CoolProp 6.1.0
@@ -733,15 +749,16 @@ class TestState(object):
         """
         s = State(substance="water")
         s.us = Q_(1013250.0, "J/kg"), Q_(3028.9867985920914, "J/(kg*K)")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.us[0], Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.us[1], Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.u, Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.us[0], Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.us[1], Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
 
     @pytest.mark.xfail(strict=True, raises=StateError)
     def test_set_su(self):
@@ -751,15 +768,16 @@ class TestState(object):
         """
         s = State(substance="water")
         s.su = Q_(3028.9867985920914, "J/(kg*K)"), Q_(1013250.0, "J/kg")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.su[0], Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.su[1], Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.u, Q_(1013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.su[0], Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.su[1], Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
 
     def test_set_uv(self):
         """Set a pair of properties of the State and check the properties.
@@ -768,15 +786,16 @@ class TestState(object):
         """
         s = State(substance="water")
         s.uv = Q_(1013250.0, "J/kg"), Q_(0.4772010021515822, "m**3/kg")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.uv[0], Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.uv[1], Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.u, Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.uv[0], Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.uv[1], Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
 
     def test_set_vu(self):
         """Set a pair of properties of the State and check the properties.
@@ -785,15 +804,16 @@ class TestState(object):
         """
         s = State(substance="water")
         s.vu = Q_(0.4772010021515822, "m**3/kg"), Q_(1013250.0, "J/kg")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.vu[0], Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.vu[1], Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.u, Q_(1013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.vu[0], Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.vu[1], Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
 
     def test_set_sv(self):
         """Set a pair of properties of the State and check the properties.
@@ -802,15 +822,16 @@ class TestState(object):
         """
         s = State(substance="water")
         s.sv = Q_(3028.9867985920914, "J/(kg*K)"), Q_(0.4772010021515822, "m**3/kg")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.sv[0], Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.sv[1], Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.u, Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.sv[0], Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.sv[1], Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
 
     def test_set_vs(self):
         """Set a pair of properties of the State and check the properties.
@@ -819,15 +840,16 @@ class TestState(object):
         """
         s = State(substance="water")
         s.vs = Q_(0.4772010021515822, "m**3/kg"), Q_(3028.9867985920914, "J/(kg*K)")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.vs[0], Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.vs[1], Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.u, Q_(1013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.vs[0], Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.vs[1], Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
 
     def test_set_sh(self):
         """Set a pair of properties of the State and check the properties.
@@ -836,15 +858,16 @@ class TestState(object):
         """
         s = State(substance="water")
         s.sh = Q_(3028.9867985920914, "J/(kg*K)"), Q_(1061602.391543017, "J/kg")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.sh[0], Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.sh[1], Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.u, Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.sh[0], Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.sh[1], Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
 
     def test_set_hs(self):
         """Set a pair of properties of the State and check the properties.
@@ -853,15 +876,16 @@ class TestState(object):
         """
         s = State(substance="water")
         s.hs = Q_(1061602.391543017, "J/kg"), Q_(3028.9867985920914, "J/(kg*K)")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.hs[0], Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.hs[1], Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.u, Q_(1013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.hs[0], Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.hs[1], Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
 
     def test_set_vh(self):
         """Set a pair of properties of the State and check the properties.
@@ -870,15 +894,16 @@ class TestState(object):
         """
         s = State(substance="water")
         s.vh = Q_(0.4772010021515822, "m**3/kg"), Q_(1061602.391543017, "J/kg")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.vh[0], Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.vh[1], Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.u, Q_(1013250.0, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.vh[0], Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.vh[1], Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250.0, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
 
     def test_set_hv(self):
         """Set a pair of properties of the State and check the properties.
@@ -887,12 +912,13 @@ class TestState(object):
         """
         s = State(substance="water")
         s.hv = Q_(1061602.391543017, "J/kg"), Q_(0.4772010021515822, "m**3/kg")
-        assert isclose_quant(s.T, Q_(373.1242958476843, "K"))
-        assert isclose_quant(s.p, Q_(101325.0, "Pa"))
-        assert isclose_quant(s.hv[0], Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.hv[1], Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.u, Q_(1013250, "J/kg"))
-        assert isclose_quant(s.s, Q_(3028.9867985920914, "J/(kg*K)"))
-        assert isclose_quant(s.v, Q_(0.4772010021515822, "m**3/kg"))
-        assert isclose_quant(s.h, Q_(1061602.391543017, "J/kg"))
-        assert isclose_quant(s.x, Q_(0.28475636946248034, "dimensionless"))
+        # Pylance does not support NumPy ufuncs
+        assert np.isclose(s.T, Q_(373.1242958476843, "K"))  # type: ignore
+        assert np.isclose(s.p, Q_(101325.0, "Pa"))  # type: ignore
+        assert np.isclose(s.hv[0], Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.hv[1], Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.u, Q_(1013250, "J/kg"))  # type: ignore
+        assert np.isclose(s.s, Q_(3028.9867985920914, "J/(kg*K)"))  # type: ignore
+        assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
+        assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
+        assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
