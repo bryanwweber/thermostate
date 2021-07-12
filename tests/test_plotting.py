@@ -343,8 +343,8 @@ def test_label_add_state():
     st_2 = State('water', x = 0.0 * units.dimensionless, T= 100 * units.degC)
     assert(st_1._label is None)
     assert(st_2._label is None)
-    vd.add_state(st_1, 1)
-    vd.add_state(st_2, "2")
+    vd.add_state(st_1, label = 1)
+    vd.add_state(st_2, label = "2")
     assert(st_1._label == "1")
     assert(st_2._label =="2")
     

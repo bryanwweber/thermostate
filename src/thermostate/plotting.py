@@ -63,7 +63,6 @@ class PlottingBase(ABC):
             key = repr(state)
             
         state.label = label
-        
 
         plotted_state = PlottedState(key=key, state=state)
         
