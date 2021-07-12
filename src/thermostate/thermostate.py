@@ -1,16 +1,26 @@
 """Base ThermoState module."""
-from math import isclose
+# Needed to support Python < 3.9
+from __future__ import annotations
 import sys
+from typing import TYPE_CHECKING
+import enum
+from collections import OrderedDict
 
 import CoolProp
 from pint import UnitRegistry, DimensionalityError
 from pint.unit import UnitsContainer, UnitDefinition
 from pint.converters import ScaleConverter
+import numpy as np
 
 try:  # pragma: no cover
     from IPython.core.ultratb import AutoFormattedTB
+
 except ImportError:  # pragma: no cover
     AutoFormattedTB = None
+
+if TYPE_CHECKING:  # pragma: no cover
+    import pint
+    from typing import Union
 
 units = UnitRegistry(autoconvert_offset_to_baseunit=True)
 Q_ = units.Quantity
@@ -22,7 +32,7 @@ units.setup_matplotlib()
 # anyways, so it doesn't matter if it's missing if IPython isn't available.
 if AutoFormattedTB is not None:  # pragma: no cover
 
-    def render_traceback(self):
+    def render_traceback(self: DimensionalityError):
         """Render a minimized version of the DimensionalityError traceback.
 
         The default Jupyter/IPython traceback includes a lot of
@@ -31,25 +41,40 @@ if AutoFormattedTB is not None:  # pragma: no cover
         this particular error, since the problem is almost certainly in
         the user code. This function removes the additional context.
         """
-        a = AutoFormattedTB(mode="Context", color_scheme="Neutral", tb_offset=1)
+        a = AutoFormattedTB(
+            mode="Context", color_scheme="Neutral", tb_offset=1
+        )  # type: ignore
         etype, evalue, tb = sys.exc_info()
         stb = a.structured_traceback(etype, evalue, tb, tb_offset=1)
         for i, line in enumerate(stb):
             if "site-packages" in line:
-                first_line = i
+                first_line = slice(i)
                 break
-        return stb[:first_line] + stb[-1:]
+        else:
+            # This is deliberately an "else" on the for loop
+            first_line = slice(-1)
+        return stb[first_line] + stb[-1:]
 
-    DimensionalityError._render_traceback_ = render_traceback.__get__(
+    DimensionalityError._render_traceback_ = render_traceback.__get__(  # type: ignore
         DimensionalityError
     )
 
-phase_map = {
-    getattr(CoolProp, i): i.split("_")[1] for i in dir(CoolProp) if "iphase" in i
-}
+
+class CoolPropPhaseNames(enum.Enum):
+    """Map the phase names in CoolProp."""
+
+    critical_point = CoolProp.iphase_critical_point
+    gas = CoolProp.iphase_gas
+    liquid = CoolProp.iphase_liquid
+    not_imposed = CoolProp.iphase_not_imposed
+    supercritical = CoolProp.iphase_supercritical
+    supercritical_gas = CoolProp.iphase_supercritical_gas
+    supercritical_liquid = CoolProp.iphase_supercritical_liquid
+    twophase = CoolProp.iphase_twophase
+    unknown = CoolProp.iphase_unknown
 
 
-def munge_coolprop_input_prop(prop):
+def munge_coolprop_input_prop(prop: str) -> str:
     """Munge an input property pair from CoolProp into our format.
 
     Example CoolProp input: ``XY_INPUTS``, where ``X`` and ``Y`` are one of
@@ -66,14 +91,6 @@ def munge_coolprop_input_prop(prop):
     """
     prop = prop.replace("_INPUTS", "").replace("mass", "").replace("D", "V")
     return prop.replace("Q", "X").lower().replace("t", "T")
-
-
-def isclose_quant(a, b, *args, **kwargs):
-    """Compare Pint Quantities to each other using `math.isclose`.
-
-    The Quantities must be in the same units.
-    """
-    return isclose(a.magnitude, b.magnitude, *args, **kwargs)
 
 
 class StateError(Exception):
@@ -93,9 +110,11 @@ class StateError(Exception):
             stb = a.structured_traceback(etype, evalue, tb, tb_offset=1)
             for i, line in enumerate(stb):
                 if "site-packages" in line:
-                    first_line = i
+                    first_line = slice(i)
                     break
-            return stb[:first_line] + stb[-1:]
+            else:
+                first_line = slice(-1)
+            return stb[first_line] + stb[-1:]
 
 
 class State(object):
@@ -135,27 +154,21 @@ class State(object):
         "NITROGEN",
     ]
 
-    _all_pairs = [
+    _all_pairs = set(
         munge_coolprop_input_prop(k)
         for k in dir(CoolProp.constants)
         if "INPUTS" in k and "molar" not in k
-    ]
-    _all_pairs.extend([k[::-1] for k in _all_pairs])
+    )
+    _all_pairs.update([k[::-1] for k in _all_pairs])
 
-    _unsupported_pairs = ["Tu", "Th", "us", "hx"]
-    _unsupported_pairs.extend([k[::-1] for k in _unsupported_pairs])
+    _unsupported_pairs = set(("Tu", "Th", "us", "hx"))
+    _unsupported_pairs.update([k[::-1] for k in _unsupported_pairs])
 
-    # This weird lambda construct is necessary because _unsupported_pairs can't be
-    # accessed inside the list comprehension because of the namespacing rules for class
-    # attributes. Trying to set _allowed_pairs in the __init__ leads to infinite
-    # recursion because of how we're messing with __setattr__.
-    _allowed_pairs = (
-        lambda x=_unsupported_pairs, y=_all_pairs: [p for p in y if p not in x]
-    )()
+    _allowed_pairs = _all_pairs - _unsupported_pairs
 
-    _all_props = list("Tpvuhsx")
+    _all_props = set("Tpvuhsx")
 
-    _read_only_props = ["cp", "cv", "phase"]
+    _read_only_props = set(("cp", "cv", "phase"))
 
     _dimensions = {
         "T": UnitsContainer({"[temperature]": 1.0}),
@@ -177,25 +190,32 @@ class State(object):
         "x": "dimensionless",
         "cp": "joules/(kilogram*kelvin)",
         "cv": "joules/(kilogram*kelvin)",
-        "phase": None,
     }
 
-    def __setattr__(self, key, value):
+    def __setattr__(
+        self,
+        key: str,
+        value: "Union[str, pint.Quantity, tuple[pint.Quantity, pint.Quantity]]",
+    ) -> None:
         if key.startswith("_") or key == "sub" or key == "label":
             object.__setattr__(self, key, value)
         elif key in self._allowed_pairs:
+            if not isinstance(value, tuple):  # pragma: no cover, for typing
+                raise ValueError("Must pass a tuple of Quantities")
             self._check_dimensions(key, value)
             self._check_values(key, value)
             self._set_properties(key, value)
         elif key in self._unsupported_pairs:
             raise StateError(
-                "The pair of input properties entered ({}) isn't supported yet. "
-                "Sorry!".format(key)
+                f"The pair of input properties entered ({key}) isn't supported yet. "
+                "Sorry!"
             )
         else:
-            raise AttributeError("Unknown attribute {}".format(key))
+            raise AttributeError(f"Unknown attribute {key}")
 
-    def __getattr__(self, key):
+    def __getattr__(
+        self, key: str
+    ) -> "Union[str, tuple[pint.Quantity, pint.Quantity], pint.Quantity]":
         if key in self._all_props:
             return object.__getattribute__(self, "_" + key)
         elif key in self._all_pairs:
@@ -207,43 +227,46 @@ class State(object):
         elif key in self._read_only_props:
             return object.__getattribute__(self, "_" + key)
         else:
-            raise AttributeError("Unknown attribute {}".format(key))
+            raise AttributeError(f"Unknown attribute {key}")
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Check if two `State`s are equivalent.
 
         Check that they are using the same substance and two properties that are
         always independent. Choose T and v because the EOS tends to be defined
         in terms of T and density.
         """
+        if not isinstance(other, State):
+            return NotImplemented
         if (
             self.sub == other.sub
-            and isclose_quant(other.T, self.T)
-            and isclose_quant(other.v, self.v)
+            # Pylance does not support NumPy ufuncs
+            and np.isclose(other.T, self.T)  # type: ignore
+            and np.isclose(other.v, self.v)  # type: ignore
         ):
             return True
+        return False
 
-    def __le__(self, other):
+    def __le__(self, other: "State"):
         return NotImplemented
 
-    def __lt__(self, other):
+    def __lt__(self, other: "State"):
         return NotImplemented
 
-    def __gt__(self, other):
+    def __gt__(self, other: "State"):
         return NotImplemented
 
-    def __ge__(self, other):
+    def __ge__(self, other: "State"):
         return NotImplemented
 
-    def __init__(self, substance, label = None, **kwargs):
+    def __init__(self, substance: str, label=None, **kwargs: "pint.Quantity"):
         self.label = label
         if substance.upper() in self._allowed_subs:
             self.sub = substance.upper()
         else:
             raise ValueError(
-                "{} is not an allowed substance. Choose one of {}.".format(
-                    substance, self._allowed_subs
-                )
+                f"{substance} is not an allowed substance. "
+                f"Choose one of {self._allowed_subs}."
             )
 
         self._abstract_state = CoolProp.AbstractState("HEOS", self.sub)
@@ -251,7 +274,7 @@ class State(object):
         input_props = ""
         for arg in kwargs:
             if arg not in self._all_props:
-                raise ValueError("The argument {} is not allowed.".format(arg))
+                raise ValueError(f"The argument {arg} is not allowed.")
             else:
                 input_props += arg
 
@@ -262,8 +285,8 @@ class State(object):
 
         if len(input_props) > 0 and input_props not in self._allowed_pairs:
             raise StateError(
-                "The pair of input properties entered ({}) isn't supported yet. "
-                "Sorry!".format(input_props)
+                f"The pair of input properties entered ({input_props}) isn't supported "
+                "yet. Sorry!"
             )
 
         if len(input_props) > 0:
@@ -284,95 +307,89 @@ class State(object):
             raise TypeError(f"The given label '{label!r}' could not be converted to a string")
         self._label = label
 
-    def to_SI(self, prop, value):
+    def to_SI(self, prop: str, value: "pint.Quantity") -> "pint.Quantity":
         """Convert the input ``value`` to the appropriate SI base units."""
         return value.to(self._SI_units[prop])
 
-    def to_PropsSI(self, prop, value):  # noqa: D403
+    def to_PropsSI(self, prop: str, value: "pint.Quantity") -> float:  # noqa: D403
         """CoolProp can't handle Pint Quantites so return the magnitude only.
 
         Convert to the appropriate SI units first.
         """  # noqa: D403
         return self.to_SI(prop, value).magnitude
 
-    def _check_values(self, properties, value):
-        for i in range(len(properties)):
-            if properties[i] in "Tvp" and value[i].to_base_units().magnitude < 0.0:
-                raise StateError(
-                    "The value of {} must be positive in absolute units".format(
-                        properties[i]
-                    )
-                )
-            elif properties[i] in "x" and (
-                value[i].to_base_units().magnitude < 0.0
-                or value[i].to_base_units().magnitude > 1.0
-            ):
+    def _check_values(
+        self, properties: str, values: "tuple[pint.Quantity, pint.Quantity]"
+    ) -> None:
+        for p, v in zip(properties, values):
+            if p in "Tvp" and v.to_base_units().magnitude < 0.0:
+                raise StateError(f"The value of {p} must be positive in absolute units")
+            elif p == "x" and not (0.0 <= v.to_base_units().magnitude <= 1.0):
                 raise StateError("The value of the quality must be between 0 and 1")
 
-    def _check_dimensions(self, properties, value):
-        if value[0].dimensionality != self._dimensions[properties[0]]:
-            raise StateError(
-                "The dimensions for {props[0]} must be {dim}".format(
-                    props=properties, dim=self._dimensions[properties[0]]
+    def _check_dimensions(
+        self, properties: str, values: "tuple[pint.Quantity, pint.Quantity]"
+    ) -> None:
+        for p, v in zip(properties, values):
+            # Dimensionless values are a special case and don't work with
+            # the "check" method.
+            try:
+                valid = v.check(self._SI_units[p])
+            except KeyError:
+                valid = v.dimensionality == self._dimensions[p]
+            if not valid:
+                raise StateError(
+                    f"The dimensions for {p} must be {self._dimensions[p]}"
                 )
-            )
-        elif value[1].dimensionality != self._dimensions[properties[1]]:
-            raise StateError(
-                "The dimensions for {props[1]} must be {dim}".format(
-                    props=properties, dim=self._dimensions[properties[1]]
-                )
-            )
 
-    def _set_properties(self, known_props, known_values):
-        if (
-            len(known_props) != 2
-            or len(known_values) != 2
-            or len(known_props) != len(known_values)
-        ):
-            raise StateError("Only specify two properties to _set_properties")
-
-        known_state = []
+    def _set_properties(
+        self, known_props: str, known_values: "tuple[pint.Quantity, pint.Quantity]"
+    ) -> None:
+        known_state: OrderedDict[str, float] = OrderedDict()
 
         for prop, val in zip(known_props, known_values):
             if prop == "x":
-                known_state.append(("Q", self.to_PropsSI(prop, val)))
+                known_state["Q"] = self.to_PropsSI(prop, val)
             elif prop == "v":
-                known_state.append(("Dmass", 1.0 / self.to_PropsSI(prop, val)))
+                known_state["Dmass"] = 1.0 / self.to_PropsSI(prop, val)
             else:
                 postfix = "" if prop in ["T", "p"] else "mass"
-                known_state.append((prop.upper() + postfix, self.to_PropsSI(prop, val)))
+                known_state[prop.upper() + postfix] = self.to_PropsSI(prop, val)
 
-        known_state.sort(key=lambda p: p[0])
+        for key in sorted(known_state):
+            known_state.move_to_end(key)
 
-        inputs = getattr(CoolProp, "".join([p[0] for p in known_state]) + "_INPUTS")
+        inputs = getattr(CoolProp, "".join(known_state.keys()) + "_INPUTS")
         try:
-            self._abstract_state.update(inputs, known_state[0][1], known_state[1][1])
+            self._abstract_state.update(inputs, *known_state.values())
         except ValueError as e:
             if "Saturation pressure" in str(e):
                 raise StateError(
-                    "The given values for {} and {} are not "
-                    "independent.".format(known_props[0], known_props[1])
+                    f"The given values for {known_props[0]} and {known_props[1]} are "
+                    "not independent."
                 )
             else:
                 raise
 
-        for prop in self._all_props + self._read_only_props:
+        for prop in self._all_props.union(self._read_only_props):
             if prop == "v":
-                value = Q_(
-                    1.0 / self._abstract_state.keyed_output(CoolProp.iDmass),
-                    self._SI_units[prop],
-                )
+                v = 1.0 / self._abstract_state.keyed_output(CoolProp.iDmass)
+                value = v * units(self._SI_units[prop])
             elif prop == "x":
-                value = Q_(
-                    self._abstract_state.keyed_output(CoolProp.iQ), self._SI_units[prop]
-                )
-                if value == -1.0:
+                x = self._abstract_state.keyed_output(CoolProp.iQ)
+                if x == -1.0:
                     value = None
+                else:
+                    value = x * units(self._SI_units[prop])
             elif prop == "phase":
-                value = phase_map[self._abstract_state.keyed_output(CoolProp.iPhase)]
+                value = CoolPropPhaseNames(
+                    self._abstract_state.keyed_output(CoolProp.iPhase)
+                ).name
             else:
-                postfix = "" if prop in ["T", "p"] else "mass"
+                postfix = "" if prop in "Tp" else "mass"
                 p = getattr(CoolProp, "i" + prop.title() + postfix)
-                value = Q_(self._abstract_state.keyed_output(p), self._SI_units[prop])
+                value = self._abstract_state.keyed_output(p) * units(
+                    self._SI_units[prop]
+                )
 
             setattr(self, "_" + prop, value)

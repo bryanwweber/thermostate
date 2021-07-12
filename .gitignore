@@ -100,3 +100,6 @@ ENV/
 
 # macOS files
 .DS_Store
+
+# mypy and typing
+out/
