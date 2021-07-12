@@ -62,11 +62,7 @@ class PlottingBase(ABC):
         if key is None:
             key = repr(state)
             
-        if label is not None:
-            if isinstance(label, int) or isinstance(label, str):
-                state._label = label
-            else:
-                raise TypeError("Label must be an int or str")
+        state.label = label
         
 
         plotted_state = PlottedState(key=key, state=state)
