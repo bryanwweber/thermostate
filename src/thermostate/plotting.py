@@ -61,8 +61,9 @@ class PlottingBase(ABC):
         """Add a state to the self.states dictionary and plot it."""
         if key is None:
             key = repr(state)
-            
-        state.label = label
+        
+        if label is not None: 
+            state.label = label
 
         plotted_state = PlottedState(key=key, state=state)
         
