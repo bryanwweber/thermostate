@@ -57,18 +57,20 @@ class PlottingBase(ABC):
         """Hold the place of a plot function that a child class must establish."""
         pass
 
-    def add_state(self, state, key=None, label = None):
+    def add_state(self, state, key=None, label=None):
         """Add a state to the self.states dictionary and plot it."""
         if key is None:
             key = repr(state)
-        if label:
+            
+        if label is not None:
             if isinstance(label, int) or isinstance(label, str):
                 state._label = label
             else:
                 raise TypeError("Label must be an int or str")
+        
 
         plotted_state = PlottedState(key=key, state=state)
-
+        
         for plot_key, value in self.plots.items():
             x_data = []
             y_data = []
@@ -79,7 +81,7 @@ class PlottingBase(ABC):
             x_data = np.array(x_data) * getattr(units, self.axis_units[x_axis])
             y_data = np.array(y_data) * getattr(units, self.axis_units[y_axis])
             (line,) = axis.plot(x_data, y_data, marker="o")
-            if state._label:
+            if state._label is not None:
                 axis.annotate(state._label, (x_data[0], y_data[0]), textcoords = "offset pixels", xytext = (5, 5))
             plotted_state.markers[plot_key] = line
 
@@ -139,7 +141,7 @@ class PlottingBase(ABC):
             self.remove_state(state_1)
             self.remove_state(state_2)
 
-    def add_process(self, state_1, state_2, process_type=None, label_1 = None, label_2 = None):
+    def add_process(self, state_1, state_2, process_type=None, label_1=None, label_2=None):
         """Add a thermodynamic process to the self.process dictionary and plots it.
 
         A property of the states is held constant and all intermediate states are traced

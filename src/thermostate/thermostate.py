@@ -181,7 +181,7 @@ class State(object):
     }
 
     def __setattr__(self, key, value):
-        if key.startswith("_") or key == "sub":
+        if key.startswith("_") or key == "sub" or key == "label":
             object.__setattr__(self, key, value)
         elif key in self._allowed_pairs:
             self._check_dimensions(key, value)
@@ -236,7 +236,7 @@ class State(object):
         return NotImplemented
 
     def __init__(self, substance, label = None, **kwargs):
-        self._label = label
+        self.label = label
         if substance.upper() in self._allowed_subs:
             self.sub = substance.upper()
         else:
@@ -268,6 +268,21 @@ class State(object):
 
         if len(input_props) > 0:
             setattr(self, input_props, (kwargs[input_props[0]], kwargs[input_props[1]]))
+         
+    @property 
+    def label(self):
+        return self._label
+    
+    @label.setter
+    def label(self, value):
+        if value is None:
+            self._label = value
+            return
+        try: 
+            label = str(value)
+        except Exception:
+            raise TypeError(f"The given label '{label!r}' could not be converted to a string")
+        self._label = label
 
     def to_SI(self, prop, value):
         """Convert the input ``value`` to the appropriate SI base units."""
