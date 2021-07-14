@@ -339,25 +339,25 @@ def test_IdealGas_plot_already_added():
 def test_label_add_state():
     """Test using a label in add_state."""
     vd = VaporDome('water', ('v', 'T'))
-    st_1 = State('water', x = 1.0 * units.dimensionless, T= 100 * units.degC)
-    st_2 = State('water', x = 0.0 * units.dimensionless, T= 100 * units.degC)
-    assert(st_1._label is None)
-    assert(st_2._label is None)
+    st_1 = State('water', x=1.0 * units.dimensionless, T=100 * units.degC)
+    st_2 = State('water', x=0.0 * units.dimensionless, T=100 * units.degC)
+    assert(st_1.label is None)
+    assert(st_2.label is None)
     vd.add_state(st_1, label = 1)
     vd.add_state(st_2, label = "2")
-    assert(st_1._label == "1")
-    assert(st_2._label =="2")
+    assert(st_1.label == "1")
+    assert(st_2.label == "2")
     
 def test_label_add_process():
     """Test using label in add_process"""
     vd = VaporDome('water', ('v', 'T'))
-    st_1 = State('water', x = 1.0 * units.dimensionless, T= 100 * units.degC)
-    st_2 = State('water', x = 0.0 * units.dimensionless, T= 100 * units.degC)
-    assert(st_1._label is None)
-    assert(st_2._label is None)
-    vd.add_process(st_1, st_2, label_1 = 1, label_2 = "2")
-    assert(st_1._label == "1")
-    assert(st_2._label =="2")
+    st_1 = State('water', x=1.0 * units.dimensionless, T=100 * units.degC)
+    st_2 = State('water', x=0.0 * units.dimensionless, T=100 * units.degC)
+    assert(st_1.label is None)
+    assert(st_2.label is None)
+    vd.add_process(st_1, st_2, label_1=1, label_2="2")
+    assert(st_1.label == "1")
+    assert(st_2.label == "2")
 
 
 @pytest.mark.xfail(strict=True)

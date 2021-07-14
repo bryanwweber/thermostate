@@ -64,9 +64,9 @@ class PlottingBase(ABC):
         
         if label is not None: 
             state.label = label
-
-        plotted_state = PlottedState(key=key, state=state)
         
+        plotted_state = PlottedState(key=key, state=state)
+
         for plot_key, value in self.plots.items():
             x_data = []
             y_data = []
@@ -77,8 +77,8 @@ class PlottingBase(ABC):
             x_data = np.array(x_data) * getattr(units, self.axis_units[x_axis])
             y_data = np.array(y_data) * getattr(units, self.axis_units[y_axis])
             (line,) = axis.plot(x_data, y_data, marker="o")
-            if state._label is not None:
-                axis.annotate(state._label, (x_data[0], y_data[0]), textcoords = "offset pixels", xytext = (5, 5))
+            if state.label is not None:
+                axis.annotate(state.label, (x_data[0], y_data[0]), textcoords="offset pixels", xytext=(5, 5))
             plotted_state.markers[plot_key] = line
 
         self.states[key] = plotted_state
