@@ -298,7 +298,7 @@ class State(object):
         return self._label
 
     @label.setter
-    def label(self, value):
+    def label(self, value: str | None):
         if value is None:
             self._label = value
             return

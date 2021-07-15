@@ -351,7 +351,7 @@ def test_label_add_state():
 
 
 def test_label_add_process():
-    """Test using label in add_process"""
+    """Test using label in add_process."""
     vd = VaporDome("water", ("v", "T"))
     st_1 = State("water", x=1.0 * units.dimensionless, T=100 * units.degC)
     st_2 = State("water", x=0.0 * units.dimensionless, T=100 * units.degC)
