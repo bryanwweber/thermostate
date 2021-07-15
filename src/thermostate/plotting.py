@@ -41,7 +41,8 @@ class PlottingBase(ABC):
     allowed_processes = {
         "isochoric": "v",
         "isovolumetric": "v",
-        "isometric" "isobaric": "p",
+        "isometric": "v",
+        "isobaric": "p",
         "isothermal": "T",
         "isoenergetic": "u",
         "isoenthalpic": "h",
