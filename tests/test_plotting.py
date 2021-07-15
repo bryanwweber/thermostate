@@ -335,29 +335,31 @@ def test_IdealGas_plot_already_added():
         ValueError, match="Plot has already been added to this class instance"
     ):
         g.plot("v", "T")
-        
+
+
 def test_label_add_state():
     """Test using a label in add_state."""
-    vd = VaporDome('water', ('v', 'T'))
-    st_1 = State('water', x=1.0 * units.dimensionless, T=100 * units.degC)
-    st_2 = State('water', x=0.0 * units.dimensionless, T=100 * units.degC)
-    assert(st_1.label is None)
-    assert(st_2.label is None)
-    vd.add_state(st_1, label = 1)
-    vd.add_state(st_2, label = "2")
-    assert(st_1.label == "1")
-    assert(st_2.label == "2")
-    
+    vd = VaporDome("water", ("v", "T"))
+    st_1 = State("water", x=1.0 * units.dimensionless, T=100 * units.degC)
+    st_2 = State("water", x=0.0 * units.dimensionless, T=100 * units.degC)
+    assert st_1.label is None
+    assert st_2.label is None
+    vd.add_state(st_1, label=1)
+    vd.add_state(st_2, label="2")
+    assert st_1.label == "1"
+    assert st_2.label == "2"
+
+
 def test_label_add_process():
     """Test using label in add_process"""
-    vd = VaporDome('water', ('v', 'T'))
-    st_1 = State('water', x=1.0 * units.dimensionless, T=100 * units.degC)
-    st_2 = State('water', x=0.0 * units.dimensionless, T=100 * units.degC)
-    assert(st_1.label is None)
-    assert(st_2.label is None)
+    vd = VaporDome("water", ("v", "T"))
+    st_1 = State("water", x=1.0 * units.dimensionless, T=100 * units.degC)
+    st_2 = State("water", x=0.0 * units.dimensionless, T=100 * units.degC)
+    assert st_1.label is None
+    assert st_2.label is None
     vd.add_process(st_1, st_2, label_1=1, label_2="2")
-    assert(st_1.label == "1")
-    assert(st_2.label == "2")
+    assert st_1.label == "1"
+    assert st_2.label == "2"
 
 
 @pytest.mark.xfail(strict=True)
