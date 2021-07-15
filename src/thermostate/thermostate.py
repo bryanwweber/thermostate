@@ -307,7 +307,7 @@ class State(object):
         except Exception:
             raise TypeError(
                 f"The given label '{value!r}' could not be converted to a string"
-            )
+            ) from None
         self._label = label
 
     def to_SI(self, prop: str, value: "pint.Quantity") -> "pint.Quantity":

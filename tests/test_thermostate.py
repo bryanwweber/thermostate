@@ -159,6 +159,21 @@ class TestState(object):
             # Should be lowercase p
             s.TP = Q_(400.0, "K"), Q_(101325.0, "Pa")
 
+    def test_label_cannot_be_converted_to_string(self):
+        """Trying to set a label that can't be converted to a string is a TypeError."""
+
+        class NoStr:
+            def __str__(self) -> str:
+                raise NotImplementedError
+
+        with pytest.raises(TypeError, match="The given label"):
+            State("water", label=NoStr())
+
+    def test_unsupported_pair(self):
+        """Trying to set with an unsupported property pair raises a StateError."""
+        with pytest.raises(StateError, match="The pair of input"):
+            State("water", T=Q_(100.0, "degC"), u=Q_(1e6, "J/kg"))
+
     def test_set_Tp(self):
         """Set a pair of properties of the State and check the properties.
 
