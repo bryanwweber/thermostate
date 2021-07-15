@@ -1,4 +1,5 @@
 """Base Plotting module."""
+from __future__ import annotations
 from . import State, units
 from CoolProp.CoolProp import PropsSI
 import matplotlib.pyplot as plt
@@ -40,31 +41,31 @@ class PlottingBase(ABC):
     allowed_processes = {
         "isochoric": "v",
         "isovolumetric": "v",
-        "isobaric": "p",
+        "isometric" "isobaric": "p",
         "isothermal": "T",
         "isoenergetic": "u",
         "isoenthalpic": "h",
         "isentropic": "s",
     }
 
-    def __init__(self):
+    def __init__(self, substance: str):
         self.states = {}
         self.plots = {}
         self.processes = {}
 
     @abstractmethod
-    def plot(self, x_axis, y_axis):  # pragma: no cover
+    def plot(self, x_axis: str, y_axis: str):  # pragma: no cover
         """Hold the place of a plot function that a child class must establish."""
         pass
 
-    def add_state(self, state, key=None, label=None):
+    def add_state(self, state: State, key: str | None = None, label: str | None = None):
         """Add a state to the self.states dictionary and plot it."""
         if key is None:
             key = repr(state)
-        
-        if label is not None: 
+
+        if label is not None:
             state.label = label
-        
+
         plotted_state = PlottedState(key=key, state=state)
 
         for plot_key, value in self.plots.items():
@@ -78,12 +79,17 @@ class PlottingBase(ABC):
             y_data = np.array(y_data) * getattr(units, self.axis_units[y_axis])
             (line,) = axis.plot(x_data, y_data, marker="o")
             if state.label is not None:
-                axis.annotate(state.label, (x_data[0], y_data[0]), textcoords="offset pixels", xytext=(5, 5))
+                axis.annotate(
+                    state.label,
+                    (x_data[0], y_data[0]),
+                    textcoords="offset pixels",
+                    xytext=(5, 5),
+                )
             plotted_state.markers[plot_key] = line
 
         self.states[key] = plotted_state
 
-    def remove_state(self, state=None, key=None):
+    def remove_state(self, state: State | None = None, key: str | None = None):
         """Remove a state from the self.states dictionary and plots."""
         if state is None and key is None:
             raise ValueError("No state or key was entered. Unable to find state")
@@ -105,7 +111,9 @@ class PlottingBase(ABC):
             line.remove()
         del self.states[state_to_be_removed.key]
 
-    def remove_process(self, state_1, state_2, remove_states=False):
+    def remove_process(
+        self, state_1: State, state_2: State, remove_states: bool = False
+    ):
         """Remove a process from the self.process dictionary.
 
         The process to be removed is specified by the states that were used to
@@ -137,7 +145,14 @@ class PlottingBase(ABC):
             self.remove_state(state_1)
             self.remove_state(state_2)
 
-    def add_process(self, state_1, state_2, process_type=None, label_1=None, label_2=None):
+    def add_process(
+        self,
+        state_1: State,
+        state_2: State,
+        process_type: str | None = None,
+        label_1: str | None = None,
+        label_2: str | None = None,
+    ):
         """Add a thermodynamic process to the self.process dictionary and plots it.
 
         A property of the states is held constant and all intermediate states are traced
@@ -158,6 +173,10 @@ class PlottingBase(ABC):
             ``"isothermal"``, ``"isoenergetic"``, ``"isoenthalpic"``,
             ``"isentropic"``, or ``None``. If not specified, a straight line is drawn
             between the states.
+        label_1: optional, `str`
+            If given, will be used to label the first state.
+        label_2: optional, `str`
+            If given, will be used to label the second state.
         """
         if (
             process_type not in self.allowed_processes.keys()
@@ -206,7 +225,7 @@ class PlottingBase(ABC):
 
         self.processes[plot_key] = {}
 
-        if process_type in ("isochoric", "isovolumetric"):
+        if process_type in ("isochoric", "isovolumetric", "isometric"):
             p_1 = np.log10(state_1.p.magnitude)
             p_2 = np.log10(state_2.p.magnitude)
             v_range = np.logspace(p_1, p_2) * units.pascal
@@ -248,7 +267,7 @@ class PlottingBase(ABC):
             else:
                 state = State(state_1.sub)
                 for v in v_range:
-                    if process_type == "isochoric" or process_type == "isovolumetric":
+                    if process_type in ("isochoric", "isovolumetric", "isometric"):
                         state.pv = v, state_1.v
                     elif process_type == "isobaric":
                         state.pv = state_1.p, v
@@ -270,13 +289,13 @@ class PlottingBase(ABC):
                 self.processes[plot_key][key] = line
 
     def set_xscale(self, x_axis, y_axis, scale="linear"):
-        """Acceses a plot in self.plots and changes the scale of its x axis."""
+        """Access a plot in self.plots and change the scale of its x axis."""
         key = x_axis + y_axis
         fig, axis = self.plots[key]
         axis.set_xscale(scale)
 
     def set_yscale(self, x_axis, y_axis, scale="linear"):
-        """Acceses a plot in self.plots and changes the scale of its y axis."""
+        """Access a plot in self.plots and change the scale of its y axis."""
         key = x_axis + y_axis
         fig, axis = self.plots[key]
         axis.set_yscale(scale)
@@ -286,7 +305,7 @@ class VaporDome(PlottingBase):
     """Class for plotting graphs with a vapor dome."""
 
     def __init__(self, substance, *args):
-        super(VaporDome, self).__init__()
+        super().__init__(substance)
         min_temp = PropsSI("Tmin", substance)
         max_temp = PropsSI("Tcrit", substance)
 
@@ -337,7 +356,7 @@ class IdealGas(PlottingBase):
     """Class for plotting graphs modeled as an Ideal Gas."""
 
     def __init__(self, substance, *args):
-        super(IdealGas, self).__init__()
+        super().__init__(substance)
         for axes in args:
             self.plot(axes[0], axes[1])
 
