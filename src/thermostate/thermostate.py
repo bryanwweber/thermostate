@@ -161,14 +161,14 @@ class State(object):
     )
     _all_pairs.update([k[::-1] for k in _all_pairs])
 
-    _unsupported_pairs = set(("Tu", "Th", "us", "hx"))
+    _unsupported_pairs = {"Tu", "Th", "us", "hx"}
     _unsupported_pairs.update([k[::-1] for k in _unsupported_pairs])
 
     _allowed_pairs = _all_pairs - _unsupported_pairs
 
     _all_props = set("Tpvuhsx")
 
-    _read_only_props = set(("cp", "cv", "phase"))
+    _read_only_props = {"cp", "cv", "phase"}
 
     _dimensions = {
         "T": UnitsContainer({"[temperature]": 1.0}),
@@ -197,7 +197,7 @@ class State(object):
         key: str,
         value: "Union[str, pint.Quantity, tuple[pint.Quantity, pint.Quantity]]",
     ) -> None:
-        if key.startswith("_") or key == "sub":
+        if key.startswith("_") or key == "sub" or key == "label":
             object.__setattr__(self, key, value)
         elif key in self._allowed_pairs:
             if not isinstance(value, tuple):  # pragma: no cover, for typing
@@ -259,7 +259,8 @@ class State(object):
     def __ge__(self, other: "State"):
         return NotImplemented
 
-    def __init__(self, substance: str, **kwargs: "pint.Quantity"):
+    def __init__(self, substance: str, label=None, **kwargs: "pint.Quantity"):
+        self.label = label
         if substance.upper() in self._allowed_subs:
             self.sub = substance.upper()
         else:
@@ -291,6 +292,24 @@ class State(object):
         if len(input_props) > 0:
             setattr(self, input_props, (kwargs[input_props[0]], kwargs[input_props[1]]))
 
+    @property
+    def label(self):
+        """Get or set the string label for this state, used in plotting."""
+        return self._label
+
+    @label.setter
+    def label(self, value: str | None):
+        if value is None:
+            self._label = value
+            return
+        try:
+            label = str(value)
+        except Exception:
+            raise TypeError(
+                f"The given label '{value!r}' could not be converted to a string"
+            ) from None
+        self._label = label
+
     def to_SI(self, prop: str, value: "pint.Quantity") -> "pint.Quantity":
         """Convert the input ``value`` to the appropriate SI base units."""
         return value.to(self._SI_units[prop])
@@ -302,8 +321,9 @@ class State(object):
         """  # noqa: D403
         return self.to_SI(prop, value).magnitude
 
+    @staticmethod
     def _check_values(
-        self, properties: str, values: "tuple[pint.Quantity, pint.Quantity]"
+        properties: str, values: "tuple[pint.Quantity, pint.Quantity]"
     ) -> None:
         for p, v in zip(properties, values):
             if p in "Tvp" and v.to_base_units().magnitude < 0.0:
