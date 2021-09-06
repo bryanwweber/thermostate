@@ -32,12 +32,12 @@ units.setup_matplotlib()
 default_units = None 
 
 def set_default_units(units):
-    if units is None or units in ["SI", "EE"]:
+    if units is None or units in ("SI", "EE"):
         global default_units 
         default_units = units
     else: 
         raise TypeError(
-            f"The given units '{units!r}' are not supported"
+            f"The given units '{units!r}' are not supported. Must be 'SI', 'EE', or None."
         )
 
 # Don't add the _render_traceback_ function to DimensionalityError if
@@ -272,17 +272,11 @@ class State(object):
     def __ge__(self, other: "State"):
         return NotImplemented
 
-    def __init__(self, substance: str, label=None, units = None, **kwargs: "pint.Quantity"):
+    def __init__(self, substance: str, label=None, units=None, **kwargs: "pint.Quantity"):
         
         if units is None:
             units = default_units
-        
-        if units is None or units in ["SI", "EE"]:
-            self.units = units
-        else: 
-            raise TypeError(
-                f"The given units '{units!r}' are not supported"
-            )
+        self.units = units
 
         self.label = label
         
@@ -337,21 +331,17 @@ class State(object):
         
     @property
     def units(self):
-        """Get or set the string label for this state, used in plotting."""
+        """Get or set the string units for this state to autoset the units for all state attributes."""
         return self._units
 
     @units.setter
     def units(self, value: str | None):
-        if value is None:
+        if value is None or value in ("EE", "SI"):
             self._units = value
-            return
-        try:
-            units = str(value)
-        except Exception:
+        else:
             raise TypeError(
-                f"The given label '{value!r}' could not be converted to a string"
-            ) from None
-        self._units = units
+                f"The given units '{units!r}' are not supported. Must be 'SI', 'EE', or None."
+            )
 
     def to_SI(self, prop: str, value: "pint.Quantity") -> "pint.Quantity":
         """Convert the input ``value`` to the appropriate SI base units."""
@@ -439,12 +429,11 @@ class State(object):
                     self._SI_units[prop]
                 )
                 
-            if self._units == "SI":
+            set_units = None
+            if self.units == "SI":
                 set_units = getattr(default_SI, prop, None) 
-                if set_units is not None:
-                    value.ito(set_units)
-            elif self._units == "EE":
+            elif self.units == "EE":
                 set_units = getattr(default_EE, prop, None) 
-                if set_units is not None:
-                    value.ito(set_units)
+            if set_units is not None:
+                value.ito(set_units)
             setattr(self, "_" + prop, value)

@@ -941,7 +941,7 @@ class TestState(object):
         
     def test_state_units_EE(self):
         """ Set a state with EE units and check the properties."""
-        s = State("water", T = Q_(100, 'degC'), p = Q_(1.0, 'atm'), units = "EE")
+        s = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'), units="EE")
         assert s.units == "EE"
         assert s.cv.units == "british_thermal_unit / degree_Rankine / pound"
         assert s.cp.units == "british_thermal_unit / degree_Rankine / pound"
@@ -954,7 +954,7 @@ class TestState(object):
         
     def test_state_units_SI(self): 
         """ Set a state with SI units and check the properties."""
-        s = State("water", T = Q_(100, 'degC'), p = Q_(1.0, 'atm'), units = "SI")
+        s = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'), units="SI")
         assert s.units == "SI"
         assert s.cv.units == "kilojoule / kelvin / kilogram"
         assert s.cp.units == "kilojoule / kelvin / kilogram"
@@ -975,3 +975,4 @@ class TestState(object):
         set_default_units("EE")
         s3 = State("water", T = Q_(100, 'degC'), p = Q_(1.0, 'atm'))
         assert s3.units == "EE"
+        set_default_units(None)

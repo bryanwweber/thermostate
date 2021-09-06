@@ -32,9 +32,9 @@ class EnglishEngineering:
         BTU/lb
     v : `str`
         ft**3/lb
-    cp : 'str'
+    cp : `str`
         BTU/(lb*degR)
-    cv : 'str'
+    cv : `str`
         BTU/(lb*degR)
 
     """
@@ -69,9 +69,9 @@ class SystemInternational:
         kJ/kg
     v : `str`
         m**3/lb
-    cv : 'str'
+    cv : `str`
         kJ/(K*kg) 
-    cp : 'str'
+    cp : `str`
         kJ/(K*kg)
 
     """
