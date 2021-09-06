@@ -967,12 +967,12 @@ class TestState(object):
               
     def test_default_units(self):
         """ Set default units and check for functionality"""
-        s = State("water", T = Q_(100, 'degC'), p = Q_(1.0, 'atm'))
+        s = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'))
         assert s.units is None
         set_default_units("SI")
-        s2 = State("water", T = Q_(100, 'degC'), p = Q_(1.0, 'atm'))
+        s2 = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'))
         assert s2.units == "SI"
         set_default_units("EE")
-        s3 = State("water", T = Q_(100, 'degC'), p = Q_(1.0, 'atm'))
+        s3 = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'))
         assert s3.units == "EE"
         set_default_units(None)
