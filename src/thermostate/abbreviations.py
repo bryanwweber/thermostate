@@ -70,7 +70,7 @@ class SystemInternational:
     v : `str`
         m**3/lb
     cv : `str`
-        kJ/(K*kg) 
+        kJ/(K*kg)
     cp : `str`
         kJ/(K*kg)
 
@@ -82,5 +82,5 @@ class SystemInternational:
     u = "kJ/kg"
     v = "m**3/kg"
     p = "bar"
-    cv = "kJ/(K*kg)" 
+    cv = "kJ/(K*kg)"
     cp = "kJ/(K*kg)"

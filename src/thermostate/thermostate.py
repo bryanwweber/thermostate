@@ -13,7 +13,7 @@ from pint.converters import ScaleConverter
 import numpy as np
 
 from .abbreviations import (
-    SystemInternational as default_SI, 
+    SystemInternational as default_SI,
     EnglishEngineering as default_EE)
 
 try:  # pragma: no cover
@@ -278,12 +278,8 @@ class State(object):
     def __ge__(self, other: "State"):
         return NotImplemented
 
-    def __init__(
-        self, 
-        substance: str, 
-        label=None, 
-        units=None, 
-        **kwargs: "pint.Quantity"):
+    def __init__(self, substance: str, label=None, units=None,
+                 **kwargs: "pint.Quantity"):
 
         if units is None:
             units = default_units
@@ -342,8 +338,7 @@ class State(object):
 
     @property
     def units(self):
-        """Get or set the string units for this state to autoset the units for all 
-        state attributes."""
+        """Get or set the string units for this state to set attribute units."""
         return self._units
 
     @units.setter
