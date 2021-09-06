@@ -976,3 +976,10 @@ class TestState(object):
         s3 = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'))
         assert s3.units == "EE"
         set_default_units(None)
+        
+    def test_unsupported_units(self):
+        """ unsupported unit names should raise TypeError """
+        with pytest.raises(TypeError):
+            set_default_units("bad")
+        with pytest.raises(TypeError):
+            s = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'), units="bad")
