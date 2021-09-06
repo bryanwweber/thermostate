@@ -12,7 +12,9 @@ from pint.unit import UnitsContainer, UnitDefinition
 from pint.converters import ScaleConverter
 import numpy as np
 
-from .abbreviations import SystemInternational as default_SI, EnglishEngineering as default_EE
+from .abbreviations import (
+    SystemInternational as default_SI, 
+    EnglishEngineering as default_EE)
 
 try:  # pragma: no cover
     from IPython.core.ultratb import AutoFormattedTB
@@ -29,16 +31,20 @@ Q_ = units.Quantity
 units.define(UnitDefinition("percent", "pct", (), ScaleConverter(1.0 / 100.0)))
 units.setup_matplotlib()
 
-default_units = None 
+default_units = None
+
 
 def set_default_units(units):
+    """Set default units to be used in class initialization."""
     if units is None or units in ("SI", "EE"):
-        global default_units 
+        global default_units
         default_units = units
-    else: 
+    else:
         raise TypeError(
-            f"The given units '{units!r}' are not supported. Must be 'SI', 'EE', or None."
+            f"The given units '{units!r}' are not supported. Must be 'SI', "
+            "'EE', or None."
         )
+
 
 # Don't add the _render_traceback_ function to DimensionalityError if
 # IPython isn't present. This function is only used by the IPython/ipykernel
@@ -272,14 +278,19 @@ class State(object):
     def __ge__(self, other: "State"):
         return NotImplemented
 
-    def __init__(self, substance: str, label=None, units=None, **kwargs: "pint.Quantity"):
-        
+    def __init__(
+        self, 
+        substance: str, 
+        label=None, 
+        units=None, 
+        **kwargs: "pint.Quantity"):
+
         if units is None:
             units = default_units
         self.units = units
 
         self.label = label
-        
+
         if substance.upper() in self._allowed_subs:
             self.sub = substance.upper()
         else:
@@ -328,10 +339,11 @@ class State(object):
                 f"The given label '{value!r}' could not be converted to a string"
             ) from None
         self._label = label
-        
+
     @property
     def units(self):
-        """Get or set the string units for this state to autoset the units for all state attributes."""
+        """Get or set the string units for this state to autoset the units for all 
+        state attributes."""
         return self._units
 
     @units.setter
@@ -340,7 +352,8 @@ class State(object):
             self._units = value
         else:
             raise TypeError(
-                f"The given units '{units!r}' are not supported. Must be 'SI', 'EE', or None."
+                f"The given units '{units!r}' are not supported. Must be 'SI', "
+                "'EE', or None."
             )
 
     def to_SI(self, prop: str, value: "pint.Quantity") -> "pint.Quantity":
@@ -428,12 +441,12 @@ class State(object):
                 value = self._abstract_state.keyed_output(p) * units(
                     self._SI_units[prop]
                 )
-                
+
             set_units = None
             if self.units == "SI":
-                set_units = getattr(default_SI, prop, None) 
+                set_units = getattr(default_SI, prop, None)
             elif self.units == "EE":
-                set_units = getattr(default_EE, prop, None) 
+                set_units = getattr(default_EE, prop, None)
             if set_units is not None:
                 value.ito(set_units)
             setattr(self, "_" + prop, value)
