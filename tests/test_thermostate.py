@@ -938,9 +938,8 @@ class TestState(object):
         assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
         assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
 
-        
     def test_state_units_EE(self):
-        """ Set a state with EE units and check the properties."""
+        """Set a state with EE units and check the properties."""
         s = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'), units="EE")
         assert s.units == "EE"
         assert s.cv.units == "british_thermal_unit / degree_Rankine / pound"
@@ -951,9 +950,9 @@ class TestState(object):
         assert s.u.units == "british_thermal_unit / pound"
         assert s.v.units == "foot ** 3 / pound"
         assert s.p.units == "pound_force_per_square_inch"
-        
-    def test_state_units_SI(self): 
-        """ Set a state with SI units and check the properties."""
+
+    def test_state_units_SI(self):
+        """Set a state with SI units and check the properties."""
         s = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'), units="SI")
         assert s.units == "SI"
         assert s.cv.units == "kilojoule / kelvin / kilogram"
@@ -964,9 +963,9 @@ class TestState(object):
         assert s.u.units == "kilojoule / kilogram"
         assert s.v.units == "meter ** 3 / kilogram"
         assert s.p.units == "bar"
-              
+
     def test_default_units(self):
-        """ Set default units and check for functionality"""
+        """Set default units and check for functionality."""
         s = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'))
         assert s.units is None
         set_default_units("SI")
@@ -976,10 +975,10 @@ class TestState(object):
         s3 = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'))
         assert s3.units == "EE"
         set_default_units(None)
-        
+
     def test_unsupported_units(self):
-        """ unsupported unit names should raise TypeError """
+        """Unsupported unit names should raise TypeError."""
         with pytest.raises(TypeError):
             set_default_units("bad")
         with pytest.raises(TypeError):
-            s = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'), units="bad")
+            State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'), units="bad")
