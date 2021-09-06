@@ -949,8 +949,8 @@ class TestState(object):
         assert s.h.units == "british_thermal_unit / pound"
         assert s.T.units == "degree_Fahrenheit"
         assert s.u.units == "british_thermal_unit / pound"
-        assert s.v.units == "pound_force_per_square_inch"
-        assert s.p.units == "foot ** 3 / pound"
+        assert s.v.units == "foot ** 3 / pound"
+        assert s.p.units == "pound_force_per_square_inch"
         
     def test_state_units_SI(self): 
         """ Set a state with SI units and check the properties."""
@@ -962,8 +962,8 @@ class TestState(object):
         assert s.h.units == "kilojoule / kilogram"
         assert s.T.units == "degree_Celsius"
         assert s.u.units == "kilojoule / kilogram"
-        assert s.v.units == "bar"
-        assert s.p.units == "meter ** 3 / kilogram"
+        assert s.v.units == "meter ** 3 / kilogram"
+        assert s.p.units == "bar"
               
     def test_default_units(self):
         """ Set default units and check for functionality"""
