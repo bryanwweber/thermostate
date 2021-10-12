@@ -14,7 +14,8 @@ import numpy as np
 
 from .abbreviations import (
     SystemInternational as default_SI,
-    EnglishEngineering as default_EE)
+    EnglishEngineering as default_EE,
+)
 
 try:  # pragma: no cover
     from IPython.core.ultratb import AutoFormattedTB
@@ -278,8 +279,9 @@ class State(object):
     def __ge__(self, other: "State"):
         return NotImplemented
 
-    def __init__(self, substance: str, label=None, units=None,
-                 **kwargs: "pint.Quantity"):
+    def __init__(
+        self, substance: str, label=None, units=None, **kwargs: "pint.Quantity"
+    ):
 
         if units is None:
             units = default_units
@@ -345,6 +347,8 @@ class State(object):
     def units(self, value: str | None):
         if value is None or value in ("EE", "SI"):
             self._units = value
+            if hasattr(self, "T"):
+                setattr(self, "Tv", (self.T, self.v))
         else:
             raise TypeError(
                 f"The given units '{units!r}' are not supported. Must be 'SI', "

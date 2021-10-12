@@ -940,7 +940,7 @@ class TestState(object):
 
     def test_state_units_EE(self):
         """Set a state with EE units and check the properties."""
-        s = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'), units="EE")
+        s = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"), units="EE")
         assert s.units == "EE"
         assert s.cv.units == "british_thermal_unit / degree_Rankine / pound"
         assert s.cp.units == "british_thermal_unit / degree_Rankine / pound"
@@ -953,7 +953,7 @@ class TestState(object):
 
     def test_state_units_SI(self):
         """Set a state with SI units and check the properties."""
-        s = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'), units="SI")
+        s = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"), units="SI")
         assert s.units == "SI"
         assert s.cv.units == "kilojoule / kelvin / kilogram"
         assert s.cp.units == "kilojoule / kelvin / kilogram"
@@ -966,13 +966,13 @@ class TestState(object):
 
     def test_default_units(self):
         """Set default units and check for functionality."""
-        s = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'))
+        s = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"))
         assert s.units is None
         set_default_units("SI")
-        s2 = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'))
+        s2 = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"))
         assert s2.units == "SI"
         set_default_units("EE")
-        s3 = State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'))
+        s3 = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"))
         assert s3.units == "EE"
         set_default_units(None)
 
@@ -981,4 +981,19 @@ class TestState(object):
         with pytest.raises(TypeError):
             set_default_units("bad")
         with pytest.raises(TypeError):
-            State("water", T=Q_(100, 'degC'), p=Q_(1.0, 'atm'), units="bad")
+            State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"), units="bad")
+
+    def test_change_units(self):
+        """Set units after state has been initialized and check variables units have changed."""
+        s = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"), units="EE")
+        assert s.units == "EE"
+        s.units = "SI"
+        assert s.units == "SI"
+        assert s.cv.units == "kilojoule / kelvin / kilogram"
+        assert s.cp.units == "kilojoule / kelvin / kilogram"
+        assert s.s.units == "kilojoule / kelvin / kilogram"
+        assert s.h.units == "kilojoule / kilogram"
+        assert s.T.units == "degree_Celsius"
+        assert s.u.units == "kilojoule / kilogram"
+        assert s.v.units == "meter ** 3 / kilogram"
+        assert s.p.units == "bar"
