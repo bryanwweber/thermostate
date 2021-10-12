@@ -984,8 +984,7 @@ class TestState(object):
             State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"), units="bad")
 
     def test_change_units(self):
-        """Set units after state has been initialized and check variables
-         units have changed."""
+        """Change state units and check variable units have changed."""
         s = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"), units="EE")
         assert s.units == "EE"
         s.units = "SI"
