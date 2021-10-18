@@ -32,6 +32,10 @@ class EnglishEngineering:
         BTU/lb
     v : `str`
         ft**3/lb
+    cp : `str`
+        BTU/(lb*degR)
+    cv : `str`
+        BTU/(lb*degR)
 
     """
 
@@ -41,6 +45,8 @@ class EnglishEngineering:
     u = "BTU/lb"
     v = "ft**3/lb"
     p = "psi"
+    cp = "BTU/(lb*degR)"
+    cv = "BTU/(lb*degR)"
 
 
 class SystemInternational:
@@ -63,6 +69,10 @@ class SystemInternational:
         kJ/kg
     v : `str`
         m**3/lb
+    cv : `str`
+        kJ/(K*kg)
+    cp : `str`
+        kJ/(K*kg)
 
     """
 
@@ -72,3 +82,5 @@ class SystemInternational:
     u = "kJ/kg"
     v = "m**3/kg"
     p = "bar"
+    cv = "kJ/(K*kg)"
+    cp = "kJ/(K*kg)"

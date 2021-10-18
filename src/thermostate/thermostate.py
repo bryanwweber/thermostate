@@ -12,6 +12,11 @@ from pint.unit import UnitsContainer, UnitDefinition
 from pint.converters import ScaleConverter
 import numpy as np
 
+from .abbreviations import (
+    SystemInternational as default_SI,
+    EnglishEngineering as default_EE,
+)
+
 try:  # pragma: no cover
     from IPython.core.ultratb import AutoFormattedTB
 
@@ -26,6 +31,21 @@ units = UnitRegistry(autoconvert_offset_to_baseunit=True)
 Q_ = units.Quantity
 units.define(UnitDefinition("percent", "pct", (), ScaleConverter(1.0 / 100.0)))
 units.setup_matplotlib()
+
+default_units = None
+
+
+def set_default_units(units):
+    """Set default units to be used in class initialization."""
+    if units is None or units in ("SI", "EE"):
+        global default_units
+        default_units = units
+    else:
+        raise TypeError(
+            f"The given units '{units!r}' are not supported. Must be 'SI', "
+            "'EE', or None."
+        )
+
 
 # Don't add the _render_traceback_ function to DimensionalityError if
 # IPython isn't present. This function is only used by the IPython/ipykernel
@@ -197,7 +217,7 @@ class State(object):
         key: str,
         value: "Union[str, pint.Quantity, tuple[pint.Quantity, pint.Quantity]]",
     ) -> None:
-        if key.startswith("_") or key == "sub" or key == "label":
+        if key.startswith("_") or key in ("sub", "label", "units"):
             object.__setattr__(self, key, value)
         elif key in self._allowed_pairs:
             if not isinstance(value, tuple):  # pragma: no cover, for typing
@@ -259,8 +279,16 @@ class State(object):
     def __ge__(self, other: "State"):
         return NotImplemented
 
-    def __init__(self, substance: str, label=None, **kwargs: "pint.Quantity"):
+    def __init__(
+        self, substance: str, label=None, units=None, **kwargs: "pint.Quantity"
+    ):
+
+        if units is None:
+            units = default_units
+        self.units = units
+
         self.label = label
+
         if substance.upper() in self._allowed_subs:
             self.sub = substance.upper()
         else:
@@ -309,6 +337,23 @@ class State(object):
                 f"The given label '{value!r}' could not be converted to a string"
             ) from None
         self._label = label
+
+    @property
+    def units(self):
+        """Get or set the string units for this state to set attribute units."""
+        return self._units
+
+    @units.setter
+    def units(self, value: str | None):
+        if value is None or value in ("EE", "SI"):
+            self._units = value
+            if hasattr(self, "T"):
+                setattr(self, "Tv", (self.T, self.v))
+        else:
+            raise TypeError(
+                f"The given units '{units!r}' are not supported. Must be 'SI', "
+                "'EE', or None."
+            )
 
     def to_SI(self, prop: str, value: "pint.Quantity") -> "pint.Quantity":
         """Convert the input ``value`` to the appropriate SI base units."""
@@ -396,4 +441,11 @@ class State(object):
                     self._SI_units[prop]
                 )
 
+            set_units = None
+            if self.units == "SI":
+                set_units = getattr(default_SI, prop, None)
+            elif self.units == "EE":
+                set_units = getattr(default_EE, prop, None)
+            if set_units is not None:
+                value.ito(set_units)
             setattr(self, "_" + prop, value)

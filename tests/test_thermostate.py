@@ -2,7 +2,7 @@
 import pytest
 import numpy as np
 
-from thermostate import State, Q_
+from thermostate import State, Q_, set_default_units
 from thermostate.thermostate import StateError
 
 
@@ -937,3 +937,63 @@ class TestState(object):
         assert np.isclose(s.v, Q_(0.4772010021515822, "m**3/kg"))  # type: ignore
         assert np.isclose(s.h, Q_(1061602.391543017, "J/kg"))  # type: ignore
         assert np.isclose(s.x, Q_(0.28475636946248034, "dimensionless"))  # type: ignore
+
+    def test_state_units_EE(self):
+        """Set a state with EE units and check the properties."""
+        s = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"), units="EE")
+        assert s.units == "EE"
+        assert s.cv.units == "british_thermal_unit / degree_Rankine / pound"
+        assert s.cp.units == "british_thermal_unit / degree_Rankine / pound"
+        assert s.s.units == "british_thermal_unit / degree_Rankine / pound"
+        assert s.h.units == "british_thermal_unit / pound"
+        assert s.T.units == "degree_Fahrenheit"
+        assert s.u.units == "british_thermal_unit / pound"
+        assert s.v.units == "foot ** 3 / pound"
+        assert s.p.units == "pound_force_per_square_inch"
+
+    def test_state_units_SI(self):
+        """Set a state with SI units and check the properties."""
+        s = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"), units="SI")
+        assert s.units == "SI"
+        assert s.cv.units == "kilojoule / kelvin / kilogram"
+        assert s.cp.units == "kilojoule / kelvin / kilogram"
+        assert s.s.units == "kilojoule / kelvin / kilogram"
+        assert s.h.units == "kilojoule / kilogram"
+        assert s.T.units == "degree_Celsius"
+        assert s.u.units == "kilojoule / kilogram"
+        assert s.v.units == "meter ** 3 / kilogram"
+        assert s.p.units == "bar"
+
+    def test_default_units(self):
+        """Set default units and check for functionality."""
+        s = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"))
+        assert s.units is None
+        set_default_units("SI")
+        s2 = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"))
+        assert s2.units == "SI"
+        set_default_units("EE")
+        s3 = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"))
+        assert s3.units == "EE"
+        set_default_units(None)
+
+    def test_unsupported_units(self):
+        """Unsupported unit names should raise TypeError."""
+        with pytest.raises(TypeError):
+            set_default_units("bad")
+        with pytest.raises(TypeError):
+            State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"), units="bad")
+
+    def test_change_units(self):
+        """Change state units and check variable units have changed."""
+        s = State("water", T=Q_(100, "degC"), p=Q_(1.0, "atm"), units="EE")
+        assert s.units == "EE"
+        s.units = "SI"
+        assert s.units == "SI"
+        assert s.cv.units == "kilojoule / kelvin / kilogram"
+        assert s.cp.units == "kilojoule / kelvin / kilogram"
+        assert s.s.units == "kilojoule / kelvin / kilogram"
+        assert s.h.units == "kilojoule / kilogram"
+        assert s.T.units == "degree_Celsius"
+        assert s.u.units == "kilojoule / kilogram"
+        assert s.v.units == "meter ** 3 / kilogram"
+        assert s.p.units == "bar"
