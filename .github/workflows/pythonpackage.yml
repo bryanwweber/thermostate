@@ -15,7 +15,7 @@ on:
 
 jobs:
   build:
-    name: Build and test on ${{ runner.os }} with Python ${{ matrix.python }}
+    name: Build and test on ${{ matrix.os }} with Python ${{ matrix.python }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -46,7 +46,7 @@ jobs:
         file: ./coverage.xml
 
   build-coolprop-master:
-    name: Build CoolProp on ${{ runner.os }} with Python ${{ matrix.python }}
+    name: Build CoolProp on ${{ matrix.os }} with Python ${{ matrix.python }}
     continue-on-error: true
     runs-on: ${{ matrix.os }}
     strategy:
