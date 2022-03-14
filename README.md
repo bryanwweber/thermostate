@@ -6,7 +6,7 @@ This package provides a wrapper around [CoolProp](https://github.com/CoolProp/Co
 
 ### Conda
 
-The preferred installation method is to use [`conda`](https://anaconda.com/download). Using Conda, ThermoState can be installed for either Python 3.6, or 3.7\. If you have an existing Conda environment with one of those Python versions, installing ThermoState can be done by
+The preferred installation method is to use [`conda`](https://anaconda.com/download). Using Conda, ThermoState can be installed for Python 3.7 or higher. If you have an existing Conda environment with one of those Python versions, installing ThermoState can be done by
 
 ```bash
 conda install -c bryanwweber thermostate conda-forge::pint
@@ -14,7 +14,7 @@ conda install -c bryanwweber thermostate conda-forge::pint
 
 This installs Pint from the `conda-forge` channel; if you would like to use another channel to install Pint, change the `conda-forge` to be the name of the channel you prefer. If Pint is already installed in your environment, the `conda-forge::pint` can be omitted entirely.
 
-If you do not have an environment with Python 3.6 or 3.7, you can create a new environment with
+If you do not have an environment with Python 3.7 or higher, you can create a new environment with
 
 ```bash
 conda create -n thermostate -c bryanwweber thermostate conda-forge::pint
@@ -25,7 +25,16 @@ conda create -n thermostate -c bryanwweber thermostate conda-forge::pint
 Alternatively, ThermoState can be installed with pip.
 
 ```bash
-pip install thermostate
+python -m pip install thermostate
+```
+
+Note that for versions of Python >= 3.9, CoolProp 6.4.1 will not work from PyPI. You'll
+need to install CoolProp from their source repository until CoolProp >6.4.1 is
+released. In this case, you can still install ThermoState from PyPI by specifying
+not to install the dependencies automatically:
+
+```bash
+python -m pip install --no-deps thermostate matplotlib numpy pint
 ```
 
 ### From Source
@@ -43,7 +52,6 @@ pip install .
 Documentation can be found at <https://thermostate.readthedocs.io/>. The documentation contains a short [tutorial](https://thermostate.readthedocs.io/en/stable/Tutorial.html), [examples](https://thermostate.readthedocs.io/en/stable/examples.html), and [API documentation](https://thermostate.readthedocs.io/en/stable/thermostate.html) for the package.
 
 [![Documentation Status](https://readthedocs.org/projects/thermostate/badge/?version=stable)](https://thermostate.readthedocs.io/en/stable/?badge=stable)
-
 
 ## Citation
 
