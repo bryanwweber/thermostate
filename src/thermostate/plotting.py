@@ -376,5 +376,9 @@ class IdealGas(PlottingBase):
         if x_axis + y_axis not in self.plots:
             fig, axis = plt.subplots()
             self.plots[x_axis + y_axis] = (fig, axis)
+            if x_axis in ("p", "v"):
+                self.set_xscale(x_axis, y_axis, "log")
+            if y_axis in ("p", "v"):
+                self.set_yscale(x_axis, y_axis, "log")
         else:
             raise ValueError("Plot has already been added to this class instance")

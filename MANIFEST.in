@@ -3,3 +3,4 @@ include CODE_OF_CONDUCT.md
 include CONTRIBUTING.md
 include CHANGELOG.md
 include README.md
+include VERSION.txt

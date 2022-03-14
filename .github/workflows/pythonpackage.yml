@@ -13,28 +13,21 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
+    name: Build and test on ${{ matrix.os }} with Python ${{ matrix.python }}
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        python-version: [3.7, 3.8]
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        experimental: [false]
-        # Python 3.9 builds require CoolProp from their master branch
+        # Python 3.9 and 3.10 builds require CoolProp from their master branch
         # so we can use the coolprop-master builds below as the test
-        # for Python 3.9
-        # include:
-        #   - os: ubuntu-latest
-        #     experimental: true
-        #     python-version: 3.9
-        #   - os: macos-latest
-        #     experimental: true
-        #     python-version: 3.9
-        #   - os: windows-latest
-        #     experimental: true
-        #     python-version: 3.9
+        # for Python 3.9 and 3.10
+        python-version: ["3.7", "3.8"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
       fail-fast: false
 
     steps:
@@ -51,27 +44,29 @@ jobs:
     - name: Test with tox
       run: tox -v
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
 
   build-coolprop-master:
+    name: Build CoolProp on ${{ matrix.os }} with Python ${{ matrix.python }}
     continue-on-error: true
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.9", "3.10"]
       fail-fast: false
     steps:
-      - name: Check out the repository
+      - name: Check out this repository
         uses: actions/checkout@v2
         with:
           path: main
-      - name: Set up Python 3.9
+      - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: ${{ matrix.python }}
       - name: Install Pip and Setuptools
         run: python -m pip install --upgrade pip setuptools wheel
       - uses: octokit/request-action@v2.x
@@ -86,7 +81,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/CoolProp/wrappers/Python/dist
-          key: ${{ runner.os }}-cp-build-${{ fromJson(steps.get-cp-hash.outputs.data).sha }}
+          key: ${{ runner.os }}-${{ matrix.python }}-cp-build-${{ fromJson(steps.get-cp-hash.outputs.data).sha }}
       - name: Clone CoolProp
         if: steps.cp-cache.outputs.cache-hit != 'true'
         uses: actions/checkout@v2
@@ -100,7 +95,7 @@ jobs:
       - name: Build CoolProp wheel
         if: steps.cp-cache.outputs.cache-hit != 'true'
         env:
-          MACOSX_DEPLOYMENT_TARGET: 10.14
+          MACOSX_DEPLOYMENT_TARGET: 11.0
         run: |
           pushd CoolProp/wrappers/Python
           python ../../dev/generate_headers.py
@@ -112,19 +107,18 @@ jobs:
       - name: Test with tox
         env:
           CP_PACKAGE_DIST_DIR: ${{ github.workspace }}/CoolProp/wrappers/Python/dist
-        run: |
-          pushd main
-          tox -e coolprop-master
+        run: tox -e coolprop-master
+        working-directory: main
 
   notebooks:
     runs-on: ubuntu-latest
     steps:
-    - name: Check out the repository
+    - name: Check out this repository
       uses: actions/checkout@v2
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: '3.8'
     - name: Install test dependencies
       run: |
         python -m pip install --upgrade pip setuptools
@@ -135,12 +129,12 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     steps:
-    - name: Check out the repository
+    - name: Check out this repository
       uses: actions/checkout@v2
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: '3.8'
     - name: Install tox and dependencies
       run: |
         python -m pip install --upgrade pip
@@ -151,12 +145,12 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-    - name: Check out the repository
+    - name: Check out this repository
       uses: actions/checkout@v2
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: '3.8'
     - name: Install pandoc from Apt
       run: sudo apt-get install pandoc
     - name: Install docs dependencies
@@ -165,31 +159,8 @@ jobs:
         python -m pip install .[docs]
     - name: Build docs with sphinx
       run: |
-        pushd docs && make html SPHINXOPTS="-W"
-
-  conda-build-and-upload:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -l {0}
-    steps:
-    - uses: actions/checkout@v2
-    - uses: conda-incubator/setup-miniconda@77b16ed746da28724c61e1f1ad23395a4b695ef5
-      with:
-        auto-update-conda: true
-        conda-build-version: 3.21
-        auto-activate-base: true
-        activate-environment: ""
-        show-channel-urls: true
-        miniforge-version: latest
-    - name: Install conda-build dependencies
-      run: conda install -q anaconda-client conda-verify ripgrep
-    - name: Run conda build
-      run: conda build conda.recipe
-    - name: Upload package to anaconda.org
-      run: |
-        anaconda -t ${{ secrets.ANACONDA_TOKEN }} upload $CONDA/conda-bld/*/thermostate*.tar.bz2
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+        make html SPHINXOPTS="-W"
+      working-directory: docs
 
   pypi-build-and-upload:
     runs-on: ubuntu-latest
@@ -199,9 +170,9 @@ jobs:
       with:
         python-version: 3.8
     - name: Install build dependencies
-      run: python -m pip install --upgrade pip setuptools wheel pep517
+      run: python -m pip install --upgrade pip setuptools wheel build
     - name: Build the source and binary distributions
-      run: python -m pep517.build --source --binary --out-dir dist/ .
+      run: python -m build --outdir dist/ .
     - name: Publish a Python distribution to PyPI
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@v1.3.1
