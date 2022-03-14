@@ -9,7 +9,7 @@ source:
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: "{{ PYTHON }} -m pip install -vv ."
   noarch: python
 
 requirements:
@@ -23,6 +23,7 @@ requirements:
     - coolprop >=6.1.0,<6.5
     - pint >=0.9,<1.0
     - matplotlib >=2.0
+    - numpy >=1.16
 
 test:
   source_files:
