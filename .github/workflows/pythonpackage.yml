@@ -158,30 +158,6 @@ jobs:
       run: |
         pushd docs && make html SPHINXOPTS="-W"
 
-  conda-build-and-upload:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -l {0}
-    steps:
-    - uses: actions/checkout@v2
-    - uses: conda-incubator/setup-miniconda@77b16ed746da28724c61e1f1ad23395a4b695ef5
-      with:
-        auto-update-conda: true
-        conda-build-version: 3.21
-        auto-activate-base: true
-        activate-environment: ""
-        show-channel-urls: true
-        miniforge-version: latest
-    - name: Install conda-build dependencies
-      run: conda install -q anaconda-client conda-verify ripgrep
-    - name: Run conda build
-      run: conda build conda.recipe
-    - name: Upload package to anaconda.org
-      run: |
-        anaconda -t ${{ secrets.ANACONDA_TOKEN }} upload $CONDA/conda-bld/*/thermostate*.tar.bz2
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-
   pypi-build-and-upload:
     runs-on: ubuntu-latest
     steps:
