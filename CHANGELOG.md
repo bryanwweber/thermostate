@@ -6,14 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
 
-## [Unreleased]
+## [1.3.0] - 14-MAR-2022
 ### Added
+- Plots!
+- Python 3.10 support
+- Default units can now be specified for `State` instances
 
 ### Changed
-
-### Fixed
-
-### Removed
+- Python >= 3.9 requires CoolProp from their source repository
 
 ## [1.2.1] - 21-JUL-2020
 ### Changed
@@ -228,7 +228,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - First Release
 
-[Unreleased]: https://github.com/bryanwweber/thermostate/compare/v1.2.1...HEAD
+[1.3.0]: https://github.com/bryanwweber/thermostate/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/bryanwweber/thermostate/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/bryanwweber/thermostate/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/bryanwweber/thermostate/compare/v1.0.0...v1.1.0
