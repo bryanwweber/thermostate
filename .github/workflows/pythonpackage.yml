@@ -67,7 +67,7 @@ jobs:
       uses: conda-incubator/setup-miniconda@v2
       with:
         python-version: ${{ matrix.python }}
-        miniforge-version: Mambaforge
+        miniforge-variant: Mambaforge
     - name: Install Conda dependencies
       run: mamba install coolprop pint numpy matplotlib pytest pytest-cov pip tox
     - name: Install pip dependencies
