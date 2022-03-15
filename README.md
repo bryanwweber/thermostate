@@ -6,18 +6,18 @@ This package provides a wrapper around [CoolProp](https://github.com/CoolProp/Co
 
 ### Conda
 
-The preferred installation method is to use [`conda`](https://anaconda.com/download). Using Conda, ThermoState can be installed for Python 3.7 or higher. If you have an existing Conda environment with one of those Python versions, installing ThermoState can be done by
+The preferred installation method is to use [`conda`](https://anaconda.com/download). Using Conda, ThermoState can be installed for Python 3.7 or higher. If you have an existing Conda environment with one of those Python versions, installing ThermoState can be done by:
 
 ```bash
-conda install -c bryanwweber thermostate conda-forge::pint
+conda install -c conda-forge thermostate
 ```
 
-This installs Pint from the `conda-forge` channel; if you would like to use another channel to install Pint, change the `conda-forge` to be the name of the channel you prefer. If Pint is already installed in your environment, the `conda-forge::pint` can be omitted entirely.
+This installs ThermoState and its dependencies from the `conda-forge` channel.
 
-If you do not have an environment with Python 3.7 or higher, you can create a new environment with
+If you do not have an environment with Python 3.7 or higher, you can create a new environment with:
 
 ```bash
-conda create -n thermostate -c bryanwweber thermostate conda-forge::pint
+conda create -n thermostate -c conda-forge thermostate
 ```
 
 ### Pip
@@ -37,9 +37,11 @@ not to install the dependencies automatically:
 python -m pip install --no-deps thermostate matplotlib numpy pint
 ```
 
+Then you'll need to install CoolProp into the same environment separately. Note that the conda package is available for all Python versions after 3.7.
+
 ### From Source
 
-ThermoState is a pure-Python package that supports any Python version 3.6 and higher. To install from source, clone the source code repository and install using `pip`.
+ThermoState is a pure-Python package that supports any Python version 3.7 and higher. To install from source, clone the source code repository and install using `pip`.
 
 ```bash
 git clone https://github.com/bryanwweber/thermostate
