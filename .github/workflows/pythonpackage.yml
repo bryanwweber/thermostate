@@ -71,7 +71,7 @@ jobs:
     - name: Install Conda dependencies
       run: mamba install coolprop pint numpy matplotlib pytest pytest-cov pip tox
     - name: Install pip dependencies
-      run: python -m pip install tox-current-env
+      run: python -m pip install tox-current-env tox-venv
     - name: Install this package
       run: python -m pip install . --no-deps -vv
     - name: Test with tox
