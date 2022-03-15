@@ -78,7 +78,7 @@ jobs:
       run: |
         PY_VER=${{ matrix.python }}
         TEST_VER=${PY_VER:0:1}${PY_VER:2:3}
-        tox -e $TEST_VER --current-env
+        tox -e py$TEST_VER --current-env
 
   notebooks:
     runs-on: ubuntu-latest
