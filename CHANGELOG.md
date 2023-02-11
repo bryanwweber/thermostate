@@ -6,14 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
 
-## [Unreleased]
-### Added
-
+## [1.4.0] - 11-FEB-2023
 ### Changed
-
-### Fixed
-
-### Removed
+- Capped the version of pint. We don't support 0.20 with this version due to a missing module.
 
 ## [1.3.0] - 14-MAR-2022
 ### Added
