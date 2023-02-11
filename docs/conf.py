@@ -13,23 +13,15 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import os
-import sys
-import pkg_resources
 import datetime
 import shutil
+
+from importlib import metadata
 
 shutil.copy2('../CHANGELOG.md', 'CHANGELOG.md')
 shutil.copy2('../CODE_OF_CONDUCT.md', 'CODE_OF_CONDUCT.md')
 shutil.copy2('../CONTRIBUTING.md', 'CONTRIBUTING.md')
 
-# If Sphinx is not running on a CI service, then we're probably building
-# locally and don't have the package installed. In that case, we need to add
-# src directory from one up for autodoc to work.
-on_rtd = os.environ.get('READTHEDOCS') == 'True'
-on_gh_actions = os.environ.get('GITHUB_ACTIONS') == 'true'
-if not any([on_rtd, on_gh_actions]):
-    sys.path.insert(0, os.path.abspath(os.path.join('..', 'src')))
 
 # -- General configuration ------------------------------------------------
 
@@ -88,10 +80,7 @@ copyright = '{}, {}'.format(this_year, author)
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-try:
-    release = pkg_resources.get_distribution(project).version
-except pkg_resources.DistributionNotFound:
-    release = 'unknown'
+release = metadata.version("thermostate")
 # The short X.Y version.
 version = '.'.join(release.split('.')[:1])
 
