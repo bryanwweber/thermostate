@@ -1,5 +1,6 @@
 """Test module for the units abbreviations code."""
-from thermostate import EnglishEngineering as EE, SystemInternational as SI
+from thermostate import EnglishEngineering as EE
+from thermostate import SystemInternational as SI
 
 
 def test_EE():

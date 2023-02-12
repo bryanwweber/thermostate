@@ -1,8 +1,8 @@
 """Test module for the main ThermoState code."""
-import pytest
 import numpy as np
+import pytest
 
-from thermostate import State, Q_, set_default_units
+from thermostate import Q_, State, set_default_units
 from thermostate.thermostate import StateError
 
 

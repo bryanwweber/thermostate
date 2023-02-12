@@ -1,6 +1,104 @@
 [build-system]
-requires = [
-    "setuptools >= 40.0.4",
-    "wheel >= 0.29.0",
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+
+[project]
+name = "thermostate"
+description = "A package to manage thermodynamic states"
+keywords = ["thermodynamics", "chemistry", "state", "education"]
+readme = "README.md"
+authors = [
+    {name = "Bryan W. Weber"},
 ]
-build-backend = 'setuptools.build_meta'
+maintainers = [
+    {name = "Bryan W. Weber", email = "bryan.w.weber@gmail.com"},
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: MacOS",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: POSIX",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.9",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "coolprop>=6.4.3.post1",
+    "matplotlib>=3.5",
+    "numpy>=1.22",
+    "pint>=0.20,<1.0",
+]
+license = {text = "BSD-3-clause"}
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://thermostate.readthedocs.io/"
+Source = "https://github.com/bryanwweber/thermostate"
+Tracker = "https://github.com/bryanwweber/thermostate/issues"
+
+[project.optional-dependencies]
+docs = [
+    "ipykernel~=6.21",
+    "ipython~=8.10",
+    "jupyter-client~=8.0",
+    "nbsphinx~=0.8",
+    "recommonmark~=0.7",
+    "sphinx~=6.1",
+]
+
+[tool]
+[tool.pdm]
+package-dir = "src"
+[tool.pdm.version]
+source = "file"
+path = "src/thermostate/__init__.py"
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "flake8>=6.0.0",
+    "black[jupyter]>=23.1.0",
+    "mypy>=1.0.0",
+    "isort>=5.12.0",
+    "flake8-docstrings>=1.7.0",
+]
+testing = [
+    "pytest>=7.2",
+    "pytest-cov>=4.0",
+]
+ci = [
+    "tox>=4.4.5",
+    "tox-pdm>=0.6.1",
+]
+
+[tool.pdm.scripts]
+test = "pytest -vv --cov --cov-report=xml tests/"
+docs = "sphinx-build -b html docs/ docs/_build -W --keep-going"
+
+[tool.pdm.scripts.lint]
+shell = """
+    flake8 src/thermostate tests docs
+    isort --check src/thermostate tests
+    black --check src/thermostate tests docs
+"""
+
+[tool.pdm.scripts.format]
+shell = """
+    isort src/thermostate tests
+    black src/thermostate tests docs
+"""
+
+[tool.pdm.scripts.notebooks]
+shell = """
+    jupyter nbconvert --to notebook --execute docs/*-example.ipynb
+    jupyter nbconvert --to notebook --execute docs/Plot-Tutorial.ipynb
+    jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_errors=True docs/Tutorial.ipynb
+"""

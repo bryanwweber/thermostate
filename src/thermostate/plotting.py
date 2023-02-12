@@ -1,11 +1,14 @@
 """Base Plotting module."""
 from __future__ import annotations
-from . import State, units
-from CoolProp.CoolProp import PropsSI
-import matplotlib.pyplot as plt
-import numpy as np
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+
+import matplotlib.pyplot as plt
+import numpy as np
+from CoolProp.CoolProp import PropsSI
+
+from . import State, units
 
 
 @dataclass

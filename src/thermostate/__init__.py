@@ -1,9 +1,4 @@
-from .thermostate import units, Q_, State, set_default_units  # noqa
 from .abbreviations import EnglishEngineering, SystemInternational  # noqa
+from .thermostate import Q_, State, set_default_units, units  # noqa
 
-try:
-    import importlib.metadata as implib
-except ImportError:
-    import importlib_metadata as implib
-
-__version__ = implib.version("thermostate")
+__version__ = "2.0.0"

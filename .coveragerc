@@ -9,11 +9,6 @@ exclude_lines =
     pragma: no cover
     raise NotImplementedError
     if __name__ == .__main__.:
-ignore_errors = True
-omit =
-    setup.py
-    src/thermostate/_version.py
-    .eggs/*
 
 [paths]
 # List of paths that are equivalent and should be combined

@@ -1,8 +1,9 @@
 """Test module for the plotting code."""
-import pytest
-from thermostate.plotting import VaporDome, IdealGas
-from thermostate.thermostate import State, units
 import numpy as np
+import pytest
+
+from thermostate.plotting import IdealGas, VaporDome
+from thermostate.thermostate import State, units
 
 
 def get_vapordome():
@@ -38,7 +39,7 @@ def test_remove_state_no_input():
 def test_remove_state_no_key():
     """Test ability of remove_state function to work with input of the state."""
     v = get_vapordome()
-    state_3 = State("water", T=500 * units.kelvin, v=1 * units.m ** 3 / units.kg)
+    state_3 = State("water", T=500 * units.kelvin, v=1 * units.m**3 / units.kg)
     v.add_state(state_3)  # test of repr(state)
     v.remove_state(state_3)
     # assert v.states[repr(state_3)] == None
@@ -47,7 +48,7 @@ def test_remove_state_no_key():
 def test_remove_state_key_input():
     """Test ability of remove_state function to work with input of a key."""
     v = get_vapordome()
-    state_4 = State("water", T=400 * units.kelvin, v=1 * units.m ** 3 / units.kg)
+    state_4 = State("water", T=400 * units.kelvin, v=1 * units.m**3 / units.kg)
     v.add_state(state_4, key="st4")  # test of key
     v.remove_state(key="st4")
     # assert state_4 not in v.states #fails whether its "in" or "not in". whats a better
@@ -57,7 +58,7 @@ def test_remove_state_key_input():
 def test_remove_state_wrong_key_no_state():
     """Test error handling of remove_state function with the wrong key."""
     v = get_vapordome()
-    state_5 = State("water", T=700 * units.kelvin, v=1 * units.m ** 3 / units.kg)
+    state_5 = State("water", T=700 * units.kelvin, v=1 * units.m**3 / units.kg)
     v.add_state(state_5, key="st5")  # test of wrong key and state = none
     with pytest.raises(ValueError, match="Couldn't find key"):
         v.remove_state(key="wrong key")
@@ -66,7 +67,7 @@ def test_remove_state_wrong_key_no_state():
 def test_remove_state_altered_key():
     """Test ability of remove_state function to work with input of an altered key."""
     v = get_vapordome()
-    state_6 = State("water", T=700 * units.kelvin, v=0.01 * units.m ** 3 / units.kg)
+    state_6 = State("water", T=700 * units.kelvin, v=0.01 * units.m**3 / units.kg)
     v.add_state(state_6, key="st6")  # test of state input with an altered key
     v.remove_state(state_6)
 
@@ -74,7 +75,7 @@ def test_remove_state_altered_key():
 def test_remove_state_state_not_added():
     """Test error handling of remove_state function with the wrong key."""
     v = get_vapordome()
-    state_7 = State("water", T=400 * units.kelvin, v=0.01 * units.m ** 3 / units.kg)
+    state_7 = State("water", T=400 * units.kelvin, v=0.01 * units.m**3 / units.kg)
     with pytest.raises(ValueError, match="Couldn't find the state"):
         v.remove_state(state_7)  # test of removing a state that was never added
 
@@ -159,7 +160,7 @@ def test_add_process_isobaric():
     v = get_vapordome()
     state_1 = State("water", p=1500 * units.Pa, s=1.5 * units.kJ / (units.kg * units.K))
     state_2 = State("water", p=3500 * units.Pa, s=3 * units.kJ / (units.K * units.kg))
-    state_3 = State("water", p=state_2.p, v=100 * units.m ** 3 / units.kg)
+    state_3 = State("water", p=state_2.p, v=100 * units.m**3 / units.kg)
     v.add_state(state_1, key="st_1")
     v.add_state(state_2, key="st_2")
     v.add_state(state_3, key="st_3")
@@ -170,7 +171,7 @@ def test_add_process_isobaric():
     line = v.processes["st_2st_3"]["vT"]
     v_range = (
         np.logspace(np.log10(state_2.v.magnitude), np.log10(state_3.v.magnitude))
-        * units.m ** 3
+        * units.m**3
         / units.kg
     )
     assert np.all(np.isclose(line.get_xdata(), v_range))
@@ -185,7 +186,7 @@ def test_add_process_isothermal():
     state_2 = State(
         "water", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
     )
-    state_3 = State("water", T=state_2.T, v=100 * units.m ** 3 / units.kg)
+    state_3 = State("water", T=state_2.T, v=100 * units.m**3 / units.kg)
     v.add_state(state_1, key="st_1")
     v.add_state(state_2, key="st_2")
     v.add_state(state_3, key="st_3")
@@ -196,7 +197,7 @@ def test_add_process_isothermal():
     line = v.processes["st_2st_3"]["vT"]
     v_range = (
         np.logspace(np.log10(state_2.v.magnitude), np.log10(state_3.v.magnitude))
-        * units.m ** 3
+        * units.m**3
         / units.kg
     )
     assert np.all(np.isclose(line.get_xdata(), v_range))
@@ -211,7 +212,7 @@ def test_add_process_isoenergetic():
     state_2 = State(
         "water", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
     )
-    state_3 = State("water", u=state_2.u, v=state_2.v + 5 * units.m ** 3 / units.kg)
+    state_3 = State("water", u=state_2.u, v=state_2.v + 5 * units.m**3 / units.kg)
     v.add_state(state_1, key="st_1")
     v.add_state(state_2, key="st_2")
     v.add_state(state_3, key="st_3")
@@ -222,7 +223,7 @@ def test_add_process_isoenergetic():
     line = v.processes["st_2st_3"]["vT"]
     v_range = (
         np.logspace(np.log10(state_2.v.magnitude), np.log10(state_3.v.magnitude))
-        * units.m ** 3
+        * units.m**3
         / units.kg
     )
     assert np.all(np.isclose(line.get_xdata(), v_range))
@@ -237,7 +238,7 @@ def test_add_process_isoenthalpic():
     state_2 = State(
         "water", T=300 * units.kelvin, s=3 * units.kJ / (units.K * units.kg)
     )
-    state_3 = State("water", h=state_2.h, v=state_2.v + 5 * units.m ** 3 / units.kg)
+    state_3 = State("water", h=state_2.h, v=state_2.v + 5 * units.m**3 / units.kg)
     v.add_state(state_1, key="st_1")
     v.add_state(state_2, key="st_2")
     v.add_state(state_3, key="st_3")
@@ -248,7 +249,7 @@ def test_add_process_isoenthalpic():
     line = v.processes["st_2st_3"]["vT"]
     v_range = (
         np.logspace(np.log10(state_2.v.magnitude), np.log10(state_3.v.magnitude))
-        * units.m ** 3
+        * units.m**3
         / units.kg
     )
     assert np.all(np.isclose(line.get_xdata(), v_range))
@@ -274,7 +275,7 @@ def test_add_process_isentropic():
     line = v.processes["st_2st_3"]["vT"]
     v_range = (
         np.logspace(np.log10(state_2.v.magnitude), np.log10(state_3.v.magnitude))
-        * units.m ** 3
+        * units.m**3
         / units.kg
     )
     assert np.all(np.isclose(line.get_xdata(), v_range))
@@ -300,7 +301,7 @@ def test_add_process_isochoric():
     line = v.processes["st_2st_3"]["vT"]
     v_range = (
         np.logspace(np.log10(state_2.v.magnitude), np.log10(state_3.v.magnitude))
-        * units.m ** 3
+        * units.m**3
         / units.kg
     )
     assert np.all(np.isclose(line.get_xdata(), v_range))

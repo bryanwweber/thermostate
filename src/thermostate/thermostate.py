@@ -1,21 +1,19 @@
 """Base ThermoState module."""
 # Needed to support Python < 3.9
 from __future__ import annotations
-import sys
-from typing import TYPE_CHECKING
+
 import enum
+import sys
 from collections import OrderedDict
+from typing import TYPE_CHECKING
 
 import CoolProp
-from pint import UnitRegistry, DimensionalityError
-from pint.unit import UnitsContainer, UnitDefinition
-from pint.converters import ScaleConverter
 import numpy as np
+from pint import DimensionalityError, UnitRegistry
+from pint.util import UnitsContainer
 
-from .abbreviations import (
-    SystemInternational as default_SI,
-    EnglishEngineering as default_EE,
-)
+from .abbreviations import EnglishEngineering as default_EE
+from .abbreviations import SystemInternational as default_SI
 
 try:  # pragma: no cover
     from IPython.core.ultratb import AutoFormattedTB
@@ -24,12 +22,13 @@ except ImportError:  # pragma: no cover
     AutoFormattedTB = None
 
 if TYPE_CHECKING:  # pragma: no cover
-    import pint
     from typing import Union
+
+    import pint
 
 units = UnitRegistry(autoconvert_offset_to_baseunit=True)
 Q_ = units.Quantity
-units.define(UnitDefinition("percent", "pct", (), ScaleConverter(1.0 / 100.0)))
+units.define("_pct = 0.01 = pct = percent")
 units.setup_matplotlib()
 
 default_units = None
@@ -282,7 +281,6 @@ class State(object):
     def __init__(
         self, substance: str, label=None, units=None, **kwargs: "pint.Quantity"
     ):
-
         if units is None:
             units = default_units
         self.units = units
