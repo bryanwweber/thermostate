@@ -8,8 +8,7 @@ from collections import OrderedDict
 
 import CoolProp
 from pint import UnitRegistry, DimensionalityError
-from pint.unit import UnitsContainer, UnitDefinition
-from pint.converters import ScaleConverter
+from pint.util import UnitsContainer
 import numpy as np
 
 from .abbreviations import (
@@ -29,7 +28,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 units = UnitRegistry(autoconvert_offset_to_baseunit=True)
 Q_ = units.Quantity
-units.define(UnitDefinition("percent", "pct", (), ScaleConverter(1.0 / 100.0)))
+units.define("_pct = 0.01 = pct = percent")
 units.setup_matplotlib()
 
 default_units = None
