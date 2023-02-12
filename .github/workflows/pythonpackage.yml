@@ -40,7 +40,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
-        python -m pip install tox tox-gh-actions tox-venv
+        python -m pip install tox\<4 tox-gh-actions tox-venv
     - name: Test with tox
       run: tox -v
     - name: Upload coverage to Codecov
@@ -69,7 +69,7 @@ jobs:
         python-version: ${{ matrix.python }}
         miniforge-variant: Mambaforge
     - name: Install Conda dependencies
-      run: mamba install coolprop pint numpy matplotlib pytest pytest-cov pip tox
+      run: mamba install coolprop pint numpy matplotlib pytest pytest-cov pip tox\<4
     - name: Install pip dependencies
       run: python -m pip install tox-current-env tox-venv
     - name: Install this package
@@ -92,7 +92,7 @@ jobs:
     - name: Install test dependencies
       run: |
         python -m pip install --upgrade pip setuptools
-        python -m pip install tox tox-venv
+        python -m pip install tox\<4 tox-venv
     - name: Run notebooks test
       run: tox -e notebooks
 
@@ -108,7 +108,7 @@ jobs:
     - name: Install tox and dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install tox tox-venv
+        python -m pip install tox\<4 tox-venv
     - name: Run tox for flake8 environment
       run: tox -e flake8
 
