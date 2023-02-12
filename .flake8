@@ -1,0 +1,5 @@
+[flake8]
+max_line_length = 88
+# Ignore docstring requirement for dunder methods and __init__,
+# the latter only when the class is documented separately
+extend_ignore = D105,D107

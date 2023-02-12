@@ -68,6 +68,7 @@ dev = [
     "black>=23.1.0",
     "mypy>=1.0.0",
     "isort>=5.12.0",
+    "flake8-docstrings>=1.7.0",
 ]
 testing = [
     "pytest>=7.2",
