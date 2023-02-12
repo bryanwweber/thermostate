@@ -99,8 +99,7 @@ jobs:
     - name: Install the dependencies
       run: pdm install --prod -G docs
     - name: Build docs with sphinx
-      run: make html SPHINXOPTS="-W"
-      working-directory: docs
+      run: pdm docs
 
   pypi-build-and-upload:
     runs-on: ubuntu-latest
