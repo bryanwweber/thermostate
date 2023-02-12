@@ -6,47 +6,28 @@ This package provides a wrapper around [CoolProp](https://github.com/CoolProp/Co
 
 ### Conda
 
-The preferred installation method is to use [`conda`](https://anaconda.com/download). Using Conda, ThermoState can be installed for Python 3.7 or higher. If you have an existing Conda environment with one of those Python versions, installing ThermoState can be done by:
+The preferred installation method is to use [conda](https://anaconda.com/download). Using Conda, ThermoState can be installed for Python 3.9 and up. You can create a new environment with:
 
-```bash
-conda install -c conda-forge thermostate
-```
-
-This installs ThermoState and its dependencies from the `conda-forge` channel.
-
-If you do not have an environment with Python 3.7 or higher, you can create a new environment with:
-
-```bash
+```shell
 conda create -n thermostate -c conda-forge thermostate
 ```
 
 ### Pip
 
-Alternatively, ThermoState can be installed with pip.
+Alternatively, ThermoState can be installed with `pip`.
 
-```bash
+```shell
 python -m pip install thermostate
 ```
 
-Note that for versions of Python >= 3.9, CoolProp 6.4.1 will not work from PyPI. You'll
-need to install CoolProp from their source repository until CoolProp >6.4.1 is
-released. In this case, you can still install ThermoState from PyPI by specifying
-not to install the dependencies automatically:
-
-```bash
-python -m pip install --no-deps thermostate matplotlib numpy pint
-```
-
-Then you'll need to install CoolProp into the same environment separately. Note that the conda package is available for all Python versions after 3.7.
-
 ### From Source
 
-ThermoState is a pure-Python package that supports any Python version 3.7 and higher. To install from source, clone the source code repository and install using `pip`.
+ThermoState is a pure-Python package that supports any Python version 3.9 and higher. To install from source, clone the source code repository and install using `pip`.
 
-```bash
+```shell
 git clone https://github.com/bryanwweber/thermostate
 cd thermostate
-pip install .
+python -m pip install .
 ```
 
 ## Documentation
@@ -87,8 +68,8 @@ We welcome contributions from anyone in the community. Please look at the [Contr
 
 ## Continuous Integration Status
 
-[![codecov](https://codecov.io/gh/bryanwweber/thermostate/branch/master/graph/badge.svg)](https://codecov.io/gh/bryanwweber/thermostate)[![Python package](https://github.com/bryanwweber/thermostate/workflows/Python%20package/badge.svg)](https://github.com/bryanwweber/thermostate/actions?query=workflow%3A%22Python+package%22)
+[![codecov](https://codecov.io/gh/bryanwweber/thermostate/branch/master/graph/badge.svg)](https://codecov.io/gh/bryanwweber/thermostate)[![Python package](https://github.com/bryanwweber/thermostate/actions/workflows/pythonpackage.yml/badge.svg)](https://github.com/bryanwweber/thermostate/actions/workflows/pythonpackage.yml)
 
 ## Anaconda Package Version
 
-[![Anaconda-Server Badge Version](https://anaconda.org/bryanwweber/thermostate/badges/version.svg)](https://anaconda.org/bryanwweber/thermostate) [![Anaconda-Server Badge Downloads](https://anaconda.org/bryanwweber/thermostate/badges/downloads.svg)](https://anaconda.org/bryanwweber/thermostate)
+[![Anaconda-Server Badge Version](https://anaconda.org/conda-forge/thermostate/badges/version.svg)](https://anaconda.org/conda-forge/thermostate) [![Anaconda-Server Badge Downloads](https://anaconda.org/conda-forge/thermostate/badges/downloads.svg)](https://anaconda.org/conda-forge/thermostate)
