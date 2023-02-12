@@ -65,6 +65,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "black"
+version = "23.1.0"
+extras = ["jupyter"]
+requires_python = ">=3.7"
+summary = "The uncompromising code formatter."
+dependencies = [
+    "black==23.1.0",
+    "ipython>=7.8.0",
+    "tokenize-rt>=3.2.0",
+]
+
+[[package]]
 name = "bleach"
 version = "6.0.0"
 requires_python = ">=3.7"
@@ -836,6 +848,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokenize-rt"
+version = "5.0.0"
+requires_python = ">=3.7"
+summary = "A wrapper around the stdlib `tokenize` which roundtrips."
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 requires_python = ">=3.7"
@@ -922,7 +940,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:c4fcfb5a84d69666d7e2e492521c3af4d3d6b8627b294262ef3f9ecf41aadb81"
+content_hash = "sha256:b4609a733f1335fdbdc8d84389ce02da3eac7996ac2e39384f966d9fb3e35a7b"
 
 [metadata.files]
 "alabaster 0.7.13" = [
@@ -2070,6 +2088,10 @@ content_hash = "sha256:c4fcfb5a84d69666d7e2e492521c3af4d3d6b8627b294262ef3f9ecf4
 "tinycss2 1.2.1" = [
     {url = "https://files.pythonhosted.org/packages/75/be/24179dfaa1d742c9365cbd0e3f0edc5d3aa3abad415a2327c5a6ff8ca077/tinycss2-1.2.1.tar.gz", hash = "sha256:8cff3a8f066c2ec677c06dbc7b45619804a6938478d9d73c284b29d14ecb0627"},
     {url = "https://files.pythonhosted.org/packages/da/99/fd23634d6962c2791fb8cb6ccae1f05dcbfc39bce36bba8b1c9a8d92eae8/tinycss2-1.2.1-py3-none-any.whl", hash = "sha256:2b80a96d41e7c3914b8cda8bc7f705a4d9c49275616e886103dd839dfc847847"},
+]
+"tokenize-rt 5.0.0" = [
+    {url = "https://files.pythonhosted.org/packages/40/01/fb40ea8c465f680bf7aa3f5bee39c62ba8b7f52c38048c27aa95aff4f779/tokenize_rt-5.0.0.tar.gz", hash = "sha256:3160bc0c3e8491312d0485171dea861fc160a240f5f5766b72a1165408d10740"},
+    {url = "https://files.pythonhosted.org/packages/8d/12/4c7495f25b4c9131706f3aaffb185d4de32c02a6ee49d875e929c5b7c919/tokenize_rt-5.0.0-py2.py3-none-any.whl", hash = "sha256:c67772c662c6b3dc65edf66808577968fb10badfc2042e3027196bed4daf9e5a"},
 ]
 "tomli 2.0.1" = [
     {url = "https://files.pythonhosted.org/packages/97/75/10a9ebee3fd790d20926a90a2547f0bf78f371b2f13aa822c759680ca7b9/tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},

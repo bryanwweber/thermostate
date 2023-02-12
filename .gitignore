@@ -160,3 +160,7 @@ cython_debug/
 #.idea/
 
 *.nbconvert.ipynb
+
+docs/CHANGELOG.md
+docs/CONTRIBUTING.md
+docs/CODE_OF_CONDUCT.md

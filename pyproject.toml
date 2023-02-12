@@ -65,7 +65,7 @@ path = "src/thermostate/__init__.py"
 [tool.pdm.dev-dependencies]
 dev = [
     "flake8>=6.0.0",
-    "black>=23.1.0",
+    "black[jupyter]>=23.1.0",
     "mypy>=1.0.0",
     "isort>=5.12.0",
     "flake8-docstrings>=1.7.0",
@@ -81,18 +81,19 @@ ci = [
 
 [tool.pdm.scripts]
 test = "pytest -vv --cov --cov-report=xml tests/"
+docs = "sphinx-build -b html docs/ docs/_build -W --keep-going"
 
 [tool.pdm.scripts.lint]
 shell = """
-    flake8 src/thermostate tests
+    flake8 src/thermostate tests docs
     isort --check src/thermostate tests
-    black --check src/thermostate tests
+    black --check src/thermostate tests docs
 """
 
 [tool.pdm.scripts.format]
 shell = """
     isort src/thermostate tests
-    black src/thermostate tests
+    black src/thermostate tests docs
 """
 
 [tool.pdm.scripts.notebooks]
