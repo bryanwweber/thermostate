@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 <!-- markdownlint-disable MD022 MD032 MD024 -->
+## [2.0.0] - 12-FEB-2023
+### Added
+- Builds for Python 3.11
+
+### Changed
+- Switched to using pdm for dependency and build management
+
+### Fixed
+- Support pint >=0.20 by updating a few imports
+
+### Removed
+- The GitHub Actions docs job, which now runs directly on readthedocs for each PR
 
 ## [1.4.0] - 11-FEB-2023
 ### Changed

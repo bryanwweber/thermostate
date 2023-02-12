@@ -85,22 +85,6 @@ jobs:
     - name: Test with tox
       run: pdm run tox -e lint
 
-  docs:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check out the repository
-      uses: actions/checkout@v3
-    - name: Install pandoc from Apt
-      run: sudo apt-get install pandoc
-    - name: Set up Python 3.10
-      uses: pdm-project/setup-pdm@v3
-      with:
-        python-version: "3.10"
-    - name: Install the dependencies
-      run: pdm install --prod -G docs
-    - name: Build docs with sphinx
-      run: pdm docs
-
   pypi-build-and-upload:
     runs-on: ubuntu-latest
     steps:
